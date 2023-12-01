@@ -1,38 +1,80 @@
+/*////////////////////////////////////////////////////////////////////
+////////// App Level Tag Styles //////////////////////////////////////
+////////////////////////////////////////////////////////////////////*/
 .App {
+  color: white;
   text-align: center;
 }
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+a:link ,:visited, :hover, :active{
   color: white;
+  text-decoration: none;
 }
-
-.App-link {
-  color: #61dafb;
+/*////////////////////////////////////////////////////////////////////
+////////// Grid Setup ////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////*/
+.auto-grid {
+  --auto-grid-min-size: 25rem;
+  display: grid;
+  grid-template-columns: 
+    repeat(auto-fill, minmax(var(--auto-grid-min-size), 1fr));
+  grid-gap: 5vw;
+  margin: auto; 
+  padding: 5vw;
+  width: 90vw;
+  @media (max-width: 430px) {
+    --auto-grid-min-size: 20rem;
+  }
 }
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/*////////////////////////////////////////////////////////////////////
+////////// App Level Card Styles /////////////////////////////////////
+////////////////////////////////////////////////////////////////////*/
+.card {
+  box-shadow: 0px 5px 5px black;
+  background-image: linear-gradient(
+    to bottom, rgba(0,0,0,.5),
+               rgba(0,0,0,.75),
+               rgba(0,0,0,.5));
+  border-radius: 5px;
+  min-width: 400px;
+  position: relative; min-height: 200px;
+  z-index: 100;
+  @media (max-width: 430px) {
+    min-width: unset;}
+  h1{ 
+    font-size: 7.5vh;
+    line-height: 1vw;
+    padding-left: 1vw;
+    text-align: left; 
+    text-shadow: -5px 10px 10px black;
+    @media (max-width: 430px) {
+      font-size: 5vh;}}
+  h2{
+    font-size: 2.5vh;
+    line-height: 1rem;
+    padding-right: 1vw;
+    text-align: right; 
+    text-shadow: -5px 5px 5px black;}
+  .fontawesome {
+    color: white;
+    font-size: 2rem; 
+    margin-bottom: -.5rem;
+    box-shadow: -5px 5px 5px black;}
+  p {
+    max-height: 15vh; overflow: scroll;
+    text-align: left;
+    padding-left: 1vw;
+    padding-right: 1vw;
+    font-size: 2vh;}
+  .break {
+    border-bottom: 2.5px solid white;
+    box-shadow: -2.5px 7.5px 5px black;
+    margin: auto;
+    opacity: .75;
+    width: 95%;}
+  .break-2 {
+    border-bottom: 1px solid white;
+    box-shadow: -2.5px 7.5px 5px black;
+    margin: auto;
+    opacity: .5;
+    width: 85%;}
 }
