@@ -1,0 +1,209 @@
+/*////////////////////////////////////////////////////////////////////
+////////// SVG logo animation ////////////////////////////////////////
+////////////////////////////////////////////////////////////////////*/ 
+.logo-banner {
+    align-items: center;
+    display: flex; 
+    flex-direction: row;
+    flex-wrap: wrap;
+    height: 100vh;
+    justify-content: center;
+    margin: auto; 
+    width: 85vw;
+    .logo-jared {
+        animation: fill-logo 5s ease forwards 5.000s;
+        filter: drop-shadow(-5px 15px 5px black);
+        position: absolute; z-index: 2500; will-change: transform;
+        margin: auto; max-width: 80%;}
+      .logo-jared path:nth-child(0){
+        stroke-dasharray: 224.58628845214844px;
+        stroke-dashoffset: 224.58628845214844px;
+        animation: line-anim 2s ease forwards 0.000s}
+      .logo-jared path:nth-child(1){
+        stroke-dasharray: 313.88592529296875px;
+        stroke-dashoffset: 313.88592529296875px;
+        animation: line-anim 2s ease forwards 0.125s}
+      .logo-jared path:nth-child(2){ /* J */
+        stroke-dasharray: 367.9700622558594px;
+        stroke-dashoffset: 367.9700622558594px;
+        animation: line-anim 2s ease forwards 0.250s}
+      .logo-jared path:nth-child(3){ /* A */
+        stroke-dasharray: 345.18603515625px;
+        stroke-dashoffset: 345.18603515625px;
+        animation: line-anim 2s ease forwards 0.375s}
+      .logo-jared path:nth-child(4){ /* R */
+        stroke-dasharray: 338.96588134765625px;
+        stroke-dashoffset: 338.96588134765625px;
+        animation: line-anim 2s ease forwards 0.500s}
+      .logo-jared path:nth-child(5){ /* E */
+        stroke-dasharray: 361.4064025878906px;
+        stroke-dashoffset: 361.4064025878906px;
+        animation: line-anim 2s ease forwards 0.625s}
+      .logo-jared path:nth-child(6){ /* D */
+        stroke-dasharray: 313.8856201171875px;
+        stroke-dashoffset: 313.8856201171875px;
+        animation: line-anim 2s ease forwards 0.750s}
+      @keyframes line-anim{
+          to{ stroke-dashoffset: 0; }}
+      @keyframes fill-logo{
+          from{ fill: transparent; }
+          to{ fill: white; }}
+    .logo-harbison {
+        animation: fill-logo-2 5s ease forwards 5.000s;
+        filter: drop-shadow(-5px 15px 5px black);
+        position: absolute; z-index: 2500; will-change: transform;
+        margin: auto; max-width: 80%;}
+      .logo-harbison path:nth-child(0){ /* */
+        stroke-dasharray: 367.9692687988281px;
+        stroke-dashoffset: 367.9692687988281px;
+        animation: line-anim-2 2s ease forwards 0.875s}
+      .logo-harbison path:nth-child(1){ /* */
+        stroke-dasharray: 373.0042724609375px;
+        stroke-dashoffset: 373.0042724609375px;
+        animation: line-anim-2 2s ease forwards 1.00s}
+      .logo-harbison path:nth-child(2){ /* H */
+        stroke-dasharray: 364.6240234375px;
+        stroke-dashoffset: 364.6240234375px;
+        animation: line-anim-2 2s ease forwards 1.125s}
+      .logo-harbison path:nth-child(3){ /* 1 */
+        stroke-dasharray: 346.8232421875px;
+        stroke-dashoffset: 346.8232421875px;
+        animation: line-anim-2 2s ease forwards 1.250s}
+      .logo-harbison path:nth-child(4){ /* R */
+        stroke-dasharray: 331.6245422363281px;
+        stroke-dashoffset: 331.6245422363281px;
+        animation: line-anim-2 2s ease forwards 1.375s}
+      .logo-harbison path:nth-child(5){ /* B */
+        stroke-dasharray: 387.89849853515625px;
+        stroke-dashoffset: 387.89849853515625px;
+        animation: line-anim-2 2s ease forwards 1.500s}
+      .logo-harbison path:nth-child(6){ /* I */
+        stroke-dasharray: 379.98513793945312px;
+        stroke-dashoffset: 379.98513793945312px;
+        animation: line-anim-2 2s ease forwards 1.625s}
+      .logo-harbison path:nth-child(7){ /* S */
+        stroke-dasharray: 393.42544555664062px;
+        stroke-dashoffset: 393.42544555664062px;
+        animation: line-anim-2 2s ease forwards 1.750s}
+      .logo-harbison path:nth-child(8){ /* O */
+        stroke-dasharray: 393.42544555664062px;
+        stroke-dashoffset: 393.42544555664062px;
+        animation: line-anim-2 2s ease forwards 1.875s}
+      .logo-harbison path:nth-child(9){ /* N */
+        stroke-dasharray: 393.42544555664062px;
+        stroke-dashoffset: 393.42544555664062px;
+        animation: line-anim-2 2s ease forwards 2.000s}
+      @keyframes line-anim-2{
+          to{ stroke-dashoffset: 0; }}
+      @keyframes fill-logo-2{
+          from{ fill: transparent; }
+          to{ fill: white; }}
+    .logo-software {
+        animation: fill-logo-3 5s ease forwards 5.000s;
+        filter: drop-shadow(-5px 15px 5px black);
+        position: absolute; z-index: 2500; will-change: transform;
+        margin: auto; max-width: 80%;}
+      .logo-software path:nth-child(0){ /* */
+        stroke-dasharray: 347.8143768310547px;
+        stroke-dashoffset: 347.8143768310547px;
+        animation: line-anim-3 2s ease forwards 2.125s}
+      .logo-software path:nth-child(1){ /* */
+        stroke-dasharray: 131.8665771484375px;
+        stroke-dashoffset: 131.8665771484375px;
+        animation: line-anim-3 2s ease forwards 2.250s}
+      .logo-software path:nth-child(2){ /* S */
+        stroke-dasharray: 241.99765014648438px;
+        stroke-dashoffset: 241.99765014648438px;
+        animation: line-anim-3 2s ease forwards 2.375s}
+      .logo-software path:nth-child(3){ /* O */
+        stroke-dasharray: 187.62843322753906px;
+        stroke-dashoffset: 187.62843322753906px;
+        animation: line-anim-3 2s ease forwards 2.500s}
+      .logo-software path:nth-child(4){ /* F */
+        stroke-dasharray: 409.69155883789062px;
+        stroke-dashoffset: 409.69155883789062px;
+        animation: line-anim-3 2s ease forwards 2.625s}
+      .logo-software path:nth-child(5){ /* T */
+        stroke-dasharray: 181.70338439941406px;
+        stroke-dashoffset: 181.70338439941406px;
+        animation: line-anim-3 2s ease forwards 2.750s}
+      .logo-software path:nth-child(6){ /* W */
+        stroke-dasharray: 255.70712280273438px;
+        stroke-dashoffset: 255.70712280273438px;
+        animation: line-anim-3 2s ease forwards 2.875s}
+      .logo-software path:nth-child(7){ /* A */
+        stroke-dasharray: 177.47193908691406px;
+        stroke-dashoffset: 177.47193908691406px;
+        animation: line-anim-3 2s ease forwards 3.00s}
+      .logo-software path:nth-child(8){ /* R */
+        stroke-dasharray: 237.7108154296875px;
+        stroke-dashoffset: 237.7108154296875px;
+        animation: line-anim-4 2s ease forwards 3.125s}
+      .logo-software path:nth-child(9){ /* E */
+        stroke-dasharray: 237.7108154296875px;
+        stroke-dashoffset: 237.7108154296875px;
+        animation: line-anim-4 2s ease forwards 3.250s}
+      @keyframes line-anim-3{
+          to{ stroke-dashoffset: 0; }}
+      @keyframes fill-logo-3{
+          from{ fill: transparent; }
+          to{ fill: white; }}
+    .logo-engineer {
+        animation: fill-logo-4 5s ease forwards 5.000s;
+        filter: drop-shadow(-5px 15px 5px black);
+        position: absolute; z-index: 2500; will-change: transform;
+        margin: auto; max-width: 80%;}
+      .logo-engineer path:nth-child(0){ /* */
+        stroke-dasharray: 237.7108154296875px;
+        stroke-dashoffset: 237.7108154296875px;
+        animation: line-anim-4 2s ease forwards 3.375s}
+      .logo-engineer path:nth-child(1){ /* */
+        stroke-dasharray: 316.75715637207031px;
+        stroke-dashoffset: 316.75715637207031px;
+        animation: line-anim-4 2s ease forwards 3.500s}
+      .logo-engineer path:nth-child(2){ /* E */
+        stroke-dasharray: 197.4729766845703px;
+        stroke-dashoffset: 197.4729766845703px;
+        animation: line-anim-4 2s ease forwards 3.625s}
+      .logo-engineer path:nth-child(3){ /* N */
+        stroke-dasharray: 181.70352172851562px;
+        stroke-dashoffset: 181.70352172851562px;
+        animation: line-anim-4 2s ease forwards 3.750s}
+      .logo-engineer path:nth-child(4){ /* G */
+        stroke-dasharray: 181.7047119140625px;
+        stroke-dashoffset: 181.7047119140625px;
+        animation: line-anim-4 2s ease forwards 3.875s}
+      .logo-engineer path:nth-child(5){ /* I */
+        stroke-dasharray: 149.69160461425781px;
+        stroke-dashoffset: 149.69160461425781px;
+        animation: line-anim-4 2s ease forwards 4.000s}
+      .logo-engineer path:nth-child(6){ /* N */
+        stroke-dasharray: 224.58628845214844px;
+        stroke-dashoffset: 224.58628845214844px;
+        animation: line-anim-4 2s ease forwards 4.125s}
+      .logo-engineer path:nth-child(7){ /* E */
+        stroke-dasharray: 313.88592529296875px;
+        stroke-dashoffset: 313.88592529296875px;
+        animation: line-anim-4 2s ease forwards 4.250s}
+      .logo-engineer path:nth-child(8){ /* E */
+        stroke-dasharray: 357.9700622558594px;
+        stroke-dashoffset: 357.9700622558594px;
+        animation: line-anim-4 2s ease forwards 4.375s}
+      .logo-engineer path:nth-child(9){ /* R */
+        stroke-dasharray: 345.18603515625px;
+        stroke-dashoffset: 345.18603515625px;
+        animation: line-anim-4 2s ease forwards 4.500s}
+      .logo-engineer path:nth-child(10){ /* */
+        stroke-dasharray: 345.18603515625px;
+        stroke-dashoffset: 345.18603515625px;
+        animation: line-anim-4 2s ease forwards 4.500s}
+      .logo-engineer path:nth-child(11){ /* */
+        stroke-dasharray: 345.18603515625px;
+        stroke-dashoffset: 345.18603515625px;
+        animation: line-anim-4 2s ease forwards 4.500s}
+      @keyframes line-anim-4{
+          to{ stroke-dashoffset: 0; }}
+      @keyframes fill-logo-4{
+          from{ fill: transparent; }
+          to{ fill: white; }}
+}
