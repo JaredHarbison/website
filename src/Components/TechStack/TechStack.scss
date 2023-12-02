@@ -5,17 +5,22 @@
     bottom: 0; 
     margin: auto;
     max-width: 85vw;
-    padding-bottom: 5vw;
+    padding-bottom: 25vw;
     padding-top: 5vw;
     position: -webkit-sticky;
     position: sticky; 
     text-align: center;
     text-shadow: -5px 15px 5px black;
+    white-space: nowrap;
     z-index: 200; }
 /*////////////////////////////////////////////////////////////////////
 ////////// Panel and Icon Adjustments ////////////////////////////////
 ////////////////////////////////////////////////////////////////////*/    
   .tech-stack {
+    display: flex;
+    flex-flow: wrap;
+    height: 150vw;
+    justify-content: center;
     margin: auto;
     padding-bottom: 10vw;
     position: relative;
@@ -24,7 +29,7 @@
   .devicon { 
     fill: white;
     filter: drop-shadow(-5px 15px 5px black);
-    opacity: .75;
+    opacity: .65;
     margin-left: 5vw;
     margin-right: 5vw;
     margin-top: 5vh;
