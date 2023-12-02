@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 function Footer() {
   return(
-    <div class="footer">
+    <div className="footer">
       <h1>get in touch via
         <a href="https://www.linkedin.com/in/jaredharbison" target="_blank" rel="noopener noreferrer">
             <FontAwesomeIcon icon={['fab', 'linkedin']} className="fontawesome"/>
