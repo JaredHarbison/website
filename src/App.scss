@@ -3,18 +3,16 @@
 ////////////////////////////////////////////////////////////////////*/
 .App {
   color: white;
-  text-align: center;
-}
+  text-align: center;}
 a:link ,:visited, :hover, :active{
   color: white;
-  text-decoration: none;
-}
+  text-decoration: none;}
 h1 {
   font-size: 10vw; 
-}
+  @media (max-width: 550px) {
+    font-size: 15vw; }  }
 .visually-hidden {
-  visibility: hidden;
-}
+  visibility: hidden;}
 /*////////////////////////////////////////////////////////////////////
 ////////// Grid Setup ////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////*/
@@ -28,14 +26,12 @@ h1 {
   padding: 5vw;
   width: 90vw;
   @media (max-width: 430px) {
-    --auto-grid-min-size: 20rem;
-  }
-}
+    --auto-grid-min-size: 20rem;}}
 /*////////////////////////////////////////////////////////////////////
 ////////// App Level Card Styles /////////////////////////////////////
 ////////////////////////////////////////////////////////////////////*/
 .card {
-  backdrop-filter: blur( 7.5px ); 
+  backdrop-filter: blur( 5px ); 
   background-image: linear-gradient(
     to bottom, rgba(0,0,0,.5),
                rgba(0,0,0,.75),
@@ -44,7 +40,7 @@ h1 {
   box-shadow: 0px 5px 5px black;
   min-width: 400px;
   position: relative; min-height: 200px;
-  -webkit-backdrop-filter: blur( 7.5px );  
+  -webkit-backdrop-filter: blur( 5px );  
   z-index: 100;
   @media (max-width: 430px) {
     min-width: unset;}
@@ -84,5 +80,4 @@ h1 {
     box-shadow: -2.5px 7.5px 5px black;
     margin: auto;
     opacity: .5;
-    width: 85%;}
-}
+    width: 85%;}}

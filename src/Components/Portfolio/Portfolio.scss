@@ -7,7 +7,6 @@
                  rgba(255,255,255,.5),
                  rgba(255,255,255,.25));
     color: black; 
-    font-size: 10vw; 
     height: 100vh;
     margin: auto;
     position: -webkit-sticky; 
@@ -16,7 +15,9 @@
     text-shadow: -5px 15px 5px rgb(82, 80, 80);
     top: 0;  
     word-spacing: -25px;
-    z-index: -200;}
+    z-index: -200;
+    @media (max-width: 550px) {
+      text-shadow: -5px 5px 5px rgb(82, 80, 80);} }
 /*////////////////////////////////////////////////////////////////////
 ////////// Portfolio Card Container and Adjustments //////////////////
 ////////////////////////////////////////////////////////////////////*/
