@@ -9,7 +9,7 @@ import fog5 from '../../Assets/Images/fog5.png'
 function Background() {
   return (
     <div className="Background">
-      <div class="bg">
+      <div class="background-fog">
         <div class="fog">
           <img src={fog1} style={{"--i": 1}} />
           <img src={fog2} style={{"--i": 2}} />
@@ -23,8 +23,6 @@ function Background() {
           <img src={fog5} style={{"--i": 6}} />
         </div>
       </div>
-      <div class="stars"></div>
-      <div class="twinkling"></div>
       <div className="background-rom-and-moon"></div>
       <div className="top-gradiated-background-layer"></div>
       <div className="background-rom-cutout"></div>
