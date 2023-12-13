@@ -25,7 +25,7 @@ function Portfolio() {
           </p>
           <p className="break"></p>
           <h3>                        
-            <a href="https://youtu.be/Ud3aomeFiaI" 
+            <a href="" 
                title="come back soon" 
                target="_blank" rel="noopener noreferrer">
                <FontAwesomeIcon icon={['fab', 'youtube']} className="fontawesome"/>
@@ -35,8 +35,8 @@ function Portfolio() {
               target="_blank" rel="noopener noreferrer">
               <FontAwesomeIcon icon={['fab', 'github']} className="fontawesome"/>
             </a> {" | "}
-            <a href="" 
-              title="come back soon" 
+            <a href="https://dev.to/jaredharbison/karaoke-queue-a-web-app-for-hosting-karaoke-parties-18f4" 
+              title="read about the project" 
               target="_blank" rel="noopener noreferrer">
               <FontAwesomeIcon icon={['fab', 'dev']} className="fontawesome"/>
             </a>
