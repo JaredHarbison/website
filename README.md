@@ -1,94 +1,143 @@
-# Jared Harbison Website
+# jaredharbison.com
 
-Personal developer site rebuilt as a small Rails app that behaves like a static
-site.
+This is the source for my personal site: a place for case studies, technical
+writing, and a little context about the way I work.
+
+The next version is a small Rails application backed by Markdown files. The
+current GitHub Pages build still lives at the repository root while I finish the
+replacement, so the rebuild can evolve without changing the live site.
+
+## Why I built it this way
+
+I wanted the authoring experience of a static site without introducing a CMS or
+a frontend framework. Rails gives me routing, layouts, asset handling, and a
+familiar testing setup. Markdown keeps the content portable and reviewable in
+Git.
+
+There is intentionally no database. A repository object reads Markdown from
+disk and returns small model-like objects to the controllers. That boundary
+keeps the rest of the app independent from where the content is stored.
+
+## What is here
+
+- A homepage, about page, and contact page
+- Long-form case studies with a consistent section structure
+- A writing section for technical notes
+- Draft filtering through front matter
+- Server-rendered, semantic HTML with no application JavaScript
+- A production visibility flag so the Rails rebuild can coexist with the live
+  static site
+
+## Screenshots
+
+The Rails version is still being prepared for launch. Before publishing it, add
+desktop and mobile captures to `docs/screenshots/` and include them here. The
+most useful views will be the homepage, case study index, and a full case study.
+
+## Tech stack
+
+- Ruby 3.3
+- Rails 8
+- ERB and CSS
+- Redcarpet for Markdown rendering
+- Minitest
+- RuboCop and Brakeman
+
+Active Record is omitted because the application has no persistent runtime
+data. Propshaft handles the stylesheet without a Node build step.
 
 ## Architecture
 
-- Rails 8 app with Active Record omitted for now.
-- Content lives in Markdown files under `content/`.
-- `ContentRepository` loads Markdown entries and exposes model-like POROs.
-- `MarkdownRenderer` renders Markdown through Redcarpet.
-- Public content routes are available in development and locked by default in
-  production with `PUBLIC_SECTIONS_ENABLED`.
-- Existing root `index.html`, `static/`, and `CNAME` remain in place so GitHub
-  Pages keeps serving the current site until launch.
-
-## Content
-
-Pages:
+Content lives under `content/` and uses YAML front matter. `ContentRepository`
+parses those files, filters out drafts, and builds `ContentEntry`, `Article`, or
+`CaseStudy` objects. Controllers request entries from the repository and pass
+them to conventional Rails views. `MarkdownRenderer` is the only object allowed
+to turn Markdown into HTML.
 
 ```text
-content/pages/about.md
-content/pages/contact.md
+content/*.md
+    -> ContentRepository
+    -> ContentEntry / Article / CaseStudy
+    -> controller
+    -> ERB view + MarkdownRenderer
+    -> HTML response
 ```
 
-Case studies:
+See [ARCHITECTURE.md](ARCHITECTURE.md) for the boundaries and tradeoffs in more
+detail.
 
-```text
-content/case_studies/my-case-study.md
-```
+## Content format
 
-Writing:
-
-```text
-content/writing/my-article.md
-```
-
-Each Markdown file uses YAML front matter:
+Each document starts with front matter:
 
 ```markdown
 ---
 title: Example
-summary: Short summary.
+summary: A short description.
 date: 2026-07-08
 status: published
 ---
 
-Markdown body.
+Markdown begins here.
 ```
 
-Draft entries are ignored by repositories unless `status: published`.
+Files default to `draft` when `status` is missing. Case studies also expose a
+check for the standard sections I use when writing about product work.
 
-## Case Study Structure
+## Running locally
 
-Case studies should use these sections:
-
-- Overview
-- Problem
-- Context
-- Constraints
-- My Role
-- Approach
-- Technical Implementation
-- Tradeoffs
-- Outcome
-- What I'd Improve Today
-
-## Development
-
-Use the configured asdf Ruby:
+The project uses the Ruby version in `.ruby-version`.
 
 ```sh
-asdf exec bundle install
-asdf exec bundle exec rails test
-asdf exec bundle exec rails server -p 3001
+bundle install
+bin/rails test
+bin/rails server
 ```
 
-The complete site is available by default in development. To preview the
-production lock locally:
+Open `http://localhost:3000`. All sections are visible by default in
+development.
+
+The Rails rebuild is locked in production unless it is explicitly enabled:
 
 ```sh
-PUBLIC_SECTIONS_ENABLED=false asdf exec bundle exec rails server -p 3001
+PUBLIC_SECTIONS_ENABLED=true bin/rails server -e production
 ```
 
-## GitHub Pages
+Set the flag to `false` locally to exercise the same lock.
 
-GitHub Pages can serve multiple pages and clean static URLs, but it cannot run a
-Rails server. Launch options:
+## Quality checks
 
-- Generate static HTML from Rails and publish that output to GitHub Pages.
-- Deploy the Rails app to a Ruby host such as Render, Fly.io, or Heroku.
+```sh
+bin/rails test
+bin/rubocop
+bin/brakeman --no-pager
+```
 
-Until launch, do not replace the existing root `index.html` or static assets on
-the Pages branch.
+## Interesting details
+
+- The content source is behind a repository boundary rather than read directly
+  in controllers or views. Moving to another backend would not require a rewrite
+  of the delivery layer.
+- Markdown rendering filters raw HTML and adds safe relationship attributes to
+  generated links.
+- Unknown slugs become normal 404 responses instead of leaking repository
+  exceptions.
+- The live static build and the Rails rebuild are deliberately kept separate.
+  Committing work on the rebuild branch does not replace the GitHub Pages entry
+  point.
+
+## Future improvements
+
+- Generate a deployable static build from the Rails routes.
+- Add RSS and sitemap generation once the writing archive grows.
+- Add screenshot assets after the content and layout settle.
+- Cache parsed entries if the content library becomes large enough to justify
+  it.
+
+## What I learned
+
+The useful decision here was not choosing Rails or Markdown by itself. It was
+putting a small boundary between them. The app stays simple today, but its
+controllers and views do not need to know whether content came from a file,
+cache, or database. It is a modest example of designing for a likely change
+without building that change early.
