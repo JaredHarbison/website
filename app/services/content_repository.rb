@@ -11,7 +11,7 @@ class ContentRepository
   def all
     paths.map { |path| build_entry(path) }
       .select(&:published?)
-      .sort_by { |entry| [entry.date || Date.new(1970, 1, 1), entry.title] }
+      .sort_by { |entry| [ entry.date || Date.new(1970, 1, 1), entry.title ] }
       .reverse
   end
 
@@ -40,14 +40,14 @@ class ContentRepository
 
   def parse(markdown)
     match = markdown.match(FRONT_MATTER_PATTERN)
-    return [{}, markdown] unless match
+    return [ {}, markdown ] unless match
 
     metadata = YAML.safe_load(
       match[:front_matter],
-      permitted_classes: [Date, Time],
+      permitted_classes: [ Date, Time ],
       aliases: false
     ) || {}
 
-    [metadata.transform_keys(&:to_s), match[:body]]
+    [ metadata.transform_keys(&:to_s), match[:body] ]
   end
 end

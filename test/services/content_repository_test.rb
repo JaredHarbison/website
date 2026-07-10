@@ -4,7 +4,7 @@ class ContentRepositoryTest < ActiveSupport::TestCase
   test "loads published markdown entries from a collection" do
     entries = ContentRepository.new(collection: "pages", model: ContentEntry).all
 
-    assert_equal ["contact", "about"], entries.map(&:slug)
+    assert_equal [ "contact", "about" ], entries.map(&:slug)
     assert entries.all?(&:published?)
   end
 

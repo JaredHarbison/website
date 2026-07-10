@@ -1,6 +1,8 @@
 class PagesController < ApplicationController
   before_action :require_public_sections!, except: :home
 
+  rescue_from ContentRepository::EntryNotFound, with: :not_found
+
   def home
   end
 

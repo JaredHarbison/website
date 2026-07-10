@@ -28,7 +28,7 @@
           <%= link_to "Jared Harbison", root_path, class: "site-mark" %>
         <% end %>
 
-        <% if ActiveModel::Type::Boolean.new.cast(ENV.fetch("PUBLIC_SECTIONS_ENABLED", Rails.env.development?)) %>
+        <% if public_sections_enabled? %>
           <ul>
             <li><%= link_to "About", about_path %></li>
             <li><%= link_to "Case Studies", case_studies_path %></li>
