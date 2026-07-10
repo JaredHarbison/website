@@ -1,0 +1,13 @@
+<main class="site-main listing-page" aria-labelledby="page-title">
+  <p class="eyebrow">Case Studies</p>
+  <h1 id="page-title">Case Studies</h1>
+
+  <div class="entry-list">
+    <% @case_studies.each do |case_study| %>
+      <article class="entry-card">
+        <h2><%= link_to case_study.title, case_study_path(case_study.slug) %></h2>
+        <p><%= case_study.summary %></p>
+      </article>
+    <% end %>
+  </div>
+</main>

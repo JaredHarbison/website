@@ -1,0 +1,5 @@
+<main class="site-main content-page" aria-labelledby="page-title">
+  <p class="eyebrow">About</p>
+  <h1 id="page-title"><%= @page.title %></h1>
+  <%= MarkdownRenderer.render(@page.body) %>
+</main>

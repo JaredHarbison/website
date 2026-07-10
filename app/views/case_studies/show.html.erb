@@ -1,0 +1,6 @@
+<main class="site-main content-page" aria-labelledby="page-title">
+  <p class="eyebrow">Case Study</p>
+  <h1 id="page-title"><%= @case_study.title %></h1>
+  <p class="lede"><%= @case_study.summary %></p>
+  <%= MarkdownRenderer.render(@case_study.body) %>
+</main>

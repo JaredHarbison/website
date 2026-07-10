@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Jared Harbison" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="Personal website of Jared Harbison, Senior Software Engineer.">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
+    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+
+    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <%= stylesheet_link_tag :app %>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <nav aria-label="Primary navigation">
+        <% if current_page?(root_path) %>
+          <span class="site-mark" aria-current="page">Jared Harbison</span>
+        <% else %>
+          <%= link_to "Jared Harbison", root_path, class: "site-mark" %>
+        <% end %>
+
+        <% if ActiveModel::Type::Boolean.new.cast(ENV.fetch("PUBLIC_SECTIONS_ENABLED", Rails.env.development?)) %>
+          <ul>
+            <li><%= link_to "About", about_path %></li>
+            <li><%= link_to "Case Studies", case_studies_path %></li>
+            <li><%= link_to "Writing", writings_path %></li>
+            <li><%= link_to "Contact", contact_path %></li>
+          </ul>
+        <% end %>
+      </nav>
+    </header>
+
+    <div id="main">
+      <%= yield %>
+    </div>
+  </body>
+</html>

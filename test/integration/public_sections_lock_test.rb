@@ -1,0 +1,59 @@
+require "test_helper"
+
+class PublicSectionsLockTest < ActionDispatch::IntegrationTest
+  test "home renders while public sections are locked" do
+    get root_path
+
+    assert_response :success
+    assert_select "h1", "Software Engineer"
+  end
+
+  test "navigation renders when public sections are enabled" do
+    with_public_sections_enabled do
+      get root_path
+    end
+
+    assert_response :success
+    assert_select "nav ul a", 4
+    assert_select ".site-mark[aria-current='page']", "Jared Harbison"
+    assert_select "a.site-mark", 0
+  end
+
+  test "content pages are inaccessible while public sections are locked" do
+    get about_path
+
+    assert_response :not_found
+  end
+
+  test "case studies are inaccessible while public sections are locked" do
+    get case_studies_path
+
+    assert_response :not_found
+  end
+
+  test "writing is inaccessible while public sections are locked" do
+    get writings_path
+
+    assert_response :not_found
+  end
+
+  test "markdown-backed pages render when public sections are enabled" do
+    with_public_sections_enabled do
+      get about_path
+    end
+
+    assert_response :success
+    assert_select "h1", "About"
+    assert_includes response.body, "Senior Software Engineer"
+  end
+
+  private
+
+  def with_public_sections_enabled
+    previous = ENV["PUBLIC_SECTIONS_ENABLED"]
+    ENV["PUBLIC_SECTIONS_ENABLED"] = "true"
+    yield
+  ensure
+    ENV["PUBLIC_SECTIONS_ENABLED"] = previous
+  end
+end
