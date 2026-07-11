@@ -14,9 +14,28 @@ class PublicSectionsLockTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :success
-    assert_select "nav ul a", 4
+    assert_select ".desktop-navigation nav[aria-label='Primary navigation']", 1
+    assert_select ".desktop-navigation a", text: "About"
+    assert_select ".desktop-navigation summary", text: /Case Studies/
+    assert_select ".desktop-navigation summary", text: /Writing/
+    assert_select ".desktop-navigation a", text: "Contact"
+    assert_select ".desktop-navigation a.explorer__link--child", 5
+    assert_select "#mobile-navigation[popover]", 1
+    assert_select "button[popovertarget='mobile-navigation']", 2
     assert_select ".site-mark[aria-current='page']", "Jared Harbison"
     assert_select "a.site-mark", 0
+    assert_select ".home-actions a", 2
+    assert_no_match(/site is being rebuilt/i, response.body)
+  end
+
+  test "active content section is expanded and current page is marked" do
+    with_public_sections_enabled do
+      get case_study_path("dogly-partner-pro")
+    end
+
+    assert_response :success
+    assert_select ".desktop-navigation details.explorer__section[open]", 1
+    assert_select ".desktop-navigation a[aria-current='page']", "Dogly Partner Pro"
   end
 
   test "content pages are inaccessible while public sections are locked" do
@@ -43,7 +62,8 @@ class PublicSectionsLockTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :success
-    assert_select "h1", "About"
+    assert_select "h1", "Jared Harbison"
+    assert_select "img.about-portrait[width='480'][height='600']", 1
     assert_includes response.body, "Senior Software Engineer"
   end
 
