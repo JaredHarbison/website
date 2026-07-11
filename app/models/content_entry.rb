@@ -15,6 +15,10 @@ class ContentEntry
     metadata["summary"].to_s
   end
 
+  def tags
+    Array(metadata["tags"]).compact_blank
+  end
+
   def date
     value = metadata["date"]
     return value if value.is_a?(Date)

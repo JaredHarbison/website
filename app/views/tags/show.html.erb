@@ -1,0 +1,32 @@
+<main class="site-main listing-page" aria-labelledby="page-title">
+  <p class="eyebrow">Topic</p>
+  <h1 id="page-title"><%= @tag.name %></h1>
+
+  <% if @tag.case_studies.any? %>
+    <section class="tag-results" aria-labelledby="case-studies-title">
+      <h2 id="case-studies-title">Case Studies</h2>
+      <div class="entry-list">
+        <% @tag.case_studies.each do |case_study| %>
+          <article class="entry-card">
+            <h3><%= link_to case_study.title, case_study_path(case_study.slug) %></h3>
+            <p><%= case_study.summary %></p>
+          </article>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+
+  <% if @tag.articles.any? %>
+    <section class="tag-results" aria-labelledby="writing-title">
+      <h2 id="writing-title">Writing</h2>
+      <div class="entry-list">
+        <% @tag.articles.each do |article| %>
+          <article class="entry-card">
+            <h3><%= link_to article.title, writing_path(article.slug) %></h3>
+            <p><%= article.summary %></p>
+          </article>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+</main>

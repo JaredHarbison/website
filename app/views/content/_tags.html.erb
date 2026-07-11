@@ -1,0 +1,5 @@
+<ul class="tag-list" aria-label="Topics">
+  <% entry.tags.each do |tag| %>
+    <li><%= link_to tag, tag_path(tag.parameterize), class: "tag-link" %></li>
+  <% end %>
+</ul>

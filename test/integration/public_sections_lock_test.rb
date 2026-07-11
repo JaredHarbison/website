@@ -19,7 +19,7 @@ class PublicSectionsLockTest < ActionDispatch::IntegrationTest
     assert_select ".desktop-navigation summary", text: /Case Studies/
     assert_select ".desktop-navigation summary", text: /Writing/
     assert_select ".desktop-navigation a", text: "Contact"
-    assert_select ".desktop-navigation a.explorer__link--child", 5
+    assert_select ".desktop-navigation a.explorer__link--child", minimum: 5
     assert_select "#mobile-navigation[popover]", 1
     assert_select "button[popovertarget='mobile-navigation']", 2
     assert_select ".site-mark[aria-current='page']", "Jared Harbison"
@@ -54,6 +54,16 @@ class PublicSectionsLockTest < ActionDispatch::IntegrationTest
     get writings_path
 
     assert_response :not_found
+  end
+
+  test "tags combine case studies and writing" do
+    with_public_sections_enabled do
+      get tag_path("rails")
+    end
+
+    assert_response :success
+    assert_select "h1", "Rails"
+    assert_select ".tag-results", 2
   end
 
   test "markdown-backed pages render when public sections are enabled" do

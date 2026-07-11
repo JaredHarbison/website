@@ -9,6 +9,12 @@ technologies:
   - Stimulus
   - Geocoder
   - RSpec
+tags:
+  - Rails
+  - Product Engineering
+  - Search & Discovery
+  - Architecture
+  - Testing
 status: published
 ---
 

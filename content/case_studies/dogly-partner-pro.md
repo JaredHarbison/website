@@ -10,6 +10,12 @@ technologies:
   - Haml
   - SCSS
   - RSpec
+tags:
+  - Rails
+  - Product Engineering
+  - Onboarding
+  - Legacy Systems
+  - Testing
 status: published
 ---
 

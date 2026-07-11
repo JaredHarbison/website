@@ -403,6 +403,13 @@ p {
   font-family: var(--font-mono);
 }
 
+.content-page img {
+  border: 1px solid var(--color-border);
+  display: block;
+  height: auto;
+  max-width: 100%;
+}
+
 .content-page ul,
 .content-page ol {
   color: var(--color-muted);
@@ -425,6 +432,73 @@ p {
 
 .entry-card h2 {
   font-size: 1.5rem;
+}
+
+.tag-list,
+.tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  padding: 0;
+}
+
+.tag-link {
+  border: 1px solid var(--color-border);
+  color: var(--color-muted);
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  padding: 0.2rem 0.5rem;
+  text-decoration: none;
+}
+
+.tag-link:hover {
+  border-color: var(--color-link);
+}
+
+.tag-cloud {
+  max-width: 64rem;
+}
+
+.tag-cloud__link {
+  align-items: center;
+  border: 1px solid var(--color-border);
+  display: flex;
+  font-family: var(--font-mono);
+  gap: 1rem;
+  justify-content: space-between;
+  min-width: 12rem;
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+}
+
+.tag-cloud__link:hover {
+  background: color-mix(in srgb, var(--color-border), transparent 65%);
+}
+
+.tag-cloud__count {
+  color: var(--color-muted);
+  font-size: 0.75rem;
+}
+
+.tag-results {
+  max-width: 64rem;
+}
+
+.tag-results + .tag-results {
+  margin-top: 3rem;
+}
+
+.tag-results > h2 {
+  color: var(--color-heading);
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.tag-results .entry-card h3 {
+  font-size: 1.25rem;
 }
 
 @media (max-width: 56rem) {

@@ -10,4 +10,5 @@ Rails.application.routes.draw do
 
   resources :case_studies, only: %i[index show], path: "case-studies", param: :slug
   resources :writings, only: %i[index show], path: "writing", param: :slug
+  resources :tags, only: %i[index show], param: :slug
 end

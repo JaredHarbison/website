@@ -2,5 +2,6 @@
   <p class="eyebrow">Case Study</p>
   <h1 id="page-title"><%= @case_study.title %></h1>
   <p class="lede"><%= @case_study.summary %></p>
+  <%= render "content/tags", entry: @case_study if @case_study.tags.any? %>
   <%= MarkdownRenderer.render(@case_study.body) %>
 </main>

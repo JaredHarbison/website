@@ -7,6 +7,7 @@
       <article class="entry-card">
         <h2><%= link_to case_study.title, case_study_path(case_study.slug) %></h2>
         <p><%= case_study.summary %></p>
+        <%= render "content/tags", entry: case_study if case_study.tags.any? %>
       </article>
     <% end %>
   </div>
