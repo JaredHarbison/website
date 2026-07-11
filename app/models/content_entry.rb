@@ -7,6 +7,10 @@ class ContentEntry
     metadata.fetch("title", slug.to_s.titleize)
   end
 
+  def navigation_title
+    metadata.fetch("navigation_title", title)
+  end
+
   def summary
     metadata["summary"].to_s
   end

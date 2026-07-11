@@ -21,26 +21,43 @@
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
     <header class="site-header">
-      <nav aria-label="Primary navigation">
+      <div class="site-header__inner">
+        <% if public_sections_enabled? %>
+          <button class="menu-button" type="button" popovertarget="mobile-navigation" aria-label="Open navigation">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+          </button>
+        <% end %>
+
         <% if current_page?(root_path) %>
           <span class="site-mark" aria-current="page">Jared Harbison</span>
         <% else %>
           <%= link_to "Jared Harbison", root_path, class: "site-mark" %>
         <% end %>
-
-        <% if public_sections_enabled? %>
-          <ul>
-            <li><%= link_to "About", about_path %></li>
-            <li><%= link_to "Case Studies", case_studies_path %></li>
-            <li><%= link_to "Writing", writings_path %></li>
-            <li><%= link_to "Contact", contact_path %></li>
-          </ul>
-        <% end %>
-      </nav>
+      </div>
     </header>
 
-    <div id="main">
-      <%= yield %>
+    <% if public_sections_enabled? %>
+      <aside class="mobile-navigation" id="mobile-navigation" popover>
+        <div class="mobile-navigation__header">
+          <span class="mobile-navigation__title">Explorer</span>
+          <button class="mobile-navigation__close" type="button" popovertarget="mobile-navigation" popovertargetaction="hide" aria-label="Close navigation">&times;</button>
+        </div>
+        <%= render "layouts/navigation" %>
+      </aside>
+    <% end %>
+
+    <div class="site-shell">
+      <% if public_sections_enabled? %>
+        <aside class="desktop-navigation">
+          <%= render "layouts/navigation" %>
+        </aside>
+      <% end %>
+
+      <div id="main" class="site-content">
+        <%= yield %>
+      </div>
     </div>
   </body>
 </html>

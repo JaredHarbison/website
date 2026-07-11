@@ -15,4 +15,19 @@ class ContentRepositoryTest < ActiveSupport::TestCase
       repository.find!("missing")
     end
   end
+
+  test "uses an optional shorter navigation title" do
+    entry = ContentEntry.new(
+      metadata: { "title" => "A Very Long Editorial Title", "navigation_title" => "Short Title" },
+      slug: "long-title"
+    )
+
+    assert_equal "Short Title", entry.navigation_title
+  end
+
+  test "falls back to the full title in navigation" do
+    entry = ContentEntry.new(metadata: { "title" => "Editorial Title" }, slug: "title")
+
+    assert_equal "Editorial Title", entry.navigation_title
+  end
 end
