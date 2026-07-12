@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="960" height="500" viewBox="0 0 960 500" role="img" aria-labelledby="title desc">
   <title id="title">Brand-specific Shopify order transmission sequence</title>
-  <desc id="desc">A completed Dogly order is grouped by brand. Previously transmitted groups are skipped, eligible groups are sent to Shopify, and external IDs or errors are persisted separately.</desc>
+  <desc id="desc">The staged order transmitter grouped a completed Dogly order by brand, skipped groups with a recorded external ID, sent eligible groups to Shopify, and persisted returned IDs separately.</desc>
   <rect width="960" height="500" fill="#080b0c"/>
   <g font-family="ui-monospace, monospace" font-size="17" text-anchor="middle">
     <text x="120" y="52" fill="#e5b566">DOGLY ORDER</text><text x="360" y="52" fill="#e5b566">TRANSMITTER</text><text x="600" y="52" fill="#e5b566">BRAND CONFIG</text><text x="840" y="52" fill="#e5b566">SHOPIFY</text>

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="960" height="520" viewBox="0 0 960 520" role="img" aria-labelledby="title desc">
   <title id="title">Dogly and Shopify integration boundaries</title>
-  <desc id="desc">Shopify order webhooks enter Dogly customer acquisition, while Dogly marketplace orders flow to brand Shopify fulfillment. Catalog and inventory mappings connect both systems.</desc>
+  <desc id="desc">Shopify order webhooks enter Dogly's production customer-acquisition flow. A later limited rollout tested Dogly marketplace orders, catalog mappings, inventory, and fulfillment in the opposite direction.</desc>
   <rect width="960" height="520" fill="#080b0c"/>
   <g fill="none" stroke="#26302c" stroke-width="2">
     <rect x="45" y="70" width="250" height="375" rx="8"/>
@@ -26,5 +26,10 @@
   <g font-family="ui-monospace, monospace" font-size="13">
     <text x="307" y="172" fill="#75bfff">EVENTS</text><text x="614" y="172" fill="#86d99a">ORDERS</text>
     <text x="614" y="352" fill="#75bfff">STATE</text><text x="307" y="352" fill="#86d99a">SYNC</text>
+  </g>
+  <g font-family="ui-monospace, monospace" font-size="13">
+    <text x="75" y="405" fill="#75bfff">PRODUCTION</text>
+    <text x="385" y="405" fill="#86d99a">LIMITED ROLLOUT</text>
+    <text x="695" y="405" fill="#86d99a">HELD FROM BROAD RELEASE</text>
   </g>
 </svg>
