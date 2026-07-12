@@ -105,7 +105,7 @@ The implementation added explicit logging, surfaced transaction rollback errors,
 
 ## Outcome
 
-More than 1,000 retained Dogly user records carry a Shopify-customer association from the production acquisition path. That is a measure of records connected to the channel—not a claim that every recipient activated or became a paid member. The integration turned partner purchases into configurable onboarding while guarding against duplicate accounts and repeated invitation sequences.
+More than 1,000 retained Dogly user records carry a Shopify-customer association from the production acquisition path for our limited rollout to a single product from a single brand in the first month. That is a measure of records connected to the channel—not a claim that every recipient activated or became a paid member. The integration turned partner purchases into configurable onboarding while guarding against duplicate accounts and repeated invitation sequences.
 
 The later commerce work established and exercised the boundaries for per-brand order transmission, fulfillment callbacks, catalog reconciliation, product import, and inventory mapping. The limited rollout produced synchronized catalog and order records, but automated fulfillment was not broadly released; the safer outcome was retaining useful administrative tooling while revisiting the checkout boundary.
 
@@ -116,5 +116,7 @@ The most durable outcome was a clearer model of ownership: Dogly owns the market
 I would formalize every cross-system operation around a persisted integration event with a unique idempotency key, payload digest, state, attempt count, and last error. The existing notes and external-ID mappings cover important duplicate cases, but a common event model with database-enforced uniqueness would close the timeout gap and make replay and support work easier.
 
 I would also make the staged rollout explicit through per-brand feature states rather than relying on configuration presence alone. A state such as disabled, shadowing, catalog-only, and fulfillment-live would better communicate operational intent.
+
+I would also set up partner-specific packing inserts that highlight Dogly and guide customers toward follow-up engagement after fulfillment. That would give each brand a lightweight, consistent way to extend the experience beyond the shipment itself.
 
 Finally, I would add contract tests around recorded Shopify payloads and a full integration test covering a multi-brand order in which one transmission succeeds and another fails. That is the scenario where clear retry boundaries matter most.
