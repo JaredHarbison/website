@@ -61,9 +61,21 @@ Filtering and visibility rules stay outside the controller. The controller coord
 
 Browse mode supports category, channel, topic, location, availability, followed advocates, featured advocates, and sort order.
 
+![Dogly Advocate Browse mode with structured location, category, channel, topic, availability, and sorting controls](/images/dogly-advocate-browse-filters.webp)
+
+*Browse mode supports people who already know how they want to narrow the professional directory.*
+
 Match mode is taxonomy-backed lexical matching rather than semantic or AI search. `TagMatcher` tokenizes a bounded text input, matches individual words and adjacent two-word phrases against curated tags and problem vocabulary, then looks for Advocates with published content connected to those tags. This makes the result less like a keyword search against profile text and more like a connection to demonstrated topical expertise.
 
+![Dogly Advocate Match mode returning three professionals for a detailed description of a dog's behavior](/images/dogly-advocate-match-results.webp)
+
+*Match mode accepts the owner's description, optionally limits results to Advocates available for bookings, and returns professionals whose published guidance connects to the matched topics.*
+
 The Stimulus controller handles tab state, keyboard switching, and panel sizing. The form submission remains standard Rails.
+
+![Dogly Advocate Match mode in a narrow mobile layout with one professional result](/images/dogly-advocate-match-mobile.webp)
+
+*The same matching workflow collapses into a focused single-column layout at mobile widths.*
 
 ## Extending the Directory Pattern
 
