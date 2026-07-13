@@ -30,12 +30,12 @@ class PublicSectionsLockTest < ActionDispatch::IntegrationTest
 
   test "active content section is expanded and current page is marked" do
     with_public_sections_enabled do
-      get case_study_path("dogly-partner-pro")
+      get case_study_path("dogly-partner-applications")
     end
 
     assert_response :success
     assert_select ".desktop-navigation details.explorer__section[open]", 1
-    assert_select ".desktop-navigation a[aria-current='page']", "Dogly Partner Pro"
+    assert_select ".desktop-navigation a[aria-current='page']", "Dogly Partner Applications"
   end
 
   test "content pages are inaccessible while public sections are locked" do

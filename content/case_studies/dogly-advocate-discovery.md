@@ -2,6 +2,7 @@
 title: Dogly Advocate Discovery
 summary: Designing browse and match modes for finding the right professional in a content-rich Rails application.
 date: 2026-07-07
+order: 5
 role: Senior Software Engineer
 technologies:
   - Ruby on Rails

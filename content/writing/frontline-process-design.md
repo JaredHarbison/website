@@ -1,8 +1,8 @@
 ---
-title: The Best Process Is the One People Can Use From the Floor
-navigation_title: A Process That Worked From the Floor
+title: Frontline Process Design
 summary: A retail communication problem taught me to design around where work happens, not where a process document assumes it happens.
 date: 2026-07-11
+order: 2
 category: Leadership
 tags:
   - Product Engineering

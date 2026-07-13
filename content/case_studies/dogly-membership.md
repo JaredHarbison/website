@@ -1,8 +1,8 @@
 ---
-title: Turning a Content Library into a Guided Membership
-navigation_title: Dogly Guided Membership
+title: Dogly Membership Experience
 summary: Connecting discovery, conversation, personalized email, daily plans, subscriptions, and live expert groups into a membership journey that increased subscriptions by more than 40%.
 date: 2026-07-11
+order: 2
 role: Software Engineer
 technologies:
   - Ruby on Rails

@@ -16,6 +16,19 @@ class ContentRepositoryTest < ActiveSupport::TestCase
     end
   end
 
+  test "uses explicit editorial order for curated collections" do
+    entries = ContentRepository.new(collection: "case_studies", model: CaseStudy).all
+
+    assert_equal [
+      "dogly-product-design",
+      "dogly-membership",
+      "dogly-shopify-integration",
+      "dogly-partner-applications",
+      "dogly-advocate-discovery",
+      "fridge-no-more-bulk-ordering"
+    ], entries.map(&:slug)
+  end
+
   test "uses an optional shorter navigation title" do
     entry = ContentEntry.new(
       metadata: { "title" => "A Very Long Editorial Title", "navigation_title" => "Short Title" },

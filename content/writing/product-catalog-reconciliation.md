@@ -1,8 +1,8 @@
 ---
-title: Reconciling Product Catalogs Without Creating a Second Source of Truth
-navigation_title: Reconciling Product Catalogs
+title: Product Catalog Reconciliation
 summary: How to combine exact identifiers, cautious matching, operator decisions, and durable mappings when two commerce systems disagree.
 date: 2026-07-09
+order: 6
 category: Integrations
 tags:
   - Rails

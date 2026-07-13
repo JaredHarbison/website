@@ -9,10 +9,11 @@ class ContentRepository
   end
 
   def all
-    paths.map { |path| build_entry(path) }
-      .select(&:published?)
-      .sort_by { |entry| [ entry.date || Date.new(1970, 1, 1), entry.title ] }
-      .reverse
+    entries = paths.map { |path| build_entry(path) }.select(&:published?)
+
+    return entries.sort_by { |entry| [ entry.order || Float::INFINITY, entry.title.downcase ] } if entries.any?(&:order)
+
+    entries.sort_by { |entry| [ entry.date || Date.new(1970, 1, 1), entry.title ] }.reverse
   end
 
   def find!(slug)

@@ -28,6 +28,12 @@ class ContentEntry
     nil
   end
 
+  def order
+    Integer(metadata["order"])
+  rescue ArgumentError, TypeError
+    nil
+  end
+
   def status
     metadata.fetch("status", "draft")
   end

@@ -1,8 +1,8 @@
 ---
-title: From Everything We Want to a Plan We Can Approve
-navigation_title: From Ideation to an Approvable Plan
+title: Product Planning and Scope
 summary: How I move a team from unconstrained ideas to a shared north star, prioritized MVP, design, and reviewable technical scope.
 date: 2026-07-11
+order: 1
 category: Collaboration
 tags:
   - Product Engineering

@@ -1,7 +1,8 @@
 ---
-title: Designing Idempotent Webhooks in Rails
+title: Idempotent Webhooks in Rails
 summary: Practical patterns for making at-least-once delivery safe across controllers, jobs, records, and delayed side effects.
 date: 2026-07-10
+order: 5
 category: Integrations
 tags:
   - Rails

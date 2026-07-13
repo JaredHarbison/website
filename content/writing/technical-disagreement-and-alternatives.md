@@ -1,8 +1,8 @@
 ---
-title: A Good Technical Disagreement Needs an Alternative
-navigation_title: Disagreement Needs an Alternative
+title: Technical Disagreement and Alternatives
 summary: How I adjust technical disagreement for peers, developing engineers, senior engineers, and business stakeholders.
 date: 2026-07-11
+order: 3
 category: Collaboration
 tags:
   - Product Engineering

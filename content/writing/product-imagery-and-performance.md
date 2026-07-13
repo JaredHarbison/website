@@ -1,8 +1,8 @@
 ---
-title: Imagery Can Be a Product Requirement
-navigation_title: Imagery Is a Product Requirement
+title: Product Imagery and Performance
 summary: Performance matters, but removing the visual quality users value is not automatically an optimization.
 date: 2026-07-11
+order: 4
 category: Product Engineering
 tags:
   - Product Engineering

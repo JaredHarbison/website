@@ -1,7 +1,8 @@
 ---
-title: Rails Can Still Be a Good Static Site Framework
+title: Rails for Static Content
 summary: Why I chose a small Rails app with Markdown content for this site instead of a static site generator.
 date: 2026-07-08
+order: 7
 category: Architecture
 tags:
   - Rails

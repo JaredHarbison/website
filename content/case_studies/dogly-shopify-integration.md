@@ -1,8 +1,8 @@
 ---
-title: Evolving Dogly's Shopify Integration
-navigation_title: Dogly Shopify Integration
+title: Dogly Shopify Integration
 summary: Evolving a production customer-acquisition integration into a carefully staged architecture for catalog reconciliation and multi-brand fulfillment.
 date: 2026-07-10
+order: 3
 role: Senior Software Engineer
 technologies:
   - Ruby on Rails
