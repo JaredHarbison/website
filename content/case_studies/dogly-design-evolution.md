@@ -120,13 +120,13 @@ React components, Haml templates, legacy JavaScript, and years of page-specific 
 
 I gradually moved new work toward explicit Dogly components and design tokens, removed dead selectors, centralized breakpoints, and replaced broad framework behavior where it created more uncertainty than value.
 
-This was incremental by necessity. The shop and brand pages still retain more of the legacy language and are clear candidates for the next modernization phase.
+This was incremental by necessity. The shop and brand pages still retain more of the legacy language and are still candidates for the next modernization phase.
 
 ## Building Trust Through Design
 
 Early in my tenure, part of the work was earning founder trust in design decisions.
 
-I did that by connecting visual proposals to user behavior and product outcomes, bringing concrete designs rather than abstract criticism, and responding carefully to feedback. Over time, the review dynamic changed. I now usually bring designs that require only minimal revision before approval.
+I did that by connecting visual proposals to user behavior and product outcomes, bringing concrete designs rather than abstract criticism, and responding carefully to feedback. Over time, the review dynamic changed. By the later phases, I was usually bringing designs that needed only small refinements before approval.
 
 That trust does not mean designing alone. It means the founders understand the reasoning, know that the work reflects Dogly's identity, and can focus feedback on the product decision rather than policing every visual detail.
 

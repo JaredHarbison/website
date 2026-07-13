@@ -25,19 +25,21 @@ status: published
 
 Dogly connects dog owners with independent brands, shelters, and professional advocates. Its marketplace runs on Spree inside a mature Rails application, while many partner brands operate their own Shopify stores.
 
-The Shopify work evolved in two distinct stages. The first, launched in late 2025, brought eligible brand customers into Dogly through signed order webhooks and a configurable invitation sequence. The second, developed and tested through a limited rollout in 2026, addressed the other direction: sending Dogly marketplace orders to a brand's Shopify store for fulfillment while reconciling catalog and inventory data between the two systems.
+The Shopify work evolved in two distinct stages. The first, shipped in late 2025, brought eligible brand customers into Dogly through signed order webhooks and a configurable invitation sequence. The second, developed and tested through a limited rollout in 2026, addressed the other direction: sending Dogly marketplace orders to a brand's Shopify store for fulfillment while reconciling catalog and inventory data between the two systems.
 
-The hard part was not making API requests. It was deciding which system owned customers, products, inventory, orders, and fulfillment state—and designing duplicate guards and retry boundaries around partial failure.
+The real problem was ownership boundaries: deciding which system owned customers, products, inventory, orders, and fulfillment state, then building duplicate guards and retry boundaries around partial failure.
 
 ![Shopify integration boundaries](/images/shopify-integration-boundaries.svg)
 
 ## Problem
 
-Dogly needed to support brands without asking them to abandon the systems they already used.
+Dogly needed to support brands without forcing them to abandon the systems they already used.
 
 For customer acquisition, a qualifying Shopify purchase could introduce someone to Dogly's expert content and membership product. That required ingesting order events, identifying eligible products, associating customers safely, and scheduling brand-specific outreach.
 
 For marketplace fulfillment, a Dogly order could contain products from multiple brands. Each brand needed only its own line items in its own Shopify store. Product and inventory data also needed a durable mapping across two catalogs that used different identifiers and did not always share clean SKUs.
+
+The existing ShipStation flow also stayed available for legacy brands, which let teams transition to Shopify incrementally instead of forcing a hard cutover.
 
 ## Constraints
 
@@ -48,7 +50,7 @@ For marketplace fulfillment, a Dogly order could contain products from multiple 
 - Split multi-brand orders without leaking another brand's line items.
 - Avoid making either catalog an accidental second source of truth.
 - Support operator review when automatic SKU or name matching was uncertain.
-- Roll the fulfillment path out incrementally and be willing to pull it back when checkout assumptions were not yet safe enough.
+- Roll the fulfillment path out incrementally and be willing to pull it back when checkout assumptions proved unsafe.
 
 ## My Role
 
@@ -75,7 +77,7 @@ That last point mattered for delayed jobs. A customer might accept an invitation
 
 The fulfillment direction introduced a different ownership model. Dogly remained the customer-facing marketplace and source of the complete order. Each Shopify store received a brand-specific fulfillment order containing only its products.
 
-The staged transmission flow grouped line items by brand, selected only brands configured for Shopify fulfillment, built a no-charge Shopify order, and recorded the returned external order ID against the Dogly order.
+The staged transmission flow grouped line items by brand, selected only brands configured for Shopify fulfillment, built the Shopify payload for each brand, and recorded the returned external order ID against the Dogly order.
 
 ![Order transmission sequence](/images/shopify-order-sequence.svg)
 
@@ -105,7 +107,7 @@ The implementation added explicit logging, surfaced transaction rollback errors,
 
 ## Outcome
 
-More than 1,000 retained Dogly user records carry a Shopify-customer association from the production acquisition path for our limited rollout to a single product from a single brand in the first month. That is a measure of records connected to the channel—not a claim that every recipient activated or became a paid member. The integration turned partner purchases into configurable onboarding while guarding against duplicate accounts and repeated invitation sequences.
+More than 1,000 retained Dogly user records carry a Shopify-customer association from the production acquisition path. That path began with a limited rollout to a single product from a single brand in the first month. The total is a count of records connected to the channel, not a claim that every recipient activated or became a paid member. The integration turned partner purchases into configurable onboarding while guarding against duplicate accounts and repeated invitation sequences.
 
 The later commerce work established and exercised the boundaries for per-brand order transmission, fulfillment callbacks, catalog reconciliation, product import, and inventory mapping. The limited rollout produced synchronized catalog and order records, but automated fulfillment was not broadly released; the safer outcome was retaining useful administrative tooling while revisiting the checkout boundary.
 

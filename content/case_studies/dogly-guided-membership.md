@@ -1,7 +1,7 @@
 ---
 title: Turning a Content Library into a Guided Membership
 navigation_title: Dogly Guided Membership
-summary: Connecting discovery, conversation, personalized email, daily plans, subscriptions, and live expert groups into a journey that increased subscriptions by more than 40%.
+summary: Connecting discovery, conversation, personalized email, daily plans, subscriptions, and live expert groups into a membership journey that increased subscriptions by more than 40%.
 date: 2026-07-11
 role: Software Engineer
 technologies:
@@ -27,7 +27,7 @@ Dogly had an unusually valuable content base: certified trainers, nutritionists,
 
 Before this work, using that expertise required determination. A visitor browsed an index of Advocates, opened individual profiles, and searched through their content. There was no shared tagging system, no conversation on content, no personalized email program, no daily agenda, and no integrated live-group experience.
 
-The product had experts and information. It did not yet have a guided journey.
+The product had experts and information. It did not yet have a guided membership journey.
 
 Over several phases, I helped turn that library into an engagement and membership system: Stripe access levels, tags and topic discovery, comments and replies, personalized Dogly Daily emails, Dogly Helps campaigns for non-members, daily plans, and Zoom groups with Advocates.
 
@@ -78,7 +78,7 @@ This changed the value of an article. It was no longer only something to consume
 
 Email became the most consistent engagement channel.
 
-**Dogly Daily** served members. It selected guidance related to the topics and Advocates they followed, avoided repeatedly digesting the same content, and evolved toward a tailored daily plan containing activities a person could complete with their dog.
+**Dogly Daily** served members. It selected guidance related to the topics and Advocates they followed, avoided repeating content, and evolved toward a tailored daily plan containing activities a person could complete with their dog.
 
 **Dogly Helps** served non-members. Instead of sending a generic newsletter, it highlighted specific ways Dogly could help and gave the recipient a useful path into expert guidance and membership.
 
@@ -108,7 +108,7 @@ The software could record subscriptions, follows, content interaction, and parti
 
 The work changed Dogly from a directory-led content product into a guided membership experience.
 
-People could discover relevant topics, interact with experts, receive tailored guidance, follow a daily agenda, join live groups, and return through lifecycle email. Non-members received a clearer explanation of what membership could do for them; members received a reason to keep using it.
+People could discover relevant topics, interact with experts, receive tailored guidance, follow a daily plan, join live groups, and return through lifecycle email. Non-members received a clearer explanation of what membership could do for them; members received a reason to keep using it.
 
 Internal comparisons of subscription levels before and after the engagement work showed growth of more than 40%. Because later Stripe synchronization created historical records in bulk, I treat that percentage as the business measurement made at the time rather than reconstructing false precision from the current database snapshot.
 
