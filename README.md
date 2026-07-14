@@ -24,8 +24,7 @@ keeps the rest of the app independent from where the content is stored.
 - Long-form case studies with a consistent section structure
 - A writing section for technical notes
 - Draft filtering through front matter
-- Server-rendered, semantic HTML with no application JavaScript
-- A production visibility flag for controlled launches
+- Rails-rendered, semantic HTML with no application JavaScript
 
 ## Tech stack
 
@@ -91,8 +90,9 @@ bin/rails server
 Open `http://localhost:3000`. All sections are visible by default in
 development.
 
-Public sections are enabled by default. To temporarily lock the portfolio while
-leaving the homepage available:
+When running Rails directly, public sections are enabled by default. To
+temporarily hide them in a local or hosted preview while leaving the homepage
+available:
 
 ```sh
 PUBLIC_SECTIONS_ENABLED=false bin/rails server -e production
@@ -121,7 +121,7 @@ generated HTML and assets; it does not run Rails or require application secrets.
 ```sh
 bin/rails test
 bin/rubocop
-bin/brakeman --no-pager
+bundle exec brakeman --no-pager
 ```
 
 ## Interesting details
@@ -139,8 +139,8 @@ bin/brakeman --no-pager
 ## Future improvements
 
 - Add RSS and sitemap generation once the writing archive grows.
-- Cache parsed entries if the content library becomes large enough to justify
-  it.
+- Cache parsed entries during the build if the content library becomes large
+  enough to make repeated parsing measurable.
 
 ## What I learned
 

@@ -31,4 +31,8 @@ The architecture is small on purpose:
 
 The future path is straightforward. If I later want tags, search, RSS, sitemap generation, or an admin interface, the public controllers and views do not need to change much. The repository can start reading from ActiveRecord instead of files.
 
+Production does not need to run Rails continuously. A GitHub Actions workflow boots the application, renders every published route through the real controllers and layouts, compiles the assets, validates internal links and files, and deploys the resulting static artifact to GitHub Pages.
+
+That boundary keeps one rendering implementation while removing the application server, secrets, cold starts, and runtime cost from the public site. Rails is the build-time authoring framework; production is HTML, CSS, and images.
+
 The lesson is not that every static site should use Rails. It is that Rails can be a simple tool when you use the parts you need and decline the parts you do not.

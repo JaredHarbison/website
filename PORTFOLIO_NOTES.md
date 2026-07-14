@@ -45,9 +45,11 @@ small example of separating implementation, verification, and release.
   runtime from production.
 - Files are simple and reviewable, but they do not provide editorial workflows
   or efficient query capabilities.
-- Parsing on demand avoids cache complexity; it would need measurement before
-  the content library became large.
-- The visibility flag is operational release control, not a security boundary.
+- Repeated parsing during the build avoids cache invalidation complexity; it
+  would need measurement before the content library became large.
+- Published front matter controls the deployed route inventory. The visibility
+  flag applies only when running Rails directly for a preview and is not a
+  security boundary.
 
 ## Challenges solved
 
@@ -65,8 +67,7 @@ small example of separating implementation, verification, and release.
 - What would change if content moved to PostgreSQL or a CMS?
 - Where would caching belong, and how would it be invalidated?
 - Why is `html_safe` acceptable in `MarkdownRenderer`?
-- What does the production visibility flag protect, and what does it not
-  protect?
+- How do published front matter and the preview visibility flag differ?
 - Why run Rails at build time instead of as a production web service?
 - What tests did you choose not to write?
 

@@ -55,9 +55,10 @@ route inventory and every local link and asset before deployment.
 
 ## Publication control
 
-The application exposes all routes by default. Setting
+Published front matter controls which entries reach the route inventory and
+static artifact. When Rails is run directly for a preview, setting
 `PUBLIC_SECTIONS_ENABLED=false` hides navigation and makes non-home routes
-unavailable during a controlled preview or release hold.
+unavailable. The Pages workflow does not use that preview flag.
 
 This is a release control, not authorization. There are no user accounts or
 private records in the application.
@@ -69,7 +70,7 @@ The current suite concentrates on the boundaries most likely to break:
 - repository parsing, filtering, ordering, and missing entries;
 - case study structure rules;
 - Markdown HTML filtering and link attributes;
-- route visibility, navigation, rendering, and 404 behavior.
+- route visibility, navigation, rendering, and 404 behavior;
 - static route enumeration, rendering, and artifact link validation.
 
 Browser-level tests would add little while the site has no client-side behavior.
@@ -85,11 +86,12 @@ conventional routing and testing while keeping the application small. Running
 Rails only during CI preserves that authoring model without carrying a public
 application server, secrets, or cold starts in production.
 
-### Parsing on request
+### Parsing during rendering
 
-The repository currently reads files when it is called. This is easy to reason
-about and appropriate for the current number of documents. Caching would add
-invalidation behavior for no measurable benefit today.
+The repository reads files whenever it is called during Rails rendering. In the
+deployed site, that work happens only during the Actions build. This is easy to
+reason about and appropriate for the current number of documents. Build-time
+caching would add invalidation behavior for no measurable benefit today.
 
 ### Front matter without a schema object
 

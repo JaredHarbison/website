@@ -27,6 +27,9 @@ class PublicSectionsLockTest < ActionDispatch::IntegrationTest
     assert_select ".site-mark[aria-current='page']", "Jared Harbison"
     assert_select "a.site-mark", 0
     assert_select ".home-actions a", 2
+    assert_select "link[rel='icon'][href='/jared-harbison-headshot-icon.png']", 1
+    assert_select "link[rel='icon'][href='/jared-harbison-headshot.ico']", 1
+    assert_select "link[rel='apple-touch-icon'][href='/apple-touch-icon.png']", 1
     assert_no_match(/site is being rebuilt/i, response.body)
   end
 
