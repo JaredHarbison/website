@@ -2,13 +2,15 @@
 
 ## Context
 
-The repository currently contains two site implementations:
+The repository temporarily contains two delivery artifacts:
 
-1. The existing static build at the repository root, which GitHub Pages serves.
-2. A Rails rebuild under `app/`, `config/`, and `content/`.
+1. The previous compiled React site at the repository root.
+2. The Rails-authored portfolio under `app/`, `config/`, and `content/`.
 
-That overlap is temporary and deliberate. The Rails version can be reviewed and
-tested without replacing the live entry point before it is ready.
+GitHub Pages no longer publishes directly from the repository root. A custom
+Actions workflow runs Rails at build time and deploys only the generated `_site`
+artifact. The previous files remain temporarily to keep the legacy Pages source
+safe until the artifact workflow completes its first verified deployment.
 
 ## Application boundaries
 
@@ -50,12 +52,17 @@ view. Missing content is translated into a 404 at this boundary. ERB templates
 provide semantic page structure, and the stylesheet supplies the terminal-like
 visual system.
 
+`StaticSite::RouteSet` enumerates every public route from the same content
+repositories and tag catalog used by the controllers. `StaticSite::Builder`
+renders those routes through an HTTPS integration session, copies compiled
+assets, and writes directory-indexed HTML. `StaticSite::Validator` verifies the
+route inventory and every local link and asset before deployment.
+
 ## Publication control
 
-The Rails version exposes all routes in development. In production, non-home
-routes are unavailable unless `PUBLIC_SECTIONS_ENABLED` is true. Navigation uses
-the same predicate as the controllers, so a link is not shown when its route is
-locked.
+The application exposes all routes by default. Setting
+`PUBLIC_SECTIONS_ENABLED=false` hides navigation and makes non-home routes
+unavailable during a controlled preview or release hold.
 
 This is a release control, not authorization. There are no user accounts or
 private records in the application.
@@ -68,6 +75,7 @@ The current suite concentrates on the boundaries most likely to break:
 - case study structure rules;
 - Markdown HTML filtering and link attributes;
 - route visibility, navigation, rendering, and 404 behavior.
+- static route enumeration, rendering, and artifact link validation.
 
 Browser-level tests would add little while the site has no client-side behavior.
 They would become more useful if interactive components are introduced.
@@ -76,11 +84,11 @@ They would become more useful if interactive components are introduced.
 
 ### Rails for a content site
 
-Rails is more runtime than a static site generator, but it is also the framework
-I work in most often. Using a narrow slice of it gives the site conventional
-routing and testing while keeping the application small. A generated static
-deployment would remove the runtime cost later without changing the authoring
-model.
+Rails is more framework than a static site generator, but it is also the
+framework I work in most often. Using a narrow slice of it gives the site
+conventional routing and testing while keeping the application small. Running
+Rails only during CI preserves that authoring model without carrying a public
+application server, secrets, or cold starts in production.
 
 ### Parsing on request
 

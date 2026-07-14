@@ -3,8 +3,9 @@
 This is the source for my personal site: a place for case studies, technical
 writing, and a little context about the way I work.
 
-The site is a small Rails application backed by Markdown files and deployed
-from `main`.
+The site is authored as a small Rails application backed by Markdown files.
+GitHub Actions renders the public routes to static HTML and deploys the verified
+artifact to GitHub Pages from `main`.
 
 ## Why I built it this way
 
@@ -97,6 +98,24 @@ leaving the homepage available:
 PUBLIC_SECTIONS_ENABLED=false bin/rails server -e production
 ```
 
+## Static build and deployment
+
+Build the same static artifact used by GitHub Pages:
+
+```sh
+RAILS_ENV=production SECRET_KEY_BASE_DUMMY=1 bin/rails assets:precompile
+RAILS_ENV=production SECRET_KEY_BASE_DUMMY=1 bin/rails site:build
+```
+
+The exporter renders every published page through the Rails controllers and
+layouts, copies production assets, and writes the result to `_site/`. Validation
+fails the build when a route does not render, an internal link or asset is
+missing, or legacy React output appears in the artifact.
+
+The Pages workflow runs tests, RuboCop, Brakeman, production asset compilation,
+static export, and validation before deploying. Production serves only the
+generated HTML and assets; it does not run Rails or require application secrets.
+
 ## Quality checks
 
 ```sh
@@ -114,6 +133,8 @@ bin/brakeman --no-pager
   generated links.
 - Unknown slugs become normal 404 responses instead of leaking repository
   exceptions.
+- Rails remains the single rendering implementation while production keeps the
+  smaller attack surface and runtime cost of a static site.
 
 ## Future improvements
 

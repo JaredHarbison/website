@@ -34,14 +34,15 @@ different rules.
 
 ### Shipping the rebuild safely
 
-The old static site stays intact while the Rails version is developed on its
-own branch. A production flag also keeps unfinished routes closed. This is a
-small example of separating implementation from release.
+The old static site stayed intact while the Rails version was developed and
+reviewed. The release pipeline now renders the Rails routes into a validated
+static artifact before GitHub Pages replaces the live deployment. This is a
+small example of separating implementation, verification, and release.
 
 ## Tradeoffs
 
-- Rails gives familiar conventions but requires a Ruby runtime unless pages are
-  generated during deployment.
+- Rails gives familiar conventions while the build pipeline removes the Ruby
+  runtime from production.
 - Files are simple and reviewable, but they do not provide editorial workflows
   or efficient query capabilities.
 - Parsing on demand avoids cache complexity; it would need measurement before
@@ -54,7 +55,8 @@ small example of separating implementation from release.
 - Keeping draft content out of public collections.
 - Turning missing files into consistent HTTP responses.
 - Rendering useful Markdown while filtering raw HTML.
-- Developing a replacement without disturbing the live GitHub Pages site.
+- Exporting every public Rails route without creating a second rendering path.
+- Validating internal links and assets before GitHub Pages deployment.
 
 ## Likely interview questions
 
@@ -65,7 +67,7 @@ small example of separating implementation from release.
 - Why is `html_safe` acceptable in `MarkdownRenderer`?
 - What does the production visibility flag protect, and what does it not
   protect?
-- How would you deploy this to GitHub Pages?
+- Why run Rails at build time instead of as a production web service?
 - What tests did you choose not to write?
 
 ## Strong talking points
@@ -78,11 +80,13 @@ small example of separating implementation from release.
   tests.
 - The migration plan preserves the existing live site until the replacement is
   deliberately published.
+- Production is static, requires no application secrets, and cannot expose a
+  Rails runtime attack surface.
 
 ## Be prepared to discuss
 
-- The lack of deployment automation for the Rails version.
 - Whether Rails remains worthwhile if the final output is fully static.
+- How the route inventory should evolve if runtime-only features are added.
 - The limits of regex-based front-matter parsing.
 - How content validation should evolve if non-developers begin authoring files.
 - Why this repository demonstrates architecture and communication more strongly
