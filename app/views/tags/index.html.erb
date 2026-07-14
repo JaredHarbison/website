@@ -1,0 +1,16 @@
+<main class="site-main listing-page" aria-labelledby="page-title">
+  <p class="eyebrow">Tags</p>
+  <h1 id="page-title">Browse by Topic</h1>
+  <p class="lede">Explore case studies and technical writing through the ideas that connect them.</p>
+
+  <ul class="tag-cloud" aria-label="All topics">
+    <% @tags.each do |tag| %>
+      <li>
+        <%= link_to tag_path(tag.slug), class: "tag-cloud__link" do %>
+          <span><%= tag.name %></span>
+          <span class="tag-cloud__count"><%= tag.count %></span>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+</main>

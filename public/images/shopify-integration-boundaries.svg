@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="520" viewBox="0 0 960 520" role="img" aria-labelledby="title desc">
+  <title id="title">Dogly and Shopify integration boundaries</title>
+  <desc id="desc">Shopify order webhooks enter Dogly's production customer-acquisition flow. A later limited rollout tested Dogly marketplace orders, catalog mappings, inventory, and fulfillment in the opposite direction.</desc>
+  <rect width="960" height="520" fill="#080b0c"/>
+  <g fill="none" stroke="#26302c" stroke-width="2">
+    <rect x="45" y="70" width="250" height="375" rx="8"/>
+    <rect x="355" y="70" width="250" height="375" rx="8"/>
+    <rect x="665" y="70" width="250" height="375" rx="8"/>
+  </g>
+  <g font-family="ui-monospace, monospace" font-size="18" fill="#e5b566">
+    <text x="75" y="112">BRAND SHOPIFY</text>
+    <text x="385" y="112">INTEGRATION</text>
+    <text x="695" y="112">DOGLY / SPREE</text>
+  </g>
+  <g font-family="ui-sans-serif, sans-serif" font-size="16" fill="#d9e0dc">
+    <text x="75" y="170">Customers</text><text x="75" y="205">Orders</text><text x="75" y="240">Products</text><text x="75" y="275">Inventory</text><text x="75" y="310">Fulfillment</text>
+    <text x="385" y="170">Signed webhooks</text><text x="385" y="205">Background jobs</text><text x="385" y="240">External ID maps</text><text x="385" y="275">Reconciliation</text><text x="385" y="310">Retry boundaries</text>
+    <text x="695" y="170">Accounts</text><text x="695" y="205">Marketplace orders</text><text x="695" y="240">Curated catalog</text><text x="695" y="275">Stock locations</text><text x="695" y="310">Shipments</text>
+  </g>
+  <g stroke="#75bfff" stroke-width="3" fill="#75bfff">
+    <line x1="295" y1="185" x2="355" y2="185"/><polygon points="355,185 345,179 345,191"/><line x1="605" y1="330" x2="665" y2="330"/><polygon points="665,330 655,324 655,336"/>
+  </g>
+  <g stroke="#86d99a" stroke-width="3" fill="#86d99a">
+    <line x1="665" y1="185" x2="605" y2="185"/><polygon points="605,185 615,179 615,191"/><line x1="355" y1="330" x2="295" y2="330"/><polygon points="295,330 305,324 305,336"/>
+  </g>
+  <g font-family="ui-monospace, monospace" font-size="13">
+    <text x="307" y="172" fill="#75bfff">EVENTS</text><text x="614" y="172" fill="#86d99a">ORDERS</text>
+    <text x="614" y="352" fill="#75bfff">STATE</text><text x="307" y="352" fill="#86d99a">SYNC</text>
+  </g>
+  <g font-family="ui-monospace, monospace" font-size="13">
+    <text x="75" y="405" fill="#75bfff">PRODUCTION</text>
+    <text x="385" y="405" fill="#86d99a">LIMITED ROLLOUT</text>
+    <text x="695" y="405" fill="#86d99a">HELD FROM BROAD RELEASE</text>
+  </g>
+</svg>

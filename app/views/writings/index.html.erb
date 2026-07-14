@@ -1,0 +1,14 @@
+<main class="site-main listing-page" aria-labelledby="page-title">
+  <p class="eyebrow">Writing</p>
+  <h1 id="page-title">Notes on Building Software</h1>
+
+  <div class="entry-list">
+    <% @articles.each do |article| %>
+      <article class="entry-card">
+        <h2><%= link_to article.title, writing_path(article.slug) %></h2>
+        <p><%= article.summary %></p>
+        <%= render "content/tags", entry: article if article.tags.any? %>
+      </article>
+    <% end %>
+  </div>
+</main>

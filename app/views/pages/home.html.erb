@@ -1,0 +1,21 @@
+<main class="site-main site-main--locked" aria-labelledby="home-title">
+  <p class="eyebrow">Jared Harbison</p>
+  <h1 id="home-title">Software Engineer</h1>
+
+  <p class="lede">
+    Senior Software Engineer building and owning product-focused web applications
+    from concept through production.
+  </p>
+
+  <p>
+    I work across product planning, architecture, implementation, and delivery,
+    translating ambiguous business needs into useful, maintainable software.
+  </p>
+
+  <% if public_sections_enabled? %>
+    <div class="home-actions" aria-label="Explore my work">
+      <%= link_to "View case studies", case_studies_path, class: "button-link button-link--primary" %>
+      <%= link_to "About me", about_path, class: "button-link" %>
+    </div>
+  <% end %>
+</main>

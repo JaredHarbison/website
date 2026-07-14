@@ -1,0 +1,7 @@
+<main class="site-main content-page" aria-labelledby="page-title">
+  <p class="eyebrow">Writing</p>
+  <h1 id="page-title"><%= @article.title %></h1>
+  <p class="lede"><%= @article.summary %></p>
+  <%= render "content/tags", entry: @article if @article.tags.any? %>
+  <%= MarkdownRenderer.render(@article.body) %>
+</main>

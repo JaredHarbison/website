@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Jared Harbison" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="Personal website of Jared Harbison, Senior Software Engineer.">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
+    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+
+    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <%= stylesheet_link_tag :app %>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="site-header__inner">
+        <% if public_sections_enabled? %>
+          <button class="menu-button" type="button" popovertarget="mobile-navigation" aria-label="Open navigation">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+          </button>
+        <% end %>
+
+        <% if current_page?(root_path) %>
+          <span class="site-mark" aria-current="page">Jared Harbison</span>
+        <% else %>
+          <%= link_to "Jared Harbison", root_path, class: "site-mark" %>
+        <% end %>
+      </div>
+    </header>
+
+    <% if public_sections_enabled? %>
+      <aside class="mobile-navigation" id="mobile-navigation" popover>
+        <div class="mobile-navigation__header">
+          <span class="mobile-navigation__title">Explorer</span>
+          <button class="mobile-navigation__close" type="button" popovertarget="mobile-navigation" popovertargetaction="hide" aria-label="Close navigation">&times;</button>
+        </div>
+        <%= render "layouts/navigation" %>
+      </aside>
+    <% end %>
+
+    <div class="site-shell">
+      <% if public_sections_enabled? %>
+        <aside class="desktop-navigation">
+          <%= render "layouts/navigation" %>
+        </aside>
+      <% end %>
+
+      <div id="main" class="site-content">
+        <%= yield %>
+      </div>
+    </div>
+  </body>
+</html>

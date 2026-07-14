@@ -1,0 +1,51 @@
+<nav class="explorer" aria-label="Primary navigation">
+  <ul class="explorer__tree">
+    <li><%= navigation_link_to "About", about_path, class: "explorer__link explorer__link--root" %></li>
+
+    <li>
+      <details class="explorer__section" <%= "open" if navigation_section_open?("case_studies") %>>
+        <summary>
+          <span class="explorer__chevron" aria-hidden="true"></span>
+          <span class="explorer__section-title">Case Studies</span>
+        </summary>
+        <ul>
+          <li>
+            <%= navigation_link_to "All Case Studies", case_studies_path,
+                  class: "explorer__link explorer__link--child explorer__link--index" %>
+          </li>
+          <% navigation_case_studies.each do |case_study| %>
+            <li>
+              <%= navigation_link_to case_study.navigation_title,
+                    case_study_path(case_study.slug),
+                    class: "explorer__link explorer__link--child" %>
+            </li>
+          <% end %>
+        </ul>
+      </details>
+    </li>
+
+    <li>
+      <details class="explorer__section" <%= "open" if navigation_section_open?("writings") %>>
+        <summary>
+          <span class="explorer__chevron" aria-hidden="true"></span>
+          <span class="explorer__section-title">Writing</span>
+        </summary>
+        <ul>
+          <li>
+            <%= navigation_link_to "All Writing", writings_path,
+                  class: "explorer__link explorer__link--child explorer__link--index" %>
+          </li>
+          <% navigation_articles.each do |article| %>
+            <li>
+              <%= navigation_link_to article.navigation_title,
+                    writing_path(article.slug),
+                    class: "explorer__link explorer__link--child" %>
+            </li>
+          <% end %>
+        </ul>
+      </details>
+    </li>
+
+    <li><%= navigation_link_to "Contact", contact_path, class: "explorer__link explorer__link--root" %></li>
+  </ul>
+</nav>

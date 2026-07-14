@@ -1,0 +1,15 @@
+<main class="site-main content-page" aria-labelledby="page-title">
+  <div class="about-hero">
+    <div class="about-hero__copy">
+      <p class="eyebrow">About</p>
+      <h1 id="page-title">Jared Harbison</h1>
+      <p class="lede"><%= @page.summary %></p>
+    </div>
+    <%= image_tag "jared-harbison-headshot.webp",
+          alt: "Jared Harbison",
+          class: "about-portrait",
+          height: 600,
+          width: 480 %>
+  </div>
+  <%= MarkdownRenderer.render(@page.body) %>
+</main>

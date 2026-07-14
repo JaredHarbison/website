@@ -1,55 +1,131 @@
 # jaredharbison.com
 
-This repository contains the source and deployment artifacts for
-[jaredharbison.com](https://www.jaredharbison.com), my personal portfolio and
-technical writing site.
+This is the source for my personal site: a place for case studies, technical
+writing, and a little context about the way I work.
 
-## Live site
+The site is a small Rails application backed by Markdown files and deployed
+from `main`.
 
-The `main` branch is the current GitHub Pages deployment. Its root contains the
-compiled output of the existing Create React App site rather than the original
-React source. GitHub Pages serves these files directly and uses `CNAME` to map
-the deployment to `www.jaredharbison.com`.
+## Why I built it this way
+
+I wanted the authoring experience of a static site without introducing a CMS or
+a frontend framework. Rails gives me routing, layouts, asset handling, and a
+familiar testing setup. Markdown keeps the content portable and reviewable in
+Git.
+
+There is intentionally no database. A repository object reads Markdown from
+disk and returns small model-like objects to the controllers. That boundary
+keeps the rest of the app independent from where the content is stored.
+
+## What is here
+
+- A homepage, about page, and contact page
+- Long-form case studies with a consistent section structure
+- A writing section for technical notes
+- Draft filtering through front matter
+- Server-rendered, semantic HTML with no application JavaScript
+- A production visibility flag for controlled launches
+
+## Tech stack
+
+- Ruby 3.3
+- Rails 8
+- ERB and CSS
+- Redcarpet for Markdown rendering
+- Minitest
+- RuboCop and Brakeman
+
+Active Record is omitted because the application has no persistent runtime
+data. Propshaft handles the stylesheet without a Node build step.
+
+## Architecture
+
+Content lives under `content/` and uses YAML front matter. `ContentRepository`
+parses those files, filters out drafts, and builds `ContentEntry`, `Article`, or
+`CaseStudy` objects. Controllers request entries from the repository and pass
+them to conventional Rails views. `MarkdownRenderer` is the only object allowed
+to turn Markdown into HTML.
 
 ```text
-main branch
-    -> compiled static assets
-    -> GitHub Pages
-    -> www.jaredharbison.com
+content/*.md
+    -> ContentRepository
+    -> ContentEntry / Article / CaseStudy
+    -> controller
+    -> ERB view + MarkdownRenderer
+    -> HTML response
 ```
 
-Because this branch is the production artifact, changes to `main` should be
-reviewed as deployment changes.
+See [ARCHITECTURE.md](ARCHITECTURE.md) for the boundaries and tradeoffs in more
+detail.
 
-## Rails rebuild
+## Content format
 
-The next version of the portfolio is being developed on the `rails-rebuild`
-branch. It replaces the generated static bundle with a small server-rendered
-Rails application backed by Markdown content.
+Each document starts with front matter:
 
-That branch includes:
+```markdown
+---
+title: Example
+summary: A short description.
+date: 2026-07-08
+order: 1
+status: published
+---
 
-- Routed portfolio, case-study, writing, about, and contact pages
-- Markdown content with YAML front matter and draft filtering
-- A repository boundary between content files and controllers
-- Sanitized Markdown rendering
-- Automated tests, RuboCop, and Brakeman checks
-- Architecture and portfolio decision records
+Markdown begins here.
+```
 
-To inspect the rebuild locally:
+Files default to `draft` when `status` is missing. Case studies also expose a
+check for the standard sections I use when writing about product work.
+
+## Running locally
+
+The project uses the Ruby version in `.ruby-version`.
 
 ```sh
-git switch rails-rebuild
 bundle install
 bin/rails test
 bin/rails server
 ```
 
-See the `rails-rebuild` branch's README and `ARCHITECTURE.md` for its design,
-content format, quality checks, and launch plan.
+Open `http://localhost:3000`. All sections are visible by default in
+development.
 
-## Deployment note
+Public sections are locked in production unless they are explicitly enabled:
 
-The Rails rebuild is intentionally isolated from `main`. Work on that branch
-does not change the live GitHub Pages site unless a separate deployment decision
-is made.
+```sh
+PUBLIC_SECTIONS_ENABLED=true bin/rails server -e production
+```
+
+Set the flag to `false` locally to exercise the same lock.
+
+## Quality checks
+
+```sh
+bin/rails test
+bin/rubocop
+bin/brakeman --no-pager
+```
+
+## Interesting details
+
+- The content source is behind a repository boundary rather than read directly
+  in controllers or views. Moving to another backend would not require a rewrite
+  of the delivery layer.
+- Markdown rendering filters raw HTML and adds safe relationship attributes to
+  generated links.
+- Unknown slugs become normal 404 responses instead of leaking repository
+  exceptions.
+
+## Future improvements
+
+- Add RSS and sitemap generation once the writing archive grows.
+- Cache parsed entries if the content library becomes large enough to justify
+  it.
+
+## What I learned
+
+The useful decision here was not choosing Rails or Markdown by itself. It was
+putting a small boundary between them. The app stays simple today, but its
+controllers and views do not need to know whether content came from a file,
+cache, or database. It is a modest example of designing for a likely change
+without building that change early.

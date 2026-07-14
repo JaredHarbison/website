@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="500" viewBox="0 0 960 500" role="img" aria-labelledby="title desc">
+  <title id="title">Timeline of Dogly's product design evolution</title>
+  <desc id="desc">A six-year timeline moves from Advocate profiles in 2020 through channels in 2021 and 2022, guided agenda and onboarding in early 2026, and the responsive multi-state homepage in spring 2026.</desc>
+  <rect width="960" height="500" fill="#080b0c"/>
+  <line x1="95" y1="245" x2="865" y2="245" stroke="#26302c" stroke-width="4"/>
+  <g font-family="ui-monospace, monospace" text-anchor="middle">
+    <g fill="#86d99a">
+      <circle cx="135" cy="245" r="12"/><circle cx="365" cy="245" r="12"/><circle cx="595" cy="245" r="12"/><circle cx="825" cy="245" r="12"/>
+    </g>
+    <g fill="#e5b566" font-size="17">
+      <text x="135" y="95">2020</text><text x="365" y="95">2021–2022</text><text x="595" y="95">EARLY 2026</text><text x="825" y="95">SPRING 2026</text>
+    </g>
+    <g fill="#d9e0dc" font-size="17">
+      <text x="135" y="135">ADVOCATE</text><text x="135" y="160">PROFILES</text>
+      <text x="365" y="135">CHANNEL</text><text x="365" y="160">SYSTEM</text>
+      <text x="595" y="135">AGENDA +</text><text x="595" y="160">ONBOARDING</text>
+      <text x="825" y="135">MULTI-STATE</text><text x="825" y="160">HOMEPAGE</text>
+    </g>
+  </g>
+  <g font-family="ui-sans-serif, sans-serif" font-size="15" fill="#929e98" text-anchor="middle">
+    <text x="135" y="305">Image-led identity</text><text x="135" y="330">Expertise + content</text><text x="135" y="355">Profile landing pages</text>
+    <text x="365" y="305">Category environments</text><text x="365" y="330">Editorial layouts</text><text x="365" y="355">Configurable imagery</text>
+    <text x="595" y="305">Conversational flows</text><text x="595" y="330">Daily task states</text><text x="595" y="355">Responsive focus</text>
+    <text x="825" y="305">Visitor / user / member</text><text x="825" y="330">Shared components</text><text x="825" y="355">Design + performance</text>
+  </g>
+  <text x="480" y="440" fill="#75bfff" font-family="ui-monospace, monospace" font-size="17" text-anchor="middle">IMAGERY · BRAND COLOR · INTERACTION · RESPONSIVENESS · CONSISTENCY</text>
+</svg>
