@@ -8,7 +8,7 @@ class ApplicationController < ActionController::Base
 
   def public_sections_enabled?
     ActiveModel::Type::Boolean.new.cast(
-      ENV.fetch("PUBLIC_SECTIONS_ENABLED", Rails.env.development?)
+      ENV.fetch("PUBLIC_SECTIONS_ENABLED", true)
     )
   end
 

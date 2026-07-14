@@ -2,7 +2,9 @@ require "test_helper"
 
 class PublicSectionsLockTest < ActionDispatch::IntegrationTest
   test "home renders while public sections are locked" do
-    get root_path
+    with_public_sections_enabled(false) do
+      get root_path
+    end
 
     assert_response :success
     assert_select "h1", "Software Engineer"
@@ -39,19 +41,25 @@ class PublicSectionsLockTest < ActionDispatch::IntegrationTest
   end
 
   test "content pages are inaccessible while public sections are locked" do
-    get about_path
+    with_public_sections_enabled(false) do
+      get about_path
+    end
 
     assert_response :not_found
   end
 
   test "case studies are inaccessible while public sections are locked" do
-    get case_studies_path
+    with_public_sections_enabled(false) do
+      get case_studies_path
+    end
 
     assert_response :not_found
   end
 
   test "writing is inaccessible while public sections are locked" do
-    get writings_path
+    with_public_sections_enabled(false) do
+      get writings_path
+    end
 
     assert_response :not_found
   end
@@ -79,9 +87,9 @@ class PublicSectionsLockTest < ActionDispatch::IntegrationTest
 
   private
 
-  def with_public_sections_enabled
+  def with_public_sections_enabled(enabled = true)
     previous = ENV["PUBLIC_SECTIONS_ENABLED"]
-    ENV["PUBLIC_SECTIONS_ENABLED"] = "true"
+    ENV["PUBLIC_SECTIONS_ENABLED"] = enabled.to_s
     yield
   ensure
     ENV["PUBLIC_SECTIONS_ENABLED"] = previous

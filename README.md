@@ -90,13 +90,12 @@ bin/rails server
 Open `http://localhost:3000`. All sections are visible by default in
 development.
 
-Public sections are locked in production unless they are explicitly enabled:
+Public sections are enabled by default. To temporarily lock the portfolio while
+leaving the homepage available:
 
 ```sh
-PUBLIC_SECTIONS_ENABLED=true bin/rails server -e production
+PUBLIC_SECTIONS_ENABLED=false bin/rails server -e production
 ```
-
-Set the flag to `false` locally to exercise the same lock.
 
 ## Quality checks
 
