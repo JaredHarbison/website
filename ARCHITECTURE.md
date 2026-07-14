@@ -2,15 +2,10 @@
 
 ## Context
 
-The repository temporarily contains two delivery artifacts:
-
-1. The previous compiled React site at the repository root.
-2. The Rails-authored portfolio under `app/`, `config/`, and `content/`.
-
-GitHub Pages no longer publishes directly from the repository root. A custom
-Actions workflow runs Rails at build time and deploys only the generated `_site`
-artifact. The previous files remain temporarily to keep the legacy Pages source
-safe until the artifact workflow completes its first verified deployment.
+The portfolio is authored as a Rails application under `app/`, `config/`, and
+`content/`, but production is static. GitHub Pages does not publish directly
+from the repository root. A custom Actions workflow runs Rails at build time and
+deploys only the generated `_site` artifact.
 
 ## Application boundaries
 
