@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 420" role="img" aria-labelledby="title description">
+  <title id="title">The Federation Briefing data and reporting pipeline</title>
+  <desc id="description">Public Reddit discussions move through ingestion and manual snapshot promotion into local or OpenAI vectors. Five retrieval lenses select evidence for a cited RAG briefing, which is compared with an isolated no-context baseline.</desc>
+  <defs>
+    <marker id="arrow" markerHeight="8" markerWidth="8" orient="auto" refX="7" refY="4">
+      <path d="M0 0 8 4 0 8Z" fill="#7b8aa0"/>
+    </marker>
+    <style>
+      .panel { fill: #111722; stroke: #53657d; stroke-width: 2; }
+      .accent { fill: #132c2b; stroke: #56d6c9; stroke-width: 2; }
+      .control { fill: #221a2b; stroke: #b995d6; stroke-width: 2; }
+      .label { fill: #ecf2f8; font: 600 18px ui-monospace, SFMono-Regular, Menlo, monospace; }
+      .copy { fill: #aebdce; font: 14px system-ui, sans-serif; }
+      .line { fill: none; stroke: #7b8aa0; stroke-width: 2; marker-end: url(#arrow); }
+      .dash { stroke-dasharray: 7 7; }
+    </style>
+  </defs>
+
+  <rect width="960" height="420" fill="#0b1018"/>
+
+  <rect class="panel" x="35" y="55" width="170" height="105" rx="8"/>
+  <text class="label" x="55" y="90">Community data</text>
+  <text class="copy" x="55" y="120">Reddit JSON / RSS</text>
+  <text class="copy" x="55" y="143">Seven-day window</text>
+
+  <path class="line" d="M205 107H260"/>
+
+  <rect class="panel" x="260" y="35" width="190" height="145" rx="8"/>
+  <text class="label" x="280" y="70">Review boundary</text>
+  <text class="copy" x="280" y="100">Ignored live snapshot</text>
+  <text class="copy" x="280" y="123">Field + URL validation</text>
+  <text class="copy" x="280" y="146">Explicit promotion</text>
+
+  <path class="line" d="M450 107H505"/>
+
+  <rect class="accent" x="505" y="35" width="190" height="145" rx="8"/>
+  <text class="label" x="525" y="70">Vector store</text>
+  <text class="copy" x="525" y="100">Local TF-IDF</text>
+  <text class="copy" x="525" y="123">or OpenAI embeddings</text>
+  <text class="copy" x="525" y="146">Reviewed documents</text>
+
+  <path class="line" d="M695 107H750"/>
+
+  <rect class="accent" x="750" y="35" width="175" height="145" rx="8"/>
+  <text class="label" x="770" y="70">Evidence set</text>
+  <text class="copy" x="770" y="100">Five query lenses</text>
+  <text class="copy" x="770" y="123">Round-robin selection</text>
+  <text class="copy" x="770" y="146">Up to eight sources</text>
+
+  <path class="line" d="M838 180V245"/>
+  <path class="line dash" d="M355 180V327H505"/>
+
+  <rect class="accent" x="655" y="245" width="270" height="130" rx="8"/>
+  <text class="label" x="675" y="280">RAG briefing</text>
+  <text class="copy" x="675" y="310">Only selected evidence</text>
+  <text class="copy" x="675" y="333">Inline S# citations</text>
+  <text class="copy" x="675" y="356">Abstain when unsupported</text>
+
+  <rect class="control" x="260" y="265" width="245" height="110" rx="8"/>
+  <text class="label" x="280" y="300">No-context control</text>
+  <text class="copy" x="280" y="330">Same question + schema</text>
+  <text class="copy" x="280" y="353">No posts, dates, or sources</text>
+
+  <path class="line" d="M505 320H655"/>
+
+  <text class="copy" x="520" y="305">A/B comparison</text>
+</svg>

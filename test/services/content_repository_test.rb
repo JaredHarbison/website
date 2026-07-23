@@ -25,7 +25,8 @@ class ContentRepositoryTest < ActiveSupport::TestCase
       "dogly-shopify-integration",
       "dogly-partner-applications",
       "dogly-advocate-discovery",
-      "fridge-no-more-bulk-ordering"
+      "fridge-no-more-bulk-ordering",
+      "federation-briefing"
     ], entries.map(&:slug)
   end
 
