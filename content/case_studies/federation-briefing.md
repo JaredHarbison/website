@@ -1,6 +1,6 @@
 ---
 title: The Federation Briefing
-summary: Building a reproducible RAG briefing that makes retrieval, evidence, abstention, and the value of context visible instead of hiding them behind an AI-generated answer.
+summary: Turning a week of Star Trek community discussions into a sourced AI briefing that shows its work and knows when it does not have enough evidence.
 date: 2026-07-20
 order: 7
 role: Software Engineer
@@ -23,57 +23,55 @@ status: published
 
 ## Overview
 
-[The Federation Briefing](https://github.com/JaredHarbison/the-federation-briefing) is a small retrieval-augmented generation application that turns a week of public Star Trek community discussions into an evidence-linked briefing.
+[The Federation Briefing](https://github.com/JaredHarbison/the-federation-briefing) is a small AI application that turns a week of public Star Trek community discussions into a sourced briefing.
 
-I built it to explore a more useful question than whether an LLM can summarize text: can a reviewer see what the system retrieved, which claims depend on which sources, when the system lacks enough evidence, and what retrieval adds compared with the same model operating without current context?
+I was interested in more than whether an AI model could summarize a group of posts. I wanted the application to show which discussions it used, connect its claims to those sources, and be honest when it did not have enough evidence to answer a question.
 
-The result is a Streamlit application with a command-driven ingestion workflow, local and OpenAI embedding paths, diversified retrieval, claim-level source labels, an explicit no-context control, and a reproducible offline mode.
+The result is a Streamlit application with live Reddit ingestion, local and OpenAI-powered search, source labels, an offline mode, and a side-by-side comparison that shows how much current source material changes the report.
 
 ## Problem
 
-A fluent weekly report can sound current and authoritative even when it is based on weak retrieval or no current evidence at all. A conventional demo often hides that risk by presenting only the generated answer.
+An AI-generated report can sound informed even when the source material is weak or unrelated. Many demos hide that problem by showing the answer without showing how it was produced.
 
-For a community briefing, I wanted the evidence boundary to remain visible. The application needed to distinguish observations from forecasts, connect community claims to specific discussions, and refuse custom questions that the weekly corpus could not support.
-
-It also needed to remain reviewable without sharing an API key. An evaluator should be able to clone the repository, run the application, inspect real source records, exercise retrieval, and compare a genuine keyed result without incurring API usage.
+For this project, I wanted the evidence to stay visible. The application needed to separate what people actually discussed from what it predicted might happen next, link claims back to specific posts, and decline questions that the week's discussions could not support.
 
 ## Context
 
-This is a focused portfolio prototype, not a production analytics service. The reviewed snapshot contains up to 25 public `r/startrek` discussions from one seven-day window. Streamlit provides the analyst interface, while Python modules and scripts own ingestion, retrieval, generation, snapshot promotion, and canonical artifact generation.
+This is a focused prototype, not a production analytics service. It works with up to 25 public `r/startrek` discussions from a seven-day period. Streamlit provides the interface, while a small set of Python modules and scripts handle data collection, search, report generation, and the reviewed offline snapshot.
 
 The project supports two operating modes:
 
-- A deterministic local path uses TF-IDF vectors and fallback reports.
-- A keyed path uses OpenAI embeddings and chat generation.
+- A local path uses TF-IDF search and fallback reports.
+- An OpenAI path uses embeddings and AI-generated reports.
 
-For the default analyst question, the repository includes a reviewed OpenAI-generated baseline/RAG pair. That artifact makes the full comparison visible in the no-key experience without exposing my credential.
+For the default question, the repository includes a reviewed pair of OpenAI reports: one with current sources and one without them. This keeps the full comparison available when live generation is unavailable.
 
 ## Constraints
 
 - Never send an API key to the browser or commit it to the repository.
-- Preserve a usable, reproducible evaluator experience without paid API access.
+- Preserve a usable, reproducible offline mode when API access is unavailable.
 - Use only retrieved discussions as evidence for current community claims.
-- Keep the baseline isolated from posts, dates, source titles, and retrieval results.
-- Abstain when a custom focus is not supported by the weekly corpus.
-- Survive blocked Reddit JSON requests through a public RSS fallback.
-- Prevent a failed or malformed live fetch from silently replacing reviewed demo data.
-- Keep the implementation small enough for an evaluator to understand quickly.
+- Keep the comparison report separate from posts, dates, source titles, and search results.
+- Decline a custom question when the week's posts do not support it.
+- Fall back to Reddit's public RSS feed when its JSON endpoint is blocked.
+- Never let a failed or malformed fetch silently replace the reviewed data.
+- Keep each part of the workflow small enough to inspect and test.
 
 ## My Role
 
-I designed and implemented the complete prototype: ingestion, snapshot lifecycle, local vector representation, OpenAI integration, retrieval policies, evidence prompts, unsupported-query gate, deterministic fallbacks, A/B interface, retrieval diagnostics, and tests.
+I designed and built the complete prototype: Reddit ingestion, the reviewed snapshot workflow, local search, OpenAI integration, source selection, prompts, unsupported-question handling, offline fallbacks, the comparison interface, and tests.
 
-I also defined the evaluation contract. Both report conditions use the same five-section schema, while the control receives no current context and the RAG condition receives only selected evidence. This makes access to retrieved context the main changed variable.
+I also designed the comparison. Both reports answer the same question using the same five sections. One receives no current community posts, while the other receives only the posts selected by the search process. The main difference between them is access to current evidence.
 
 ## Approach
 
-I separated the workflow into four boundaries: acquire and review source data, build a vector representation, select evidence, and generate or display a report.
+I divided the workflow into four steps: collect and review the source data, make it searchable, select useful evidence, and generate the report.
 
 ![The Federation Briefing pipeline from reviewed community data through retrieval and evidence-linked reporting](/images/federation-briefing-pipeline.svg)
 
-Live ingestion writes to an ignored working file rather than replacing the committed snapshot. A separate promotion command validates required fields, timestamps, and specific Reddit discussion URLs, and requires an explicit confirmation flag. The reviewed snapshot then feeds both the offline vector store and the optional OpenAI embedding path.
+New Reddit data is first written to a temporary local file instead of replacing the saved snapshot. A separate command checks the required fields, dates, and discussion URLs before the new data can be promoted. This prevents a bad response from quietly becoming the application's trusted example data.
 
-For the weekly briefing, one broad similarity query was not enough. It tended to favor whichever topic dominated the small corpus. I introduced five retrieval lenses:
+One broad search was not enough for a useful weekly briefing. It tended to return several versions of whichever topic dominated the small set of posts. I split the search into five areas:
 
 - The analyst's stated focus.
 - Releases and upcoming events.
@@ -81,50 +79,50 @@ For the weekly briefing, one broad similarity query was not enough. It tended to
 - Newcomer questions.
 - Creative participation.
 
-The selector ranks documents for each lens, adds a small engagement weight, then chooses round-robin across the ranked lists while deduplicating results. The final evidence set is capped at eight posts.
+The application ranks posts within each area, gives a small boost to posts with more engagement, and takes turns selecting from each list while removing duplicates. The final report uses no more than eight posts.
 
 ## Technical Implementation
 
-The local path builds TF-IDF document vectors with scikit-learn. Titles are repeated in the indexed document text so concise topic labels retain influence beside longer post bodies. When an API key is present, the same documents and query lenses use the configured OpenAI embedding model instead.
+The local version uses scikit-learn's TF-IDF search. I give post titles extra weight so a clear title does not get buried by a much longer body. When an API key is present, the same posts and search areas use OpenAI embeddings instead.
 
-Each selected record carries its similarity score and the lens that retrieved it. The Streamlit interface exposes those details in source cards next to the report and labels similarity correctly as alignment to a retrieval lens, not confidence or factual accuracy.
+Each selected post includes its similarity score and the reason it was chosen. The interface shows those details in source cards beside the report. It also explains that similarity measures how closely a post matched a search—not whether the post or report is correct.
 
-The RAG prompt receives only the selected posts, labeled `S1` through `S8`. It requires a citation in every substantive paragraph, forbids invented counter-positions, asks the model to label forecasts as inferences, and instructs it to omit claims that its cited source does not support.
+The sourced report receives only the selected posts, labeled `S1` through `S8`. Its instructions require citations for claims about the community, prevent the model from inventing an opposing view just to create a debate, and clearly label predictions as predictions.
 
-The baseline uses the same report headings but receives no community documents, dates, sources, or retrieval results. Its prompt requires conditional language and prevents it from presenting evergreen model knowledge as a current observation.
+The comparison report uses the same headings but receives no community posts, dates, sources, or search results. It must use conditional language rather than present general Star Trek knowledge as something the community discussed that week.
 
-Custom questions pass through an evidence gate before generation. The system extracts meaningful subject terms, checks their coverage in the corpus, and applies a conservative cosine-similarity threshold. If either check fails, it returns a structured insufficient-evidence report with no citations instead of asking the model to improvise from unrelated posts.
+Before answering a custom question, the application checks whether its important terms appear in the week's posts and whether the closest matches are strong enough. If not, it returns an insufficient-evidence message instead of asking the model to make something out of unrelated discussions.
 
-The no-key experience still exercises real local retrieval. For the default question it additionally loads the reviewed canonical OpenAI artifact, whose generation script validates the shared heading schema, RAG citations, and baseline isolation before writing it.
+Without an API key, the application still runs the real local search. For the default question, it can also show the saved OpenAI comparison. A separate generation script checks the report structure, required citations, and separation between the two reports before saving that result.
 
-Tests cover snapshot structure, relevant retrieval, diversified release coverage, unsupported and supported custom questions, baseline isolation, source labels, matching A/B schemas, and the seven-day ingestion boundary.
+Tests cover the data structure, search relevance and variety, supported and unsupported questions, separation between the two reports, source labels, matching report sections, and the seven-day ingestion window.
 
 ## Tradeoffs
 
-The corpus is deliberately small and represents one subreddit over one week. It is useful for demonstrating the system, but it cannot support claims about the broader Star Trek audience. Reddit scores also provide only a light ranking signal; they are not a measure of representativeness.
+The dataset is deliberately small and represents one subreddit over one week. It cannot support claims about the broader Star Trek audience. Reddit scores provide a small ranking signal, but popularity does not make a post representative.
 
-The evidence gate combines simple stemming, lexical coverage, and hand-selected semantic thresholds. This is understandable and testable, but it is not a calibrated relevance classifier. A larger corpus would need evaluation data and threshold tuning based on labeled queries.
+The check for unsupported questions uses simple word matching and hand-selected similarity limits. It is understandable and testable, but those limits were not measured against a large set of reviewed questions.
 
-The local query representation is simpler than the indexed TF-IDF representation, and the vector store and retrieval counters are JSON files. Those choices make the demo portable, but they are not appropriate for concurrent users or a growing corpus.
+The local search is intentionally simple, and the vectors and search counts live in JSON files. That makes the prototype portable, but it would not work well for many simultaneous users or a much larger collection.
 
-The five retrieval lenses encode an editorial definition of a useful weekly briefing. They improve coverage, but they can also reserve space for a weakly supported category. A production version should measure marginal evidence quality before forcing diversity.
+The five search areas reflect my idea of what makes a useful weekly briefing. They improve variety, but they can also give space to a category with weak results. A production version should be willing to skip an area when its evidence is not good enough.
 
-Finally, ingestion and snapshot promotion are command-driven. There is no production scheduler, hosted application, moderation workflow, or durable job system.
+Finally, data collection and review are run through commands. There is no production scheduler, hosted application, moderation process, or background job system.
 
 ## Outcome
 
-The finished prototype makes the full RAG path inspectable. An evaluator can see the selected sources, the reason each one was selected, the context-free control, the evidence-grounded report, retrieval frequency, and a two-dimensional embedding map in one interface.
+The finished prototype shows how the report was made. The interface includes the selected sources, why each one was chosen, the report without current context, the sourced report, search frequency, and a map of related posts.
 
-It also remains useful in three failure conditions: without an API key, when OpenAI generation is unavailable, and when a custom question has insufficient evidence. In each case the application changes behavior explicitly instead of quietly presenting an ungrounded answer.
+It also handles three common failure cases: no API key, unavailable OpenAI generation, and a question the data cannot support. In each case, the application explains what changed instead of quietly presenting an unsupported answer.
 
-The most important result is the evaluation design. By holding the report schema and analyst question constant while removing current evidence from the baseline, the application demonstrates what retrieval contributes: current context, inspectable sources, a basis for claims, and a bounded basis for forecasts.
+The side-by-side comparison is the most useful result. The question and report structure stay the same while the source material changes. That makes it much easier to see what retrieval actually adds: current context, visible sources, support for claims, and a more honest basis for predictions.
 
 ## What I'd Improve Today
 
-I would build a labeled evaluation set of supported and unsupported analyst questions, then report retrieval precision, source coverage, citation correctness, and abstention quality. The current tests protect intended examples, but they do not measure performance across a representative query set.
+I would create a reviewed set of questions the system should and should not answer, then measure whether it found the right sources, cited them correctly, and declined the right questions. The current tests cover important examples, but they do not measure performance across a broad set of questions.
 
-I would replace local JSON state with a small database and store ingestion runs, documents, retrieval events, generated claims, and model configuration separately. That would support concurrent sessions, reproducible runs, and comparisons across multiple weeks.
+I would replace the local JSON files with a small database and keep each data import, source post, search, generated report, and model setting. That would support multiple users and make reports easier to reproduce and compare across weeks.
 
-I would add a scheduled ingestion job with rate-limit handling, content normalization, deduplication, and a review queue before publication. I would also expand beyond one community source so the briefing could describe its sample precisely without implying that one subreddit represents an entire fandom.
+I would schedule data collection, handle rate limits, clean and deduplicate posts, and add a review step before publication. I would also include more than one community source so the briefing did not treat a single subreddit as the entire fandom.
 
-Finally, I would evaluate citations after generation at the claim level instead of relying only on prompt instructions and section-level citation checks. A useful next step would parse claims and cited source IDs, run an entailment check, and flag unsupported sentences for review before a briefing could be published.
+Finally, I would check every generated claim against its cited posts instead of relying mainly on prompt instructions. Unsupported sentences should be flagged for review before a briefing can be published.
