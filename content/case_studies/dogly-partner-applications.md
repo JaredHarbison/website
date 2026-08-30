@@ -1,8 +1,8 @@
 ---
 title: Dogly Partner Applications
-summary: Designing a resumable brand partner application and transparent review workflow inside a mature Rails marketplace without forcing a platform rewrite.
+summary: Designing a resumable partner application and transparent review workflow inside a mature Rails marketplace without forcing a platform rewrite.
 hero_image: /images/dogly-partner-application-flow.svg
-hero_alt: Diagram showing a brand partner application that progressively reveals profile, details, branding, and payment questions.
+hero_alt: Diagram showing a partner application that progressively reveals profile, details, branding, and final authorization steps.
 date: 2026-07-08
 order: 4
 role: Senior Software Engineer
@@ -26,7 +26,7 @@ status: published
 
 Dogly is a Rails marketplace and community product connecting dog owners with professional advocates, brands, and shelters. The codebase has years of accumulated product surface: ecommerce, community content, subscriptions, advocate profiles, admin tools, reporting, and partner management.
 
-Partner Pro established shared entry points for Dogly's partner ecosystem, while its guided application and review lifecycle was first implemented for Advocates. The work covered resumable onboarding, credential management, admin review, and applicant-visible revisions.
+Partner Pro established shared entry points for Dogly's partner ecosystem, while its guided application and review lifecycle was first implemented for Advocates. The work covered resumable onboarding, application details, admin review, and applicant-visible revisions.
 
 The important engineering challenge was not just adding screens. It was introducing a new product flow into a mature Rails application without destabilizing the existing routes, models, and operational assumptions.
 
@@ -91,15 +91,15 @@ Third, admin review became explicit. Admin edits can move an application into re
 
 ## Technical Implementation
 
-The onboarding controller handles a small set of explicit steps: profile, expertise, branding, and billing.
+The onboarding controller handles a small set of explicit steps: profile, details, branding, and payment.
 
 Profile data captures identity, handle, category, location, and coordinates. If browser coordinates are present, the flow can reverse-geocode into a readable location. If the user typed a location and coordinates are missing, it attempts forward geocoding. If geocoding fails, the flow keeps the user-entered value rather than blocking progress.
 
 ![The Profile step progressively collects identity, contact, handle, and location information.](/images/dogly-partner-pro-profile.webp)
 
-Expertise data captures mission, one-liner, and credentials. Applicants can select existing credentials or request new certifications. New credentials are deduplicated case-insensitively and created as external credentials, with admin approval required unless the current user is an admin.
+Details data captures the applicant's legal name and order-integration method, including the fulfillment information needed to route the application correctly.
 
-Branding data captures images (avatar, banner, and mission) and social/profile URLs. Billing captures Stripe setup intent. On final submission, the controller maps the session data into a `PartnerApplication`, sends the submitted email, completes the session, and shows a submitted/review state.
+Branding data captures images (avatar, banner, and mission) and social/profile URLs. The final step records terms acceptance and authorizes Shopify and Stripe connections. On final submission, the controller maps the session data into a `PartnerApplication`, sends the submitted email, completes the session, and shows a submitted/review state.
 
 ![The Branding step previews uploaded profile and banner imagery within the guided flow.](/images/dogly-partner-pro-branding.webp)
 

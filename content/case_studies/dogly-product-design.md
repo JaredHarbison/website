@@ -29,7 +29,7 @@ Dogly is not one simple product surface. It combines expert content, community d
 
 The design challenge was to make those experiences feel like one product without flattening the emotional quality that users valued most.
 
-## Start With What Users Value
+## Problem
 
 In a round of customer feedback, users repeatedly told us that they loved Dogly's imagery.
 
@@ -43,7 +43,24 @@ That principle shaped the visual system that followed.
 
 ![Timeline of Dogly's design evolution](/images/dogly-design-evolution.svg)
 
-## Establishing a Visual Language
+## Context
+
+This work happened inside a mature Rails product rather than a greenfield design system. The same visual language had to work across public content, member workflows, commerce, partner onboarding, and operational tools, while older surfaces still needed to remain usable.
+
+## Constraints
+
+- Preserve the warmth and credibility that imagery gave Dogly.
+- Keep text, controls, and content hierarchy usable across desktop, tablet, and mobile widths.
+- Improve consistency without forcing every surface into one identical composition.
+- Work within existing Rails, Haml, SCSS, and image-management conventions.
+
+## My Role
+
+I led the product design direction and implemented many of the resulting surfaces across the Rails stack. I worked with founders and domain owners to connect customer feedback, visual decisions, responsive behavior, and the underlying product constraints.
+
+## Approach
+
+### Establishing a Visual Language
 
 I retained the green from Dogly's logo as a selective, consistent brand color. It could communicate trust, continuity, progress, and positive state without saturating every screen.
 
@@ -59,7 +76,11 @@ Those environments were not literal rules for every asset. They gave each conten
 
 Layers and overlays protected text contrast when copy sat over photography. Rounded cards, restrained shadows, consistent internal spacing, and repeated content structures helped image-rich pages feel intentional rather than collage-like.
 
-## Era One: Advocate Profiles
+## Technical Implementation
+
+The visual system became concrete through reusable image treatments, typography and spacing decisions, responsive compositions, content-card patterns, and state treatments shared across the product. The following eras show how those decisions were applied rather than presenting a single redesign as if the product had changed all at once.
+
+### Era One: Advocate Profiles
 
 The Advocate show page was my first major Dogly project in 2020.
 
@@ -71,7 +92,7 @@ The page is now one of the older remaining experiences and is due for another mo
 
 *The early Advocate profile established an image-led presentation for professional identity and expertise, but its dense overlay and small controls also show where the system began.*
 
-## Era Two: Channels
+### Era Two: Channels
 
 The channel system developed from late 2020 and expanded substantially through 2021 and 2022.
 
@@ -87,7 +108,7 @@ This era also exposed the cost of inconsistency. Similar cards and controls had 
 
 *The guide experience brought media, instruction, navigation, and topic discovery into a repeatable learning structure.*
 
-## Era Three: Onboarding and Daily Guidance
+### Era Three: Onboarding and Daily Guidance
 
 The recent onboarding and `/my-dogly/today` agenda moved the product from browsing into guided action.
 
@@ -105,7 +126,7 @@ I introduced and centralized breakpoints around the actual behavior of component
 
 *The mobile layout preserved the task, progress, and completion path instead of merely shrinking the desktop composition.*
 
-## Era Four: The Homepage as a System
+### Era Four: The Homepage as a System
 
 The 2026 homepage is the strongest expression of the current direction.
 
@@ -138,7 +159,9 @@ The design also had to account for empty libraries, missing follows, multiple do
 
 *Visitor sections moved from broad product explanation toward recognizable problems and clear entry points.*
 
-## Balancing Imagery and Performance
+## Tradeoffs
+
+### Balancing Imagery and Performance
 
 Keeping imagery did not mean ignoring performance.
 

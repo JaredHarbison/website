@@ -1,7 +1,22 @@
 <main class="site-main content-page case-study-page" aria-labelledby="page-title">
-  <p class="eyebrow">Case Study</p>
+  <p class="eyebrow">Selected work / case study</p>
   <h1 id="page-title"><%= @case_study.title %></h1>
   <p class="lede"><%= @case_study.summary %></p>
+  <dl class="case-study-meta">
+    <% if @case_study["role"].present? %>
+      <div>
+        <dt>Role</dt>
+        <dd><%= @case_study["role"] %></dd>
+      </div>
+    <% end %>
+    <% technologies = Array(@case_study["technologies"]).compact_blank %>
+    <% if technologies.any? %>
+      <div>
+        <dt>Stack</dt>
+        <dd><%= technologies.join(" · ") %></dd>
+      </div>
+    <% end %>
+  </dl>
   <%= render "content/tags", entry: @case_study if @case_study.tags.any? %>
   <% if @case_study["hero_image"].present? %>
     <%= image_tag @case_study["hero_image"],

@@ -382,6 +382,48 @@ p {
   line-height: 1.35;
 }
 
+.case-study-meta {
+  border-block: 1px solid var(--color-border);
+  display: grid;
+  gap: 0.75rem 2rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 64rem;
+  padding-block: 1rem;
+}
+
+.case-study-meta div {
+  min-width: 0;
+}
+
+.case-study-meta dt,
+.meta-label {
+  color: var(--color-accent);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.case-study-meta dd {
+  color: var(--color-text);
+  font-size: 0.9375rem;
+  margin: 0.2rem 0 0;
+}
+
+.meta-label {
+  margin-bottom: -0.75rem;
+}
+
+.case-study-page > .meta-label {
+  color: var(--color-accent);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  margin-top: 0.75rem;
+  text-transform: uppercase;
+}
+
 .site-main p:not(.eyebrow):not(.lede),
 .content-page li {
   color: var(--color-muted);
@@ -456,6 +498,10 @@ p {
   gap: 0.5rem;
   list-style: none;
   padding: 0;
+}
+
+.case-study-page > .tag-list {
+  margin-top: 0;
 }
 
 .tag-link {
@@ -552,6 +598,10 @@ p {
 }
 
 @media (max-width: 44rem) {
+  .case-study-meta {
+    grid-template-columns: 1fr;
+  }
+
   .about-hero {
     align-items: start;
     grid-template-columns: 1fr;

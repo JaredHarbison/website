@@ -1,4 +1,5 @@
-<ul class="tag-list" aria-label="Topics">
+<p class="meta-label">Focus</p>
+<ul class="tag-list" aria-label="Case-study focus areas">
   <% entry.tags.each do |tag| %>
     <li><%= link_to tag, tag_path(tag.parameterize), class: "tag-link" %></li>
   <% end %>

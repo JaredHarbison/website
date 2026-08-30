@@ -1,6 +1,6 @@
 ---
 title: Dogly Membership Experience
-summary: Connecting discovery, conversation, personalized email, daily plans, subscriptions, and live expert groups into a membership journey that increased subscriptions by more than 40%.
+summary: Connecting discovery, conversation, personalized email, daily plans, subscriptions, and live expert groups into a membership journey associated with more than 40% subscription growth in internal comparisons.
 hero_image: /images/dogly-membership-journey.svg
 hero_alt: Diagram showing the Dogly membership journey before and after.
 date: 2026-07-11
@@ -35,8 +35,6 @@ Over several phases, I helped turn that library into an engagement and membershi
 
 Internal pre- and post-work subscription comparisons showed an increase of more than 40%.
 
-![Dogly membership journey before and after](/images/dogly-membership-journey.svg)
-
 ## Problem
 
 The original experience placed most of the work on the customer.
@@ -52,6 +50,17 @@ Even after finding useful content, there was little connective tissue:
 - No integrated live session deepened the relationship with an Advocate.
 - Subscription access existed as a business idea, but not yet as a cohesive product journey.
 
+## Context
+
+This was an incremental change inside a mature Rails application. The existing domain already connected users, dogs, Advocates, posts, products, subscriptions, follows, favorites, notifications, and live meetings, so each new capability had to extend those relationships without interrupting the existing community and commerce experience.
+
+## Constraints
+
+- Add value across discovery, engagement, and membership without requiring a rewrite.
+- Keep access and messaging correct for members and non-members.
+- Make recommendations useful for people with different dogs, follows, and levels of progress.
+- Preserve operational visibility for email delivery, content reuse, live groups, and Advocate attribution.
+
 ## My Role
 
 I worked across product planning and the full Rails stack, often directly with Dogly's founders and Advocates.
@@ -59,6 +68,12 @@ I worked across product planning and the full Rails stack, often directly with D
 My role included building and evolving subscription state, content access, tagging, comments and replies, notification and digest systems, daily guidance, Zoom meeting workflows, reporting, and the product surfaces connecting them.
 
 The work was incremental. Dogly could not pause its existing community and commerce product for a clean rewrite. Each new capability had to fit a domain already containing users, dogs, Advocates, posts, products, subscriptions, follows, favorites, and notifications.
+
+## Approach
+
+The product was built as a connected sequence of small systems: establish a topic vocabulary, add conversation, use that context to select guidance, turn guidance into a daily plan, and create return paths through email and live groups. Each step reused the records and permissions already present in Dogly.
+
+## Technical Implementation
 
 ## Building Discovery Around Problems
 
@@ -80,11 +95,11 @@ This changed the value of an article. It was no longer only something to consume
 
 Email became the most consistent engagement channel.
 
-**Dogly Daily** served members. It selected guidance related to the topics and Advocates they followed, avoided repeating content, and evolved toward a tailored daily plan containing activities a person could complete with their dog.
+**Dogly Daily** served members. It selected guidance related to the topics and Advocates they followed, avoided repeating content, and evolved toward a tailored daily plan containing activities a person could complete with their dog. The current delivery path is dog-scoped: a member receives a plan only for a dog with its own followed topics, and delivery history, notifications, progression, and completion state stay associated with that dog rather than being shared across the account.
 
 **Dogly Helps** served non-members. Instead of sending a generic newsletter, it highlighted specific ways Dogly could help and gave the recipient a useful path into expert guidance and membership.
 
-Both systems had to answer more than "what content is newest?" Selection depended on membership state, follows, tags, previous notifications, available content, and the sequence of guidance already shown.
+Both systems had to answer more than "what content is newest?" Selection depended on membership state, follows, tags, previous notifications, available content, and the sequence of guidance already shown. The latest member-email flow also records successful delivery before advancing the dog’s sequence, supports staged first, reminder, and final-reminder sends, and lets recipients complete or skip work from the email through signed, expiring action links.
 
 The systems also needed graceful fallbacks. A person with no follows still needed a meaningful email. A category with no unused content could not break the entire digest. A non-member should see enough value to understand the product without receiving member-only guidance as if they already had access.
 
@@ -96,7 +111,9 @@ Advocates could schedule live sessions from within Dogly. The system created and
 
 The retained production data includes 77 meeting records, 679 registrations, and 50 posts connected to Zoom meetings. Those numbers are modest compared with a mass webinar product, but meaningful for a specialized expert community: members were choosing to show up and participate.
 
-## Subscription and Compensation Tradeoffs
+## Tradeoffs
+
+### Subscription and Compensation
 
 The product model affected Advocate compensation.
 

@@ -32,8 +32,6 @@ The software underneath has to support several people with different needs at th
 
 Karaoke Queue is a Rails application for that shared experience. It began as a straightforward song queue and has been evolving into a venue- and event-scoped product with contextual roles, recurring events, configurable themes, presence-aware admission, fair ordering, and a presentation surface.
 
-![Karaoke Queue boundaries: performers participate through a venue and live event; the host manages the event; the display presents the current and next songs.](/images/karaoke-queue-room-model.svg)
-
 ## Problem
 
 A normal playlist solves the wrong problem. It can collect requests, but it does not answer the operational questions that make a karaoke night work:

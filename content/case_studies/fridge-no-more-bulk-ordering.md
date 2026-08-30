@@ -30,7 +30,9 @@ The opportunity arrived with a short timeline. Fridge No More needed to order ca
 
 I shipped the initial usable workflow in roughly two weeks, then continued hardening the operational details through the following weeks. The first retained production order totaled $11,935.90 across 210 cases.
 
-![QuickShipper bulk ordering workflow](/images/quickshipper-order-flow.svg)
+## Context
+
+The work extended a mature Rails marketplace using Spree for consumer commerce. The new workflow had a different buyer, order shape, fulfillment destination, and operational lifecycle, but it still needed to reuse Dogly's product catalog and existing account boundaries.
 
 ## Problem
 
@@ -47,11 +49,22 @@ A bulk buyer needed to:
 
 Building a completely separate wholesale catalog would have duplicated products and created another source of truth. Forcing the process through ordinary Spree checkout would have buried the operational information the Dogly team and brands needed.
 
+## Constraints
+
+- Ship a usable first workflow on a short partnership timeline.
+- Reuse Spree products without duplicating the catalog.
+- Keep bulk ordering separate from consumer checkout and payment assumptions.
+- Preserve partner access controls, warehouse destination, shipping rules, tracking, and invoice state.
+
 ## My Role
 
 I designed and implemented the workflow across the Rails stack. I worked with Dogly's founders to turn the partnership requirements into a deliberately narrow first release, then built the data model, admin and partner interfaces, product selection behavior, shipping calculations, order history, tracking updates, notes, and access controls.
 
 The schedule required fast decisions about what could reuse Spree and what needed a separate operational model.
+
+## Technical Implementation
+
+The implementation used a dedicated `QuickOrder` boundary with line items that referenced Spree products while storing bulk-specific quantities, categories, shipping, and totals. Separate partner and admin views exposed the operational lifecycle after submission.
 
 ## Approach
 

@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="960" height="560" viewBox="0 0 960 560" role="img" aria-labelledby="title desc">
-  <title id="title">Dogly brand partner application progressive-reveal flow</title>
-  <desc id="desc">A guided brand partner application reveals one focused question at a time, moving through profile, brand details, branding, and payment while saving progress between steps.</desc>
+  <title id="title">Dogly partner application progressive-reveal flow</title>
+  <desc id="desc">A guided partner application reveals one focused question at a time, moving through profile, details, branding, and final authorization while saving progress between steps.</desc>
   <rect width="960" height="560" fill="#080b0c"/>
   <g font-family="ui-monospace, monospace" fill="#e5b566">
-    <text x="60" y="62" font-size="18">BRAND PARTNER APPLICATION</text>
+    <text x="60" y="62" font-size="18">PARTNER APPLICATION</text>
     <text x="60" y="90" font-size="14" fill="#929e98">PROGRESSIVE REVEAL · ONE QUESTION AT A TIME · RESUMABLE</text>
   </g>
   <g fill="none" stroke="#26302c" stroke-width="2">
@@ -19,13 +19,13 @@
     <rect x="740" y="150" width="140" height="35" rx="5"/>
   </g>
   <g font-family="ui-monospace, monospace" font-size="14" fill="#ecf2f8" text-anchor="middle">
-    <text x="155" y="173">01 · PROFILE</text><text x="375" y="173">02 · DETAILS</text><text x="595" y="173">03 · BRANDING</text><text x="810" y="173">04 · PAYMENT</text>
+    <text x="155" y="173">01 · PROFILE</text><text x="375" y="173">02 · DETAILS</text><text x="595" y="173">03 · BRANDING</text><text x="810" y="173">04 · FINISH</text>
   </g>
   <g font-family="ui-sans-serif, sans-serif" font-size="15" fill="#d9e0dc">
     <text x="82" y="225">Who are you, and</text><text x="82" y="249">where are you based?</text><text x="82" y="298" fill="#929e98">Contact · handle</text><text x="82" y="323" fill="#929e98">Location · category</text><text x="82" y="380" fill="#86d99a">Saved as you go</text>
-    <text x="302" y="225">Tell us about your</text><text x="302" y="249">brand operations.</text><text x="302" y="298" fill="#929e98">Legal name</text><text x="302" y="323" fill="#929e98">Fulfillment · Shopify</text><text x="302" y="380" fill="#86d99a">Next question appears</text>
+    <text x="302" y="225">Tell us about your</text><text x="302" y="249">order operations.</text><text x="302" y="298" fill="#929e98">Legal name</text><text x="302" y="323" fill="#929e98">Order integration method</text><text x="302" y="380" fill="#86d99a">Next question appears</text>
     <text x="522" y="225">How should your</text><text x="522" y="249">brand be presented?</text><text x="522" y="298" fill="#929e98">Profile + banner images</text><text x="522" y="323" fill="#929e98">Story · founder · website</text><text x="522" y="380" fill="#86d99a">Preview before submit</text>
-    <text x="742" y="225">Review and finish</text><text x="742" y="249">your application.</text><text x="742" y="298" fill="#929e98">Payout details</text><text x="742" y="323" fill="#929e98">Terms · submit</text><text x="742" y="380" fill="#86d99a">Resume later</text>
+    <text x="742" y="225">Review and finish</text><text x="742" y="249">your application.</text><text x="742" y="298" fill="#929e98">Terms · Shopify · Stripe</text><text x="742" y="323" fill="#929e98">Authorize · submit</text><text x="742" y="380" fill="#86d99a">Resume later</text>
   </g>
   <g stroke="#75bfff" stroke-width="3" fill="#75bfff">
     <line x1="250" y1="272" x2="280" y2="272"/><polygon points="280,272 270,266 270,278"/>

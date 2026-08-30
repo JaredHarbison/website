@@ -1,6 +1,6 @@
 ---
 title: Dogly Shopify Integration
-summary: Evolving a production customer-acquisition integration into a carefully staged architecture for catalog reconciliation and multi-brand fulfillment.
+summary: "Designing a two-way Shopify integration: bringing qualifying purchases from partner stores into Dogly, then sending Dogly marketplace orders back to brands for fulfillment."
 hero_image: /images/shopify-integration-boundaries.svg
 hero_alt: Diagram showing ownership and synchronization boundaries between the Dogly marketplace, integration services, and a partner Shopify store.
 date: 2026-07-10
@@ -27,17 +27,19 @@ status: published
 
 Dogly connects dog owners with independent brands, shelters, and professional advocates. Its marketplace runs on Spree inside a mature Rails application, while many partner brands operate their own Shopify stores.
 
-The Shopify work evolved in two distinct stages. The first, shipped in late 2025, brought eligible brand customers into Dogly through signed order webhooks and a configurable invitation sequence. The second, developed and tested through a limited rollout in 2026, addressed the other direction: sending Dogly marketplace orders to a brand's Shopify store for fulfillment while reconciling catalog and inventory data between the two systems.
+The Shopify work evolved in two distinct stages. The first, shipped in late 2025, listened for qualifying purchases made on participating brands' Shopify stores, brought those customers into Dogly through signed order webhooks, and started a configurable invitation sequence. The second, developed and tested through a limited rollout in 2026, addressed the other direction: sending Dogly marketplace orders to a brand's Shopify store for fulfillment while reconciling catalog and inventory data between the two systems.
 
 The real problem was ownership boundaries: deciding which system owned customers, products, inventory, orders, and fulfillment state, then building duplicate guards and retry boundaries around partial failure.
 
-![Shopify integration boundaries](/images/shopify-integration-boundaries.svg)
+## Context
+
+This work crossed Dogly's Spree-backed marketplace, brand-specific Shopify stores, background jobs, and existing ShipStation fulfillment. The two stages had different business goals, but they shared the need to make external events and identifiers understandable inside Dogly.
 
 ## Problem
 
 Dogly needed to support brands without forcing them to abandon the systems they already used.
 
-For customer acquisition, a qualifying Shopify purchase could introduce someone to Dogly's expert content and membership product. That required ingesting order events, identifying eligible products, associating customers safely, and scheduling brand-specific outreach.
+For the acquisition path, the purchase happened on a participating brand's Shopify site—not in Dogly. Shopify sent Dogly a signed order event; Dogly identified whether the order contained an eligible product, found or created the customer in Dogly, linked the external purchase, and scheduled brand-specific invitations to Dogly's expert content and membership product.
 
 For marketplace fulfillment, a Dogly order could contain products from multiple brands. Each brand needed only its own line items in its own Shopify store. Product and inventory data also needed a durable mapping across two catalogs that used different identifiers and did not always share clean SKUs.
 
@@ -60,9 +62,15 @@ As Dogly's sole engineer, I owned the work from technical planning through imple
 
 I also worked directly with the founders to separate the immediate business need from the larger integration platform. That distinction kept the first customer-acquisition workflow small enough to launch while giving the later commerce work clearer boundaries.
 
-## Stage One: Customer Acquisition
+## Approach
 
-The first integration accepts signed Shopify order webhooks for a configured brand. The controller does very little: find the brand, verify the HMAC signature with a constant-time comparison, enqueue the raw payload, and return promptly.
+I treated each external system as a bounded collaborator with explicit ownership, asynchronous work, durable mappings, and idempotent side effects. The first stage optimized for a fast, safe customer-acquisition path; the second added fulfillment and reconciliation behind a limited rollout.
+
+## Technical Implementation
+
+## Stage One: Partner-Store Purchases into Dogly
+
+The first integration accepts signed Shopify order webhooks from a configured brand store. The order originated on the partner's site; Dogly's endpoint only verified the HMAC signature, identified the brand, enqueued the raw payload, and returned promptly.
 
 The background processor then checked whether the order contained an eligible product. If so, it found or created the customer in Dogly, recorded the Shopify relationship, associated the order, and scheduled the configured invitation sequence.
 
@@ -101,7 +109,9 @@ An operator could confirm a proposed match, import a new product, ignore an irre
 
 Images were imported through background jobs after the product transaction committed. That kept remote downloads outside the database transaction and made image failure recoverable without rolling back an otherwise valid catalog record.
 
-## Operational Lessons
+## Tradeoffs
+
+### Operational Lessons
 
 The fulfillment and catalog work went through integration, rollback, and selective restoration as it met the realities of the mature checkout code and overlapping feature branches. I did not treat a completed implementation as proof that the operational model was ready. The rollout exposed assumptions about payment timing, stock locations, variant ownership, and merge boundaries that were safer to discover at limited scope than after broad adoption.
 
