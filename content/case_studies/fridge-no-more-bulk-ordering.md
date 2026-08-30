@@ -1,6 +1,8 @@
 ---
 title: Fridge No More Bulk Ordering
 summary: Turning Dogly's retail catalog into an operational bulk-ordering workflow that produced a first retained order of $11,935.90 across 210 cases.
+hero_image: /images/quickshipper-order-flow.svg
+hero_alt: QuickShipper bulk-ordering workflow from catalog selection through fulfillment.
 date: 2026-07-11
 order: 6
 role: Software Engineer

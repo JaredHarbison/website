@@ -1,6 +1,8 @@
 ---
 title: Dogly Membership Experience
 summary: Connecting discovery, conversation, personalized email, daily plans, subscriptions, and live expert groups into a membership journey that increased subscriptions by more than 40%.
+hero_image: /images/dogly-membership-journey.svg
+hero_alt: Diagram showing the Dogly membership journey before and after.
 date: 2026-07-11
 order: 2
 role: Software Engineer

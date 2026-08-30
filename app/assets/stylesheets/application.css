@@ -293,6 +293,10 @@ p {
   padding: clamp(5rem, 14vw, 10rem) var(--space-page);
 }
 
+.case-study-page {
+  padding-top: 2rem;
+}
+
 .site-main > * {
   max-width: var(--measure);
 }
@@ -412,6 +416,14 @@ p {
   max-width: 100%;
   object-fit: contain;
   width: auto;
+}
+
+.content-page .case-study-hero {
+  aspect-ratio: 16 / 9;
+  max-height: none;
+  max-width: 64rem;
+  object-fit: cover;
+  width: 100%;
 }
 
 .content-page ul,

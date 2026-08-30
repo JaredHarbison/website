@@ -1,6 +1,8 @@
 ---
 title: Dogly Advocate Discovery
 summary: Designing browse and match modes for finding the right professional in a content-rich Rails application.
+hero_image: /images/dogly-advocate-match-results.webp
+hero_alt: Dogly Advocate Match mode returning three professionals for a detailed description of a dog's behavior.
 date: 2026-07-07
 order: 5
 role: Senior Software Engineer

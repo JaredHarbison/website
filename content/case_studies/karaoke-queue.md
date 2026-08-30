@@ -2,6 +2,8 @@
 title: "Karaoke Queue: Built for the Room"
 navigation_title: "Karaoke Queue"
 summary: Designing a shared, multi-role karaoke queue where performers can participate from their phones while hosts retain control of a live event.
+hero_image: /images/karaoke-queue-host-queue.png
+hero_alt: Karaoke Queue host workspace showing the live queue with current, next, and upcoming performers.
 date: 2026-08-29
 order: 8
 role: Senior Software Engineer and Product Design Lead

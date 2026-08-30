@@ -1,6 +1,8 @@
 ---
 title: The Federation Briefing
 summary: Turning a week of Star Trek community discussions into a sourced AI briefing that shows its work and knows when it does not have enough evidence.
+hero_image: /images/federation-briefing-pipeline.svg
+hero_alt: Pipeline diagram showing reviewed community data becoming an evidence-linked Federation Briefing.
 date: 2026-07-20
 order: 7
 role: Software Engineer
