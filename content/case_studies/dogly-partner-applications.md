@@ -1,8 +1,8 @@
 ---
 title: Dogly Partner Applications
 summary: Designing a resumable Advocate application and transparent review workflow inside a mature Rails marketplace without forcing a platform rewrite.
-hero_image: /images/dogly-partner-pro-branding.webp
-hero_alt: Dogly Partner Pro branding step previewing uploaded profile and banner imagery.
+hero_image: /images/dogly-partner-application-flow.svg
+hero_alt: Diagram showing a step-based Partner application that progressively reveals the next useful question.
 date: 2026-07-08
 order: 4
 role: Senior Software Engineer

@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="560" viewBox="0 0 960 560" role="img" aria-labelledby="title desc">
+  <title id="title">Dogly Partner application progressive-reveal flow</title>
+  <desc id="desc">A guided partner application reveals one focused question at a time, moving from profile to expertise to branding and billing while saving progress between steps.</desc>
+  <rect width="960" height="560" fill="#080b0c"/>
+  <g font-family="ui-monospace, monospace" fill="#e5b566">
+    <text x="60" y="62" font-size="18">PROGRESSIVE-REVEAL APPLICATION</text>
+    <text x="60" y="90" font-size="14" fill="#929e98">ONE USEFUL QUESTION AT A TIME · RESUMABLE · AUTOSAVED</text>
+  </g>
+  <g fill="none" stroke="#26302c" stroke-width="2">
+    <rect x="60" y="130" width="190" height="285" rx="8"/>
+    <rect x="280" y="130" width="190" height="285" rx="8"/>
+    <rect x="500" y="130" width="190" height="285" rx="8"/>
+    <rect x="720" y="130" width="180" height="285" rx="8"/>
+  </g>
+  <g fill="#132c2b" stroke="#56d6c9" stroke-width="2">
+    <rect x="80" y="150" width="150" height="35" rx="5"/>
+    <rect x="300" y="150" width="150" height="35" rx="5"/>
+    <rect x="520" y="150" width="150" height="35" rx="5"/>
+    <rect x="740" y="150" width="140" height="35" rx="5"/>
+  </g>
+  <g font-family="ui-monospace, monospace" font-size="14" fill="#ecf2f8" text-anchor="middle">
+    <text x="155" y="173">01 · PROFILE</text><text x="375" y="173">02 · EXPERTISE</text><text x="595" y="173">03 · BRANDING</text><text x="810" y="173">04 · BILLING</text>
+  </g>
+  <g font-family="ui-sans-serif, sans-serif" font-size="15" fill="#d9e0dc">
+    <text x="82" y="225">What should clients</text><text x="82" y="249">call you?</text><text x="82" y="298" fill="#929e98">Name · handle</text><text x="82" y="323" fill="#929e98">Category · location</text><text x="82" y="380" fill="#86d99a">Saved as you go</text>
+    <text x="302" y="225">What do you help</text><text x="302" y="249">with?</text><text x="302" y="298" fill="#929e98">Topics · credentials</text><text x="302" y="323" fill="#929e98">Select what applies</text><text x="302" y="380" fill="#86d99a">Next question appears</text>
+    <text x="522" y="225">How should your</text><text x="522" y="249">profile look?</text><text x="522" y="298" fill="#929e98">Photo · banner</text><text x="522" y="323" fill="#929e98">Preview before submit</text><text x="522" y="380" fill="#86d99a">Review can explain edits</text>
+    <text x="742" y="225">Choose your</text><text x="742" y="249">plan.</text><text x="742" y="298" fill="#929e98">Billing details</text><text x="742" y="323" fill="#929e98">Submit application</text><text x="742" y="380" fill="#86d99a">Resume later</text>
+  </g>
+  <g stroke="#75bfff" stroke-width="3" fill="#75bfff">
+    <line x1="250" y1="272" x2="280" y2="272"/><polygon points="280,272 270,266 270,278"/>
+    <line x1="470" y1="272" x2="500" y2="272"/><polygon points="500,272 490,266 490,278"/>
+    <line x1="690" y1="272" x2="720" y2="272"/><polygon points="720,272 710,266 710,278"/>
+  </g>
+  <line x1="155" y1="455" x2="810" y2="455" stroke="#26302c" stroke-width="2"/>
+  <text x="480" y="500" fill="#86d99a" font-family="ui-monospace, monospace" font-size="15" text-anchor="middle">DRAFT SESSION · EXPLICIT STEPS · TRANSPARENT REVIEW</text>
+</svg>

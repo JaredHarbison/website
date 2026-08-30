@@ -419,10 +419,9 @@ p {
 }
 
 .content-page .case-study-hero {
-  aspect-ratio: 16 / 9;
   max-height: none;
   max-width: 64rem;
-  object-fit: cover;
+  object-fit: contain;
   width: 100%;
 }
 

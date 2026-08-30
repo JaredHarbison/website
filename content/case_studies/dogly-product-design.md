@@ -1,8 +1,8 @@
 ---
 title: Dogly Product Design
 summary: Building a coherent, image-led product language across six years of expert content, community, subscriptions, onboarding, daily guidance, and commerce.
-hero_image: /images/dogly-design-channels-hero.webp
-hero_alt: Dogly channel page combining training photography, topic context, and Advocate identity.
+hero_image: /images/dogly-design-homepage-member.webp
+hero_alt: Dogly member homepage combining personalized guidance, content, and expert support.
 date: 2026-07-11
 order: 1
 role: Senior Software Engineer and Product Design Lead

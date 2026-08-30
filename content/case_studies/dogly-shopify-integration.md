@@ -1,8 +1,8 @@
 ---
 title: Dogly Shopify Integration
 summary: Evolving a production customer-acquisition integration into a carefully staged architecture for catalog reconciliation and multi-brand fulfillment.
-hero_image: /images/shopify-order-sequence.svg
-hero_alt: Sequence diagram showing the Shopify order transmission workflow.
+hero_image: /images/shopify-integration-boundaries.svg
+hero_alt: Diagram showing the live and staged integration boundaries between Shopify, the integration layer, and Dogly.
 date: 2026-07-10
 order: 3
 role: Senior Software Engineer
