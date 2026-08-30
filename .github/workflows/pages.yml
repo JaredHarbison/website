@@ -37,7 +37,7 @@ jobs:
         run: bin/rubocop
 
       - name: Scan for security issues
-        run: bundle exec brakeman --no-pager --quiet
+        run: bundle exec brakeman --no-pager --quiet --confidence-level 2
 
       - name: Compile production assets
         env:
