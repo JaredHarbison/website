@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="960" height="520" viewBox="0 0 960 520" role="img" aria-labelledby="title desc">
   <title id="title">Dogly and Shopify integration boundaries</title>
-  <desc id="desc">A live Shopify customer-acquisition flow and a staged marketplace synchronization flow meet at an integration layer. The marketplace order path remains unreleased while the safer one-way flow is in production.</desc>
+  <desc id="desc">The Dogly marketplace and a partner Shopify store exchange customer, order, catalog, inventory, and fulfillment data through shared integration services.</desc>
   <rect width="960" height="520" fill="#080b0c"/>
   <g fill="none" stroke="#26302c" stroke-width="2">
     <rect x="45" y="70" width="250" height="375" rx="8"/>
@@ -8,9 +8,9 @@
     <rect x="665" y="70" width="250" height="375" rx="8"/>
   </g>
   <g font-family="ui-monospace, monospace" font-size="18" fill="#e5b566">
-    <text x="75" y="112">DOGLY / SPREE</text>
-    <text x="385" y="112">INTEGRATION</text>
-    <text x="695" y="112">BRAND SHOPIFY</text>
+    <text x="75" y="112">DOGLY MARKETPLACE</text>
+    <text x="385" y="112">INTEGRATION SERVICES</text>
+    <text x="695" y="112">PARTNER SHOPIFY STORE</text>
   </g>
   <g font-family="ui-sans-serif, sans-serif" font-size="16" fill="#d9e0dc">
     <text x="75" y="170">Accounts</text><text x="75" y="205">Marketplace orders</text><text x="75" y="240">Curated catalog</text><text x="75" y="275">Stock locations</text><text x="75" y="310">Shipments</text>
@@ -28,8 +28,8 @@
     <text x="614" y="352" fill="#75bfff">STATE</text><text x="307" y="352" fill="#86d99a">SYNC</text>
   </g>
   <g font-family="ui-monospace, monospace" font-size="13">
-    <text x="75" y="405" fill="#86d99a">MARKETPLACE PATH · STAGED</text>
-    <text x="385" y="405" fill="#e5b566">INTEGRATION LAYER</text>
-    <text x="695" y="405" fill="#75bfff">CUSTOMER PATH · LIVE</text>
+    <text x="75" y="405" fill="#86d99a">CUSTOMER + ORDER OWNERSHIP</text>
+    <text x="385" y="405" fill="#e5b566">WEBHOOKS · JOBS · MAPPINGS</text>
+    <text x="695" y="405" fill="#75bfff">CATALOG + FULFILLMENT</text>
   </g>
 </svg>
