@@ -6,6 +6,7 @@ class StaticSiteTest < ActiveSupport::TestCase
 
     assert_includes paths, "/"
     assert_includes paths, "/case-studies/dogly-product-design"
+    assert_includes paths, "/case-studies/karaoke-queue"
     assert_includes paths, "/writing/product-planning-and-scope"
     assert_includes paths, "/tags/product-engineering"
     assert_equal paths.uniq, paths
