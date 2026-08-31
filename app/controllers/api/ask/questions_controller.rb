@@ -1,0 +1,28 @@
+module Api
+  module Ask
+    class QuestionsController < ApplicationController
+      protect_from_forgery with: :null_session
+      rescue_from ActiveRecord::RecordNotFound, ArgumentError, with: :bad_request
+
+      def create
+        render json: question_service.call(
+          raw_token: request.headers["X-Ask-Token"].presence || params[:t],
+          question: params[:question],
+          session_id: request.session.id.to_s.presence || request.request_id,
+          ip: request.remote_ip,
+          request_id: request.request_id
+        )
+      end
+
+      private
+
+      def question_service
+        @question_service ||= AskJared::QuestionService.new
+      end
+
+      def bad_request(error)
+        render json: { status: "blocked", answer: error.message, evidence_ids: [], source_urls: [] }, status: :unprocessable_entity
+      end
+    end
+  end
+end

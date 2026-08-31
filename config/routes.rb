@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   devise_for :admin_users, path: "admin/session"
 
   get "ask" => "ask#show"
+  post "api/ask/questions" => "api/ask/questions#create"
 
   root "pages#home"
 
