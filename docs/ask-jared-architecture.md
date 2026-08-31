@@ -199,6 +199,11 @@ under a Postgres advisory lock, marks each new record exported, and returns raw
 values through the authenticated response. The protected sheet is the delivery
 surface; Rails retains only the digest and export metadata.
 
+The token-pool endpoint enforces a hard target maximum of 500, independent of
+the normal configured target. Its refill transaction also revokes exported
+`AVAILABLE` tokens older than 30 days; claimed and submitted records are
+excluded. Revoked records no longer resolve or count as usable inventory.
+
 The owner dashboard has separate Knowledge management and Recruiter
 intelligence areas. The latter shows aggregate engagement and probabilistic
 sharing signals per opportunity without raw IPs, session digests, or questions.

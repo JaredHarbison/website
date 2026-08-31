@@ -45,6 +45,12 @@ Rails refill response and is not stored in Rails after mint/export. The Apps
 Script timed function counts `AVAILABLE` rows, calls the token-pool endpoint,
 and appends newly returned values under the document lock.
 
+Rails rejects pool targets above 500 regardless of the caller's requested value.
+Exported tokens that remain `AVAILABLE` for more than 30 days are revoked during
+the next authenticated pool refill. Claimed and submitted tokens are never
+affected by that cleanup. A stale token left in the sheet therefore cannot
+unlock Ask Jared or be submitted successfully.
+
 To claim a token during role population, first write the stable external ID to
 the role row, then run `askJaredClaimToken(externalId, tabName, rowNumber)` from
 Apps Script (or have the workbook's approved helper invoke it). The helper holds

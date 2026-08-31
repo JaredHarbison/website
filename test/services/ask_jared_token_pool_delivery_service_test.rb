@@ -46,4 +46,48 @@ class AskJaredTokenPoolDeliveryServiceTest < ActiveSupport::TestCase
     assert_equal 0, second[:minted]
     assert_equal 2, AskToken.count
   end
+
+  test "rejects zero, negative, and over-maximum targets" do
+    service = AskJared::TokenPoolDeliveryService.new(token_service: @token_service)
+
+    assert_raises(ArgumentError) { service.call(sheet_available_count: 0, target: 0) }
+    assert_raises(ArgumentError) { service.call(sheet_available_count: 0, target: -1) }
+    assert_raises(ArgumentError) { service.call(sheet_available_count: 0, target: 501) }
+    assert_empty AskToken.all
+  end
+
+  test "accepts the configured maximum without minting beyond it" do
+    result = AskJared::TokenPoolDeliveryService.new(token_service: @token_service).call(
+      sheet_available_count: AskJared::TokenPoolDeliveryService::MAX_TARGET - 1,
+      target: AskJared::TokenPoolDeliveryService::MAX_TARGET
+    )
+
+    assert_equal 1, result[:minted]
+    assert_equal AskJared::TokenPoolDeliveryService::MAX_TARGET, result[:available]
+  end
+
+  test "revokes exported available tokens older than the cleanup TTL" do
+    token, raw = @token_service.mint!
+    token.update!(exported_at: (AskJared::TokenPoolDeliveryService::EXPORTED_UNCLAIMED_TTL + 1.day).ago)
+
+    result = AskJared::TokenPoolDeliveryService.new(token_service: @token_service).call(sheet_available_count: 1, target: 1)
+
+    assert_equal 0, result[:minted]
+    assert_equal "revoked", token.reload.status
+    assert_nil @token_service.resolve(raw)
+  end
+
+  test "cleanup never revokes claimed or submitted tokens" do
+    claimed, claimed_raw = @token_service.mint!
+    @token_service.claim!(raw_token: claimed_raw, external_id: "claimed-cleanup", company: "Acme", role_title: "Engineer")
+    claimed.update!(exported_at: 31.days.ago)
+    submitted, submitted_raw = @token_service.mint!
+    AskJared::SubmissionService.new.call(raw_token: submitted_raw, external_id: "submitted-cleanup", company: "Acme", role_title: "Engineer")
+    submitted.update!(exported_at: 31.days.ago)
+
+    AskJared::TokenPoolDeliveryService.new(token_service: @token_service).call(sheet_available_count: 1, target: 1)
+
+    assert_equal "claimed", claimed.reload.status
+    assert_equal "submitted", submitted.reload.status
+  end
 end
