@@ -64,6 +64,24 @@ associates the pre-minted token, marks the opportunity submitted, and returns
 `status`, `external_id`, and `ask_link`. It does not grant admin access, approve
 knowledge, expose production data, or generate recruiter answers.
 
+## Engagement read sync
+
+Rails exposes a separate, read-only synchronization endpoint for a scheduled
+ledger/workbook job:
+
+```text
+GET /api/job_search/opportunities/engagements?since=<ISO-8601>
+X-Job-Search-Read-Key: <JOB_SEARCH_READ_SYNC_TOKEN>
+```
+
+The response contains only application state, token state, timestamps, counts
+of meaningful anonymous sessions/questions, a probabilistic possible-share flag
+and confidence, a simple follow-up-candidate flag, and aggregate Ask usage
+cost. Page loads alone and scanner-like events are excluded from meaningful
+counts. Session/IP digests, raw questions, source text, credentials, and KB
+internals are never returned. The sync job may run every 15–30 minutes and
+should write only these summaries back to the shared ledger.
+
 ## Jared follow-up actions
 
 - Confirm the exact workbook IDs, tab names, header row, and applied-state values
@@ -73,3 +91,8 @@ knowledge, expose production data, or generate recruiter answers.
 - Install the script and trigger only after `JOB_SEARCH_SYNC_TOKEN` is set in
   Heroku and the website has been deployed.
 - Perform the test with a non-production/test opportunity first.
+- Configure the separate `JOB_SEARCH_READ_SYNC_TOKEN` only for the future
+  Rails-to-ledger engagement sync; do not reuse the submission credential.
+- Have ChatGPT Work implement the scheduled read-sync job using the endpoint
+  above, preserving the last successful `since` timestamp and writing errors to
+  the ledger without overwriting the last known good summary.
