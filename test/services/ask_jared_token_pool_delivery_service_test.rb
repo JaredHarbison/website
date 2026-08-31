@@ -90,4 +90,44 @@ class AskJaredTokenPoolDeliveryServiceTest < ActiveSupport::TestCase
     assert_equal "claimed", claimed.reload.status
     assert_equal "submitted", submitted.reload.status
   end
+
+  test "claimed sheet inventory IDs are protected from exported-token cleanup" do
+    token, raw = @token_service.mint!
+    token.update!(exported_at: 31.days.ago)
+
+    result = AskJared::TokenPoolDeliveryService.new(token_service: @token_service).call(
+      sheet_available_count: 1,
+      target: 1,
+      claimed_inventory_ids: [ token.id ]
+    )
+
+    assert_equal 0, result[:minted]
+    assert_equal "available", token.reload.status
+    assert_equal "available", @token_service.resolve(raw).status
+  end
+
+  test "rejects an oversized or malformed claimed inventory list" do
+    service = AskJared::TokenPoolDeliveryService.new(token_service: @token_service)
+
+    assert_raises(ArgumentError) do
+      service.call(sheet_available_count: 0, target: 1, claimed_inventory_ids: Array.new(501, 1))
+    end
+    assert_raises(ArgumentError) do
+      service.call(sheet_available_count: 0, target: 1, claimed_inventory_ids: [ "not-an-id" ])
+    end
+  end
+
+  test "unknown claimed inventory IDs do not protect unrelated old tokens" do
+    token, raw = @token_service.mint!
+    token.update!(exported_at: 31.days.ago)
+
+    AskJared::TokenPoolDeliveryService.new(token_service: @token_service).call(
+      sheet_available_count: 1,
+      target: 1,
+      claimed_inventory_ids: [ token.id + 100_000 ]
+    )
+
+    assert_equal "revoked", token.reload.status
+    assert_nil @token_service.resolve(raw)
+  end
 end

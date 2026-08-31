@@ -8,6 +8,7 @@ module Api
       def refill
         result = AskJared::TokenPoolDeliveryService.new.call(
           sheet_available_count: params[:sheet_available_count],
+          claimed_inventory_ids: params.fetch(:claimed_inventory_ids, []),
           target: params.fetch(:target, ENV.fetch("ASK_JARED_TOKEN_POOL_TARGET", 200))
         )
         render json: result

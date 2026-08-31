@@ -73,6 +73,14 @@ the next authenticated pool refill. Claimed and submitted tokens are never
 affected by that cleanup. A stale token left in the sheet therefore cannot
 unlock Ask Jared or be submitted successfully.
 
+Before counting inventory, Apps Script marks Sheet-side `AVAILABLE` rows older
+than the same 30-day `Exported At` TTL as `REVOKED` and excludes them. The refill
+request also sends the bounded list of currently Sheet-side `CLAIMED` inventory
+IDs (at most 500). Rails excludes those IDs from its exported-available cleanup,
+so a role waiting to be submitted is not revoked merely because the Applied
+date has not arrived. Unknown IDs do not authorize anything and do not change
+recruiter access. Rails remains authoritative for final submitted/revoked state.
+
 The queue processor holds `LockService.getDocumentLock()`, reuses an existing
 CLAIMED row for the same Ask ID, otherwise changes exactly one AVAILABLE row to
 CLAIMED, and writes only the AskLink to the tracker. The raw token is never

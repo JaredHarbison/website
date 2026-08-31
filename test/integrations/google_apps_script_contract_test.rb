@@ -22,6 +22,16 @@ class GoogleAppsScriptContractTest < ActiveSupport::TestCase
     assert_includes @script, "claimState !== 'PENDING'"
     assert_includes @script, "askJaredClaimPoolToken_"
     assert_includes @script, "No AVAILABLE Ask token in pool"
+    assert_includes @script, "Waiting for Ask token inventory"
+    assert_includes @script, "claimState !== 'PENDING'"
+  end
+
+  test "reconciles stale pool rows and sends bounded claimed inventory metadata" do
+    assert_includes @script, "ASK_JARED_EXPORTED_UNCLAIMED_TTL_DAYS = 30"
+    assert_includes @script, "askJaredReconcileStaleAvailableRows_"
+    assert_includes @script, "claimed_inventory_ids: claimedInventoryIds"
+    assert_includes @script, "item.state === 'AVAILABLE'"
+    assert_includes @script, "item.state = 'REVOKED'"
   end
 
   test "uses explicit sentinel handling and never reads a tracker Ask Token column" do

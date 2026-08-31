@@ -8,9 +8,10 @@ module AskJared
       @token_service = token_service
     end
 
-    def call(sheet_available_count:, target: 200)
+    def call(sheet_available_count:, target: 200, claimed_inventory_ids: [])
       sheet_count = Integer(sheet_available_count)
       requested_target = Integer(target)
+      claimed_ids = normalize_claimed_inventory_ids(claimed_inventory_ids)
       raise ArgumentError, "sheet_available_count must be non-negative" if sheet_count.negative?
       raise ArgumentError, "target must be positive" unless requested_target.positive?
       raise ArgumentError, "target exceeds maximum of #{MAX_TARGET}" if requested_target > MAX_TARGET
@@ -20,6 +21,7 @@ module AskJared
         # Rails never stores them. Revoke those orphaned records.
         AskToken.available_now.not_exported.update_all(status: "revoked")
         AskToken.where(status: "available").where.not(exported_at: nil)
+                .where.not(id: claimed_ids)
                 .where("exported_at < ?", EXPORTED_UNCLAIMED_TTL.ago)
                 .update_all(status: "revoked", revoked_at: Time.current, updated_at: Time.current)
         needed = [ requested_target - sheet_count, 0 ].max
@@ -29,6 +31,17 @@ module AskJared
     end
 
     private
+
+    def normalize_claimed_inventory_ids(value)
+      ids = Array(value)
+      raise ArgumentError, "claimed_inventory_ids exceeds maximum of #{MAX_TARGET}" if ids.length > MAX_TARGET
+
+      begin
+        ids.map { |id| Integer(id) }.uniq
+      rescue TypeError, ArgumentError
+        raise ArgumentError, "claimed_inventory_ids must contain numeric inventory IDs"
+      end
+    end
 
     def mint_for_export
       token, raw = @token_service.mint!

@@ -23,6 +23,7 @@ var ASK_JARED_ASK_LINK_COL = 20;
 var ASK_JARED_CLAIM_STATE_COL = 21;
 var ASK_JARED_SYNC_STATE_COL = 22;
 var ASK_JARED_SYNC_MESSAGE_COL = 23;
+var ASK_JARED_EXPORTED_UNCLAIMED_TTL_DAYS = 30;
 
 function askJaredInstallableOnEdit(e) {
   if (!e || !e.range) return;
@@ -54,14 +55,18 @@ function askJaredProcessPendingClaims() {
       var sheet = workbook.getSheetByName(sheetName);
       if (!sheet || sheet.getLastRow() < 2) return;
       var rows = sheet.getRange(2, 1, sheet.getLastRow() - 1, ASK_JARED_SYNC_MESSAGE_COL).getValues();
-      rows.forEach(function(values, offset) {
+      var pendingRows = sheet.getRange(2, ASK_JARED_CLAIM_STATE_COL, sheet.getLastRow() - 1, 1).getValues();
+      pendingRows.forEach(function(claimValues, offset) {
         var row = offset + 2;
-        var company = String(values[ASK_JARED_COMPANY_COL - 1] || '').trim();
-        var role = String(values[ASK_JARED_ROLE_COL - 1] || '').trim();
-        var askId = String(values[ASK_JARED_ASK_ID_COL - 1] || '').trim();
-        var claimState = String(values[ASK_JARED_CLAIM_STATE_COL - 1] || '').trim().toUpperCase();
-        var askLink = String(values[ASK_JARED_ASK_LINK_COL - 1] || '').trim();
-        if (!company || !role || !askId || claimState !== 'PENDING' || askLink) return;
+        var claimState = String(claimValues[0] || '').trim().toUpperCase();
+        if (claimState !== 'PENDING') return;
+        var values = sheet.getRange(row, ASK_JARED_COMPANY_COL, 1, 2).getValues()[0];
+        var identity = sheet.getRange(row, ASK_JARED_ASK_ID_COL, 1, 3).getValues()[0];
+        var company = String(values[0] || '').trim();
+        var role = String(values[1] || '').trim();
+        var askId = String(identity[0] || '').trim();
+        var askLink = String(identity[1] || '').trim();
+        if (!company || !role || !askId || askLink) return;
         try {
           var token = askJaredClaimPoolToken_(pool, askId);
           var link = askJaredApiUrl_() + '/ask?t=' + encodeURIComponent(token);
@@ -69,8 +74,12 @@ function askJaredProcessPendingClaims() {
           sheet.getRange(row, ASK_JARED_CLAIM_STATE_COL).setValue('CLAIMED');
           askJaredWriteMessage_(sheet, row, 'Token claimed');
         } catch (error) {
-          sheet.getRange(row, ASK_JARED_CLAIM_STATE_COL).setValue('ERROR');
-          askJaredWriteMessage_(sheet, row, 'Claim failed: ' + error.message);
+          if (error.message === 'No AVAILABLE Ask token in pool') {
+            askJaredWriteMessage_(sheet, row, 'Waiting for Ask token inventory');
+          } else {
+            sheet.getRange(row, ASK_JARED_CLAIM_STATE_COL).setValue('ERROR');
+            askJaredWriteMessage_(sheet, row, 'Claim failed: ' + error.message);
+          }
         }
       });
     });
@@ -87,11 +96,14 @@ function askJaredRefillTokenPool() {
   var lock = LockService.getDocumentLock();
   lock.waitLock(10000);
   try {
-    var available = askJaredPoolRows_(pool).filter(function(row) { return row.state === 'AVAILABLE'; }).length;
+    var poolRows = askJaredReconcileStaleAvailableRows_(pool);
+    var availableRows = poolRows.filter(function(row) { return row.state === 'AVAILABLE'; });
+    var available = availableRows.length;
+    var claimedInventoryIds = poolRows.filter(function(row) { return row.state === 'CLAIMED'; }).map(function(row) { return row.inventoryId; });
     var response = UrlFetchApp.fetch(askJaredApiUrl_() + '/api/job_search/token_pool/refill', {
       method: 'post', contentType: 'application/json', muteHttpExceptions: true,
       headers: { 'X-Job-Search-Pool-Key': askJaredRequiredProperty_('ASK_JARED_POOL_API_KEY') },
-      payload: JSON.stringify({ sheet_available_count: available })
+      payload: JSON.stringify({ sheet_available_count: available, claimed_inventory_ids: claimedInventoryIds })
     });
     if (response.getResponseCode() < 200 || response.getResponseCode() >= 300) throw new Error('Token pool refill HTTP ' + response.getResponseCode());
     var tokens = JSON.parse(response.getContentText() || '{}').tokens || [];
@@ -201,6 +213,19 @@ function askJaredPoolRows_(pool) {
   return pool.getRange(2, 1, pool.getLastRow() - 1, 5).getValues().map(function(row, index) {
     return { row: index + 2, inventoryId: String(row[0] || '').trim(), token: String(row[1] || '').trim(), state: String(row[2] || '').trim().toUpperCase(), claimedAskId: String(row[3] || '').trim() };
   });
+}
+
+function askJaredReconcileStaleAvailableRows_(pool) {
+  var cutoff = new Date(Date.now() - ASK_JARED_EXPORTED_UNCLAIMED_TTL_DAYS * 24 * 60 * 60 * 1000);
+  var rows = askJaredPoolRows_(pool);
+  rows.forEach(function(item) {
+    var exportedAt = pool.getRange(item.row, 5).getValue();
+    if (item.state === 'AVAILABLE' && Object.prototype.toString.call(exportedAt) === '[object Date]' && exportedAt < cutoff) {
+      pool.getRange(item.row, 3).setValue('REVOKED');
+      item.state = 'REVOKED';
+    }
+  });
+  return rows;
 }
 
 function askJaredPoolSheet_(workbook) {
