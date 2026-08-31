@@ -7,4 +7,5 @@ class AskToken < ApplicationRecord
   validates :status, inclusion: { in: STATUSES }
 
   scope :available_now, -> { where(status: "available").where("expires_at IS NULL OR expires_at > ?", Time.current) }
+  scope :not_exported, -> { where(exported_at: nil) }
 end

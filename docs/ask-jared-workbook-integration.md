@@ -27,6 +27,33 @@ Exact sheet names and any workbook-specific header aliases must be confirmed
 before installation. The script ignores tabs not listed in the optional
 `ASK_JARED_SHEET_NAMES` property and ignores edits outside the state column.
 
+## Protected token-pool tab
+
+Create a protected tab named by `ASK_JARED_TOKEN_POOL_SHEET` with these headers:
+
+| Header | Meaning |
+| --- | --- |
+| Inventory ID | Rails token record ID; non-secret inventory reference |
+| Ask Token | Raw bearer token; protect the tab and do not copy it into the ledger |
+| State | `AVAILABLE`, `CLAIMED`, or `SUBMITTED/CONSUMED` |
+| Claimed External ID | Stable tracker/application ID, blank while available |
+| Minted At | Operational timestamp |
+
+The pool tab should be protected from ordinary edits and visible only to the
+job-search automation/Jared. The raw token is delivered once by the authenticated
+Rails refill response and is not stored in Rails after mint/export. The Apps
+Script timed function counts `AVAILABLE` rows, calls the token-pool endpoint,
+and appends newly returned values under the document lock.
+
+To claim a token during role population, first write the stable external ID to
+the role row, then run `askJaredClaimToken(externalId, tabName, rowNumber)` from
+Apps Script (or have the workbook's approved helper invoke it). The helper holds
+`LockService.getDocumentLock()`, reuses an existing `CLAIMED` row for that
+external ID, otherwise changes exactly one `AVAILABLE` row to `CLAIMED`, writes
+the raw token and AskLink to the role row, and releases the lock. Primary and
+secondary ChatGPT sessions therefore coordinate through ordinary workbook
+operations and cannot consume the same available row.
+
 ## Installable Apps Script setup
 
 1. Open the shared workbook and choose **Extensions → Apps Script**.
@@ -34,15 +61,22 @@ before installation. The script ignores tabs not listed in the optional
 3. Set Script Properties in **Project Settings → Script Properties**:
    - `ASK_JARED_API_URL`: the Rails website origin, without a trailing slash.
    - `ASK_JARED_SYNC_KEY`: the value of Heroku `JOB_SEARCH_SYNC_TOKEN`.
+   - `ASK_JARED_POOL_API_KEY`: the different value of Heroku
+     `JOB_SEARCH_TOKEN_POOL_TOKEN`.
+   - `ASK_JARED_TOKEN_POOL_SHEET`: exact protected token-pool tab name.
    - `ASK_JARED_SHEET_NAMES`: exact comma-separated tracker tab names.
    - optionally `ASK_JARED_HEADER_ROW` and `ASK_JARED_APPLIED_VALUES`.
 4. Create a trigger for `askJaredInstallableOnEdit`, event source **From
    spreadsheet**, event type **On edit**. Do not use a simple `onEdit` trigger;
    the authenticated HTTP request requires an installable trigger.
-5. On a test row with a valid claimed token, change only the application state
+5. Create a time-driven trigger for `askJaredRefillTokenPool` (for example,
+   every 30 minutes). This replaces the old DB-only Heroku Scheduler refill;
+   no scheduler may mint tokens without delivering their raw values to this
+   protected tab.
+6. On a test row with a valid claimed token, change only the application state
    to `Applied`. Confirm Rails receives one submission, AskLink is written, and
    sync state becomes `SYNCED`.
-6. Repeat the same edit or rerun the request. The stable external ID and Rails
+7. Repeat the same edit or rerun the request. The stable external ID and Rails
    uniqueness constraints make the operation safe to retry.
 
 The script stores no API secret in cells. It uses a document lock to reduce

@@ -4,6 +4,8 @@
  * Required Script Properties (never put these in cells):
  *   ASK_JARED_API_URL   e.g. https://jaredharbison.com
  *   ASK_JARED_SYNC_KEY  Rails JOB_SEARCH_SYNC_TOKEN
+ *   ASK_JARED_TOKEN_POOL_SHEET  exact protected token-pool tab name
+ *   ASK_JARED_POOL_API_KEY  Rails JOB_SEARCH_TOKEN_POOL_TOKEN
  *
  * Optional Script Properties:
  *   ASK_JARED_SHEET_NAMES  comma-separated exact tab names
@@ -42,6 +44,70 @@ function askJaredInstallableOnEdit(e) {
   }
 }
 
+// Install as a time-driven trigger (for example, every 30 minutes). The raw
+// values returned by Rails are written directly to the protected pool sheet.
+function askJaredRefillTokenPool() {
+  var properties = PropertiesService.getScriptProperties();
+  var sheet = SpreadsheetApp.getActive().getSheetByName(properties.getProperty('ASK_JARED_TOKEN_POOL_SHEET'));
+  if (!sheet) throw new Error('Token-pool sheet is not configured');
+  var lock = LockService.getDocumentLock();
+  lock.waitLock(10000);
+  try {
+    var columns = askJaredColumnMap_(sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0]);
+    var available = askJaredCountPool_(sheet, columns);
+    var response = UrlFetchApp.fetch(properties.getProperty('ASK_JARED_API_URL').replace(/\/$/, '') + '/api/job_search/token_pool/refill', {
+      method: 'post', contentType: 'application/json', muteHttpExceptions: true,
+      headers: { 'X-Job-Search-Pool-Key': properties.getProperty('ASK_JARED_POOL_API_KEY') },
+      payload: JSON.stringify({ sheet_available_count: available })
+    });
+    if (response.getResponseCode() < 200 || response.getResponseCode() >= 300) throw new Error('Token pool refill HTTP ' + response.getResponseCode());
+    JSON.parse(response.getContentText()).tokens.forEach(function(token) {
+      sheet.appendRow([token.inventory_id, token.token, token.state, '', new Date()]);
+    });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+// Called by the role-population workflow after it has written the stable
+// external ID to the role row. The document lock makes primary/secondary
+// assignment atomic and repeated calls for one ID reuse the same token.
+function askJaredClaimToken(externalId, targetSheetName, targetRow) {
+  var properties = PropertiesService.getScriptProperties();
+  var workbook = SpreadsheetApp.getActive();
+  var pool = workbook.getSheetByName(properties.getProperty('ASK_JARED_TOKEN_POOL_SHEET'));
+  var target = workbook.getSheetByName(targetSheetName);
+  if (!pool || !target) throw new Error('Token-pool or target sheet is not configured');
+  var lock = LockService.getDocumentLock();
+  lock.waitLock(10000);
+  try {
+    var rows = pool.getDataRange().getValues();
+    var headers = askJaredColumnMap_(rows[0]);
+    var selected = 0;
+    for (var i = 1; i < rows.length; i++) {
+      if (String(rows[i][headers.claimId - 1] || '') === externalId) { selected = i + 1; break; }
+      if (!selected && String(rows[i][headers.state - 1] || '').toUpperCase() === 'AVAILABLE') selected = i + 1;
+    }
+    if (!selected) throw new Error('No AVAILABLE Ask token in pool');
+    pool.getRange(selected, headers.state).setValue('CLAIMED');
+    pool.getRange(selected, headers.claimId).setValue(externalId);
+    var token = pool.getRange(selected, headers.rawToken).getValue();
+    var targetHeaders = askJaredColumnMap_(target.getRange(1, 1, 1, target.getLastColumn()).getValues()[0]);
+    if (targetHeaders.rawToken) target.getRange(targetRow, targetHeaders.rawToken).setValue(token);
+    if (targetHeaders.askLink) target.getRange(targetRow, targetHeaders.askLink).setValue(properties.getProperty('ASK_JARED_API_URL').replace(/\/$/, '') + '/ask?t=' + encodeURIComponent(token));
+    return token;
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function askJaredCountPool_(sheet, columns) {
+  if (!columns.state || sheet.getLastRow() < 2) return 0;
+  return sheet.getRange(2, columns.state, sheet.getLastRow() - 1, 1).getValues().filter(function(row) {
+    return String(row[0]).toUpperCase() === 'AVAILABLE';
+  }).length;
+}
+
 function askJaredColumnMap_(headers) {
   var normalized = headers.map(function(header) { return String(header).trim().toLowerCase(); });
   function find() {
@@ -59,6 +125,7 @@ function askJaredColumnMap_(headers) {
     askLink: find('AskLink', 'Ask Link'),
     sourceTracker: find('Source Tracker', 'Tracker Source'),
     state: find('Application State', 'Status', 'State'),
+    claimId: find('Claimed External ID', 'External Tracker ID', 'Tracker/Application ID', 'Application ID'),
     submittedAt: find('Submission Date', 'Submitted At', 'Applied Date'),
     syncState: find('Ask Sync State', 'Rails Sync State'),
     syncMessage: find('Ask Sync Message', 'Rails Sync Message')

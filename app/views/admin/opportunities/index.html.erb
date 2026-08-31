@@ -1,0 +1,25 @@
+<% content_for :title, "Recruiter intelligence · Ask Jared admin" %>
+
+<section class="admin-dashboard">
+  <p><%= link_to "Ask Jared admin", admin_root_path %></p>
+  <h1>Recruiter intelligence</h1>
+  <p>Engagement is anonymous and aggregate. Possible sharing is probabilistic, not an identity or viewer count.</p>
+
+  <% @opportunities.each do |summary| %>
+    <article>
+      <h2><%= summary[:company] %> · <%= summary[:role_title] %></h2>
+      <p><%= link_to summary[:external_id], admin_opportunity_path(Opportunity.find_by!(external_id: summary[:external_id])) %></p>
+      <dl>
+        <dt>Application</dt><dd><%= summary[:application_state] %></dd>
+        <dt>Token</dt><dd><%= summary[:token_state] || "not assigned" %></dd>
+        <dt>Submitted</dt><dd><%= summary[:submitted_at] || "—" %></dd>
+        <dt>First meaningful engagement</dt><dd><%= summary[:first_meaningful_engagement_at] || "—" %></dd>
+        <dt>Last meaningful engagement</dt><dd><%= summary[:last_meaningful_engagement_at] || "—" %></dd>
+        <dt>Meaningful sessions / questions</dt><dd><%= summary[:meaningful_session_count] %> / <%= summary[:meaningful_question_count] %></dd>
+        <dt>Possible internal share</dt><dd><%= summary[:possible_internal_share] ? "possible" : "not indicated" %> (<%= summary[:internal_share_confidence] %>)</dd>
+        <dt>Ask usage cost</dt><dd><%= summary[:usage_cost_cents] %>¢</dd>
+        <dt>Follow-up candidate</dt><dd><%= summary[:follow_up_candidate] ? "yes" : "no" %></dd>
+      </dl>
+    </article>
+  <% end %>
+</section>

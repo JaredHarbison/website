@@ -8,12 +8,14 @@ Rails.application.routes.draw do
   namespace :admin do
     root "dashboard#index"
     resources :knowledge_entries, only: %i[index update]
+    resources :opportunities, only: %i[index show]
   end
 
   get "ask" => "ask#show"
   post "api/ask/questions" => "api/ask/questions#create"
   post "api/job_search/opportunities/submit" => "api/job_search/opportunities#submit"
   get "api/job_search/opportunities/engagements" => "api/job_search/engagements#index"
+  post "api/job_search/token_pool/refill" => "api/job_search/token_pool#refill"
 
   root "pages#home"
 

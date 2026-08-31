@@ -48,17 +48,14 @@ AdminUser.create!(email: "<JARED_EMAIL>", password: "<ONE_TIME_PASSWORD>")
 Use the deployed admin session to review and explicitly approve knowledge
 entries. Imported anecdotes remain private candidates until that review.
 
-## Scheduler
+## Token-pool scheduling
 
-Add one Heroku Scheduler job:
-
-```text
-bundle exec rake ask_jared:refill_token_pool
-```
-
-Run it daily. The task tops up only when available inventory is below the
-minimum; it does not mint a fixed number every day. Confirm the pool target and
-threshold in config vars before enabling it.
+Do not configure a Heroku Scheduler job for token minting. A Heroku-only job
+cannot safely deliver raw bearer tokens to the protected workbook and would
+create unusable database inventory. Configure the Apps Script time-driven
+trigger `askJaredRefillTokenPool` instead; it counts protected-sheet inventory,
+requests only the deficit from Rails, and writes the one-time raw values to the
+pool tab under `LockService`.
 
 ## Domain cutover and rollback
 

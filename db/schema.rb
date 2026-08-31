@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_08_31_000005) do
+ActiveRecord::Schema[8.0].define(version: 2026_08_31_000006) do
   create_table "admin_users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -35,9 +35,11 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_31_000005) do
     t.datetime "revoked_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "exported_at"
     t.index ["claim_key", "status"], name: "index_ask_tokens_on_claim_key_and_status", unique: true, where: "claim_key IS NOT NULL AND status IN ('claimed', 'submitted')"
     t.index ["opportunity_id"], name: "index_ask_tokens_on_opportunity_id"
     t.index ["status", "expires_at"], name: "index_ask_tokens_on_status_and_expires_at"
+    t.index ["status", "exported_at"], name: "index_ask_tokens_on_status_and_exported_at"
     t.index ["token_digest"], name: "index_ask_tokens_on_token_digest", unique: true
   end
 

@@ -5,6 +5,7 @@ module Api
       before_action :authenticate_sync_request!
       rescue_from ActiveRecord::RecordNotFound, ArgumentError, with: :bad_request
       rescue_from AskJared::TokenService::TokenAlreadyClaimed, with: :conflict
+      rescue_from AskJared::SubmissionService::SubmissionConflict, with: :conflict
 
       def submit
         raise ArgumentError, "Idempotency-Key is required" if request.headers["Idempotency-Key"].blank?

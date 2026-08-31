@@ -1,5 +1,6 @@
 module AskJared
   class SubmissionService
+    SubmissionConflict = Class.new(StandardError)
     def initialize(token_service: TokenService.new)
       @token_service = token_service
     end
@@ -18,6 +19,12 @@ module AskJared
         end
         token = @token_service.resolve(raw_token)
         raise ActiveRecord::RecordNotFound, "Ask token is invalid or unavailable" unless token
+        if opportunity.company != company || opportunity.role_title != role_title
+          raise SubmissionConflict, "External opportunity details do not match the existing record"
+        end
+        if opportunity.ask_token && opportunity.ask_token.id != token.id
+          raise SubmissionConflict, "External opportunity is already bound to another Ask token"
+        end
 
         token.with_lock do
           if token.opportunity_id && token.opportunity_id != opportunity.id

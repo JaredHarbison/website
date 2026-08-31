@@ -150,12 +150,12 @@ unsupported claims, protected-characteristic requests, and off-topic questions
 return `blocked`, `out_of_scope`, or `insufficient_information` without
 retrieving private data.
 
-Public users receive a small public subset. Verified hiring leads may receive a
-higher allowance after a work-email magic link. Consumer domains are
-unverified, not automatically malicious. Signed opportunity URLs carry only an
-opaque opportunity ID, expiry, and nonce; they are provenance and an elevated
-allowance, not identity proof. Tokens are signed server-side, validated for
-expiry/revocation, and never used to expose private knowledge.
+The MVP has no generic public Ask Jared tier and no work-email magic-link flow.
+Without a valid opportunity token, the ordinary portfolio remains available but
+Ask Jared is unavailable. A valid opaque opportunity token unlocks that specific
+opportunity; it indicates provenance rather than verified human identity and
+may be forwarded internally. Tokens are validated for expiry/revocation and
+never used to expose private knowledge. Deeper trust tiers are deferred.
 
 Admin actions require separate authorization and are audited. Logs store
 minimal anonymous metadata, status, evidence IDs, latency, and cost estimates;
@@ -163,12 +163,13 @@ they do not store raw source text or model secrets.
 
 ## Implemented operational slice
 
-The pre-minted token pool is maintained by `ask_jared:refill_token_pool`. It
-uses `ASK_JARED_TOKEN_POOL_MINIMUM` and `ASK_JARED_TOKEN_POOL_TARGET`, tops up
-only when available inventory is below the minimum, and uses a Postgres
-transaction advisory lock to prevent concurrent Heroku workers from overfilling
-the pool. Heroku Scheduler should run this rake task daily; the task performs
-the job synchronously so it remains easy to operate and observe.
+The pre-minted token pool is maintained by the protected workbook's
+`askJaredRefillTokenPool` time-driven Apps Script function. It counts available
+sheet rows, requests only the deficit from Rails, and writes newly minted raw
+tokens directly to the protected pool tab under a document lock. Rails stores
+only HMAC digests plus an export timestamp; the raw bearer is returned once and
+is not recoverable from Rails/Postgres afterward. This makes sheet inventory,
+not merely database row count, the usable inventory measure.
 
 The protected Sheets integration endpoint is:
 
@@ -184,6 +185,23 @@ the usable AskLink, and is safe to retry for the same association. The
 credential is a Rails/Heroku config var and is intentionally separate from
 Devise and all admin permissions. The endpoint is narrowly scoped: it cannot
 approve knowledge, query production, or generate recruiter answers.
+
+The protected token-pool endpoint is separate:
+
+```text
+POST /api/job_search/token_pool/refill
+X-Job-Search-Pool-Key: <JOB_SEARCH_TOKEN_POOL_TOKEN>
+```
+
+Apps Script supplies its current `sheet_available_count`; Rails revokes any
+undelivered legacy DB-only available rows, mints only the deficit transactionally
+under a Postgres advisory lock, marks each new record exported, and returns raw
+values through the authenticated response. The protected sheet is the delivery
+surface; Rails retains only the digest and export metadata.
+
+The owner dashboard has separate Knowledge management and Recruiter
+intelligence areas. The latter shows aggregate engagement and probabilistic
+sharing signals per opportunity without raw IPs, session digests, or questions.
 
 ## MVP implementation plan
 
@@ -225,10 +243,10 @@ the workbooks.
 - Provide legitimate read-only production analytics access only if a proposed
   metric needs verification. Recruiter requests must never receive production
   credentials.
-- Install the Apps Script as an installable `onEdit` trigger and run its safe
-  test procedure after workbook mapping is confirmed. The script still needs
-  to be delivered in the next integration slice; its credential belongs in
-  Apps Script Script Properties, never in cells.
+- Install the delivered Apps Script as an installable `onEdit` trigger plus a
+  time-driven `askJaredRefillTokenPool` trigger after workbook mapping is
+  confirmed. Its credentials belong in Apps Script Script Properties, never in
+  cells.
 - Review and explicitly approve candidate knowledge entries before enabling
   recruiter-visible retrieval.
 

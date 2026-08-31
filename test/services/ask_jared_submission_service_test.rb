@@ -27,4 +27,24 @@ class AskJaredSubmissionServiceTest < ActiveSupport::TestCase
     assert_equal first, second
     assert_equal 1, Opportunity.count
   end
+
+  test "rejects a changed company or role for an existing external ID" do
+    service = AskJared::SubmissionService.new
+    service.call(raw_token: @raw_token, external_id: "role-submit-1", company: "Acme", role_title: "Engineer")
+
+    assert_raises(AskJared::SubmissionService::SubmissionConflict) do
+      service.call(raw_token: @raw_token, external_id: "role-submit-1", company: "Other", role_title: "Engineer")
+    end
+  end
+
+  test "rejects binding a second token to an existing opportunity" do
+    other_token, other_raw = @service.mint!
+    service = AskJared::SubmissionService.new
+    service.call(raw_token: @raw_token, external_id: "role-submit-1", company: "Acme", role_title: "Engineer")
+
+    assert_raises(AskJared::SubmissionService::SubmissionConflict) do
+      service.call(raw_token: other_raw, external_id: "role-submit-1", company: "Acme", role_title: "Engineer")
+    end
+    assert_equal "available", other_token.reload.status
+  end
 end
