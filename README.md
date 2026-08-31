@@ -3,9 +3,10 @@
 This is the source for my personal site: a place for case studies, technical
 writing, and a little context about the way I work.
 
-The site is authored as a small Rails application backed by Markdown files.
-GitHub Actions renders the public routes to static HTML and deploys the verified
-artifact to GitHub Pages from `main`.
+The site is authored as a small Rails application backed primarily by Markdown
+files. GitHub Actions renders a verified static fallback artifact for GitHub
+Pages. The intended hosted runtime for the Ask Jared knowledge platform is Rails
+on Heroku with Heroku Postgres; the static exporter remains the rollback path.
 
 ## Why I built it this way
 
@@ -14,9 +15,10 @@ a frontend framework. Rails gives me routing, layouts, asset handling, and a
 familiar testing setup. Markdown keeps the content portable and reviewable in
 Git.
 
-There is intentionally no database. A repository object reads Markdown from
-disk and returns small model-like objects to the controllers. That boundary
-keeps the rest of the app independent from where the content is stored.
+Public content remains repository-backed: a repository object reads Markdown
+from disk and returns small model-like objects to the controllers. The hosted
+runtime adds Active Record only for the approved knowledge, token, engagement,
+and admin domains, keeping content delivery independent from that datastore.
 
 ## What is here
 
@@ -35,8 +37,9 @@ keeps the rest of the app independent from where the content is stored.
 - Minitest
 - RuboCop and Brakeman
 
-Active Record is omitted because the application has no persistent runtime
-data. Propshaft handles the stylesheet without a Node build step.
+Active Record uses SQLite in development/test and Postgres in production.
+Propshaft handles the stylesheet without a Node build step. Ask Jared’s
+embedding column uses pgvector in production.
 
 ## Architecture
 
@@ -112,9 +115,10 @@ layouts, copies production assets, and writes the result to `_site/`. Validation
 fails the build when a route does not render, an internal link or asset is
 missing, or legacy React output appears in the artifact.
 
-The Pages workflow runs tests, RuboCop, Brakeman, production asset compilation,
-static export, and validation before deploying. Production serves only the
-generated HTML and assets; it does not run Rails or require application secrets.
+The Pages workflow continues to run tests, RuboCop, Brakeman, production asset
+compilation, static export, and validation. During the Heroku migration,
+production will run Rails normally while `_site/` remains a tested fallback.
+See [the Heroku deployment runbook](docs/ask-jared-heroku-deployment.md).
 
 ## Quality checks
 
