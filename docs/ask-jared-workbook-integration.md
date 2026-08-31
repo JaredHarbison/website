@@ -7,15 +7,36 @@ ChatGPT sessions; it is not an HTTP execution engine.
 
 ## Required fields
 
-Each relevant tracker tab needs a header row with these fields (the script
-accepts the alternate names shown in parentheses):
+The live workbook uses fixed columns and must not move existing fields:
+
+| Column | Header |
+| --- | --- |
+| B | Company |
+| C | Job Link |
+| L | Applied |
+| S | Ask ID |
+| T | AskLink |
+| U | Ask Claim State |
+| V | Ask Sync State |
+| W | Ask Sync Message |
+| X | Ask Engagement |
+
+The relevant tabs are exactly `Rapid Tracker`, `Target Tracker`, and
+`Recruiter Tracker`. The script does not alter B:R, existing formulas, or
+ignored/rejected behavior. The role-population queue uses the deterministic
+Ask ID `rapid:<row-number>`, `target:<row-number>`, or
+`recruiter:<row-number>`. Primary/secondary write that value to S and
+`PENDING` to U. A one-minute processor claims a token and writes T/U; a row
+is not application-ready until T contains AskLink.
+
+For reference, the logical fields are:
 
 | Field | Purpose |
 | --- | --- |
 | External Tracker ID (Tracker/Application ID/Application ID) | Stable role/application identifier; unique per role |
 | Company | Opportunity company |
 | Role Title (Role) | Opportunity role |
-| Ask Token (Ask Token/Bearer Token) | Pre-minted token claimed for this role |
+| Ask Token | Never add this field to a tracker; raw values remain only in the protected pool |
 | AskLink (Ask Link) | URL returned by Rails and used in application materials |
 | Application State (Status/State) | The manual Applied or Submitted transition |
 | Submission Date (Submitted At/Applied Date) | Jared's submission timestamp |
@@ -23,9 +44,10 @@ accepts the alternate names shown in parentheses):
 | Ask Sync State (Rails Sync State) | Script-managed SYNCED or ERROR state |
 | Ask Sync Message (Rails Sync Message) | Short operational result/error |
 
-Exact sheet names and any workbook-specific header aliases must be confirmed
-before installation. The script ignores tabs not listed in the optional
-`ASK_JARED_SHEET_NAMES` property and ignores edits outside the state column.
+The Applied field is a date, not an Application State field. `8/88/88` and
+`9/99/99` are sentinel values for the existing ignored-role workflow and never
+submit to Rails. A claimed, unsubmitted pool token is returned to AVAILABLE for
+these sentinels; SYNCED or ERROR rows fail safe and are not released.
 
 ## Protected token-pool tab
 
@@ -37,7 +59,7 @@ Create a protected tab named by `ASK_JARED_TOKEN_POOL_SHEET` with these headers:
 | Ask Token | Raw bearer token; protect the tab and do not copy it into the ledger |
 | State | `AVAILABLE`, `CLAIMED`, or `SUBMITTED/CONSUMED` |
 | Claimed External ID | Stable tracker/application ID, blank while available |
-| Minted At | Operational timestamp |
+| Exported At | Operational timestamp |
 
 The pool tab should be protected from ordinary edits and visible only to the
 job-search automation/Jared. The raw token is delivered once by the authenticated
@@ -51,14 +73,11 @@ the next authenticated pool refill. Claimed and submitted tokens are never
 affected by that cleanup. A stale token left in the sheet therefore cannot
 unlock Ask Jared or be submitted successfully.
 
-To claim a token during role population, first write the stable external ID to
-the role row, then run `askJaredClaimToken(externalId, tabName, rowNumber)` from
-Apps Script (or have the workbook's approved helper invoke it). The helper holds
-`LockService.getDocumentLock()`, reuses an existing `CLAIMED` row for that
-external ID, otherwise changes exactly one `AVAILABLE` row to `CLAIMED`, writes
-the raw token and AskLink to the role row, and releases the lock. Primary and
-secondary ChatGPT sessions therefore coordinate through ordinary workbook
-operations and cannot consume the same available row.
+The queue processor holds `LockService.getDocumentLock()`, reuses an existing
+CLAIMED row for the same Ask ID, otherwise changes exactly one AVAILABLE row to
+CLAIMED, and writes only the AskLink to the tracker. The raw token is never
+written to another tracker column. Primary and secondary sessions coordinate by
+ordinary sheet writes, so they do not need authenticated HTTP.
 
 ## Installable Apps Script setup
 
@@ -75,14 +94,16 @@ operations and cannot consume the same available row.
 4. Create a trigger for `askJaredInstallableOnEdit`, event source **From
    spreadsheet**, event type **On edit**. Do not use a simple `onEdit` trigger;
    the authenticated HTTP request requires an installable trigger.
-5. Create a time-driven trigger for `askJaredRefillTokenPool` (for example,
-   every 30 minutes). This replaces the old DB-only Heroku Scheduler refill;
+5. Create a time-driven trigger for `askJaredProcessPendingClaims` at the
+   shortest available interval (recommended every minute). This is required
+   because Google Sheets API writes do not fire onEdit.
+6. Create a daily time-driven trigger for `askJaredRefillTokenPool`. This
+   replaces the old DB-only Heroku Scheduler refill;
    no scheduler may mint tokens without delivering their raw values to this
    protected tab.
-6. On a test row with a valid claimed token, change only the application state
-   to `Applied`. Confirm Rails receives one submission, AskLink is written, and
-   sync state becomes `SYNCED`.
-7. Repeat the same edit or rerun the request. The stable external ID and Rails
+7. On a test row with a valid AskLink, enter a legitimate calendar date in L.
+   Confirm Rails receives one submission and sync state becomes `SYNCED`.
+8. Repeat the same edit or rerun the request. The stable external ID and Rails
    uniqueness constraints make the operation safe to retry.
 
 The script stores no API secret in cells. It uses a document lock to reduce
