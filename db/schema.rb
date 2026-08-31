@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_08_31_000004) do
+ActiveRecord::Schema[8.0].define(version: 2026_08_31_000005) do
   create_table "admin_users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -39,6 +39,25 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_31_000004) do
     t.index ["opportunity_id"], name: "index_ask_tokens_on_opportunity_id"
     t.index ["status", "expires_at"], name: "index_ask_tokens_on_status_and_expires_at"
     t.index ["token_digest"], name: "index_ask_tokens_on_token_digest", unique: true
+  end
+
+  create_table "ask_usage_events", force: :cascade do |t|
+    t.integer "opportunity_id"
+    t.integer "ask_token_id"
+    t.string "request_id", null: false
+    t.string "session_digest", null: false
+    t.string "status", null: false
+    t.integer "estimated_cost_cents", default: 0, null: false
+    t.integer "input_tokens"
+    t.integer "output_tokens"
+    t.datetime "occurred_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ask_token_id", "occurred_at"], name: "index_ask_usage_events_on_ask_token_id_and_occurred_at"
+    t.index ["ask_token_id"], name: "index_ask_usage_events_on_ask_token_id"
+    t.index ["opportunity_id"], name: "index_ask_usage_events_on_opportunity_id"
+    t.index ["request_id"], name: "index_ask_usage_events_on_request_id", unique: true
+    t.index ["session_digest", "occurred_at"], name: "index_ask_usage_events_on_session_digest_and_occurred_at"
   end
 
   create_table "engagement_events", force: :cascade do |t|
@@ -102,6 +121,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_31_000004) do
   end
 
   add_foreign_key "ask_tokens", "opportunities"
+  add_foreign_key "ask_usage_events", "ask_tokens"
+  add_foreign_key "ask_usage_events", "opportunities"
   add_foreign_key "engagement_events", "ask_tokens"
   add_foreign_key "engagement_events", "opportunities"
 end

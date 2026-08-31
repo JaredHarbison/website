@@ -4,6 +4,7 @@ module Api
       protect_from_forgery with: :null_session
       rescue_from ActiveRecord::RecordNotFound, ArgumentError, with: :bad_request
       rescue_from AskJared::OpenAiProvider::ConfigurationError, AskJared::OpenAiProvider::ProviderError, with: :provider_unavailable
+      rescue_from AskJared::UsageGuard::LimitExceeded, with: :rate_limited
 
       def create
         render json: question_service.call(
@@ -27,6 +28,10 @@ module Api
 
       def provider_unavailable(_error)
         render json: { status: "insufficient_information", answer: "The answer service is temporarily unavailable.", evidence_ids: [], source_urls: [] }, status: :service_unavailable
+      end
+
+      def rate_limited(error)
+        render json: { status: "blocked", answer: error.message, evidence_ids: [], source_urls: [] }, status: :too_many_requests
       end
     end
   end

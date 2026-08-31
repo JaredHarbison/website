@@ -4,17 +4,20 @@ module AskJared
     MIN_QUESTION_LENGTH = 3
     GARBAGE_PATTERN = /\A(.)\1{20,}\z/
 
-    def initialize(token_service: TokenService.new, retriever: ApprovedKnowledgeRetriever.new, provider: OpenAiProvider.new, engagement_service: EngagementService.new)
+    def initialize(token_service: TokenService.new, retriever: ApprovedKnowledgeRetriever.new, provider: OpenAiProvider.new, engagement_service: EngagementService.new, usage_guard: UsageGuard.new)
       @token_service = token_service
       @retriever = retriever
       @provider = provider
       @engagement_service = engagement_service
+      @usage_guard = usage_guard
     end
 
     def call(raw_token:, question:, session_id:, ip: nil, request_id:)
       token = @token_service.resolve(raw_token)
       raise ActiveRecord::RecordNotFound, "Ask token is invalid or unavailable" unless @token_service.recruiter_accessible?(token)
       validate_question!(question)
+      session_digest = @usage_guard.digest_session(session_id)
+      @usage_guard.check!(token: token, session_digest: session_digest)
 
       entries = @retriever.call(question)
       evidence_ids = entries.map { |entry| entry.id.to_s }
@@ -26,6 +29,7 @@ module AskJared
 
       @engagement_service.record!(raw_token: raw_token, event_type: "question_submitted", session_id: session_id, ip: ip, event_key: "#{request_id}:question")
       @engagement_service.record!(raw_token: raw_token, event_type: "answer_returned", session_id: session_id, ip: ip, event_key: "#{request_id}:answer")
+      @usage_guard.record!(token: token, session_digest: session_digest, request_id: request_id, status: "completed", estimated_cost_cents: entries.empty? ? 0 : 1)
       response
     end
 
