@@ -55,13 +55,13 @@ class AskControllerTest < ActionDispatch::IntegrationTest
     assert_equal 0, EngagementEvent.count
   end
 
-  test "renders a direct-share token without an opportunity" do
-    token, raw = @token_service.mint_direct_share!
+  test "renders a manual direct-share token through the normal opportunity lifecycle" do
+    opportunity, _token, raw = AskJared::ManualShareService.new.create!(label: "Portfolio review", purpose: "General introduction")
 
     get "/ask", params: { t: raw }
 
     assert_response :success
-    assert_equal "direct_share", token.reload.access_scope
-    assert_nil token.opportunity
+    assert_equal "manual", opportunity.reload.tracker_source
+    assert_equal "pre_application", opportunity.application_state
   end
 end

@@ -14,9 +14,22 @@
       <%= link_to "Open owner preview", ask_path, class: "button-link" %>
     </div>
     <%= form_with url: admin_share_links_path, method: :post do %>
+      <div class="admin-form__grid admin-share-form-grid">
+        <div class="admin-field"><%= label_tag :label, "Label" %><%= text_field_tag :label, nil, required: true, placeholder: "Portfolio review" %></div>
+        <div class="admin-field"><%= label_tag :company, "Company (optional)" %><%= text_field_tag :company, nil, placeholder: "Optional context" %></div>
+        <div class="admin-field admin-field--wide"><%= label_tag :purpose, "Purpose" %><%= text_area_tag :purpose, nil, rows: 2, required: true, placeholder: "General engineering introduction" %></div>
+        <div class="admin-field"><%= label_tag :expires_on, "Expires on (optional)" %><%= date_field_tag :expires_on %></div>
+      </div>
       <%= submit_tag "Create direct-share link", class: "button-link button-link--primary" %>
     <% end %>
     <% if @direct_share_link %><div class="admin-generated-link" role="status"><p class="admin-meta">Copy this link now. The bearer value is not recoverable from Rails if lost.</p><code><%= @direct_share_link %></code></div><% end %>
+    <% if @manual_opportunities.any? %>
+      <ul class="admin-manual-links">
+        <% @manual_opportunities.each do |opportunity| %>
+          <li><span><strong><%= opportunity.role_title %></strong><span class="admin-meta"><%= opportunity.purpose %> · <%= opportunity.ask_token&.status %></span></span><%= button_to "Revoke", admin_revoke_share_link_path(opportunity), method: :delete, class: "button-link" if opportunity.ask_token&.status.in?(%w[claimed submitted]) %></li>
+        <% end %>
+      </ul>
+    <% end %>
   </section>
 
   <section aria-labelledby="review-status-title">

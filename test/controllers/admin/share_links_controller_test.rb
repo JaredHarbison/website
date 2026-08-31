@@ -12,8 +12,8 @@ class Admin::ShareLinksControllerTest < ActionDispatch::IntegrationTest
   test "owner can create a direct-share link" do
     sign_in @admin
 
-    assert_difference("AskToken.where(access_scope: 'direct_share').count", 1) do
-      post "/admin/share_links"
+    assert_difference("Opportunity.where(tracker_source: 'manual').count", 1) do
+      post "/admin/share_links", params: { label: "Portfolio review", purpose: "General engineering introduction" }
     end
 
     assert_redirected_to "/admin"
@@ -24,6 +24,18 @@ class Admin::ShareLinksControllerTest < ActionDispatch::IntegrationTest
     post "/admin/share_links"
 
     assert_response :redirect
-    assert_empty AskToken.where(access_scope: "direct_share")
+    assert_empty Opportunity.where(tracker_source: "manual")
+  end
+
+  test "owner can revoke a manual link without affecting application links" do
+    opportunity, = AskJared::ManualShareService.new.create!(label: "Portfolio review", purpose: "General introduction")
+    application_opportunity = Opportunity.create!(external_id: "application-1", company: "Acme", role_title: "Engineer")
+    sign_in @admin
+
+    delete "/admin/share_links/#{opportunity.id}"
+
+    assert_redirected_to "/admin"
+    assert_equal "revoked", opportunity.ask_token.reload.status
+    assert_nil application_opportunity.reload.ask_token
   end
 end

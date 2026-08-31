@@ -160,8 +160,8 @@ job-search workflow. Direct-share tokens use the same approved knowledge and
 rate/cost controls, indicate share-link provenance rather than identity, and
 cannot be used to submit or bind a job-search opportunity. Opportunity tokens
 remain scoped to their opportunity and indicate provenance rather than verified
-human identity and
-may be forwarded internally. Tokens are validated for expiry/revocation and
+human identity and may be forwarded internally. Tokens are validated for
+expiry/revocation and
 never used to expose private knowledge. Deeper trust tiers are deferred.
 
 Admin actions require separate authorization and are audited. Logs store

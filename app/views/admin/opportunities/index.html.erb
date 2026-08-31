@@ -13,7 +13,7 @@
       <table class="admin-table">
         <caption class="visually-hidden">Recruiter engagement by opportunity</caption>
         <thead><tr>
-          <th scope="col">Opportunity</th><th scope="col">Application</th><th scope="col">Token</th>
+          <th scope="col">Opportunity</th><th scope="col">Source</th><th scope="col">Application</th><th scope="col">Token</th>
           <th scope="col">Submitted</th><th scope="col">Last engagement</th><th scope="col">Sessions</th>
           <th scope="col">Questions</th><th scope="col">Signals</th><th scope="col">Cost</th>
         </tr></thead>
@@ -22,6 +22,7 @@
             <% opportunity = Opportunity.find_by(external_id: summary[:external_id]) %>
             <tr>
               <th scope="row"><%= link_to "#{summary[:company]} · #{summary[:role_title]}", admin_opportunity_path(opportunity), class: "admin-table__primary" %><span class="admin-meta"><%= summary[:external_id] %></span></th>
+              <td><span class="status-badge status-badge--<%= summary[:source] == "manual" ? "signal" : "none" %>"><%= summary[:source].humanize %></span></td>
               <td><span class="status-badge status-badge--<%= summary[:application_state] %>"><%= summary[:application_state].presence || "Not submitted" %></span></td>
               <td><span class="status-badge status-badge--<%= summary[:token_state] || "none" %>"><%= summary[:token_state] || "Not assigned" %></span></td>
               <td><%= summary[:submitted_at] || "—" %></td>

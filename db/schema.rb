@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_08_31_000008) do
+ActiveRecord::Schema[8.0].define(version: 2026_08_31_000009) do
   create_table "admin_users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -121,6 +121,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_31_000008) do
     t.datetime "submitted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "purpose"
     t.index ["external_id"], name: "index_opportunities_on_external_id", unique: true
   end
 

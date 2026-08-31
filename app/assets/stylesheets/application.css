@@ -751,6 +751,10 @@ p {
 .admin-share-panel form { margin-top: 1rem; }
 .admin-generated-link { border-left: 2px solid var(--color-heading); margin-top: 1rem; overflow-wrap: anywhere; padding: 0.7rem 0.9rem; }
 .admin-generated-link code { color: var(--color-link); font-family: var(--font-mono); font-size: 0.75rem; }
+.admin-manual-links { list-style: none; margin: 1rem 0 0; padding: 0; }
+.admin-manual-links li { align-items: center; border-top: 1px solid var(--color-border); display: flex; gap: 1rem; justify-content: space-between; padding: 0.75rem 0; }
+.admin-manual-links strong, .admin-manual-links .admin-meta { display: block; }
+.admin-share-form-grid { margin-bottom: 1rem; }
 
 .admin-main > section + section,
 .admin-detail-grid,

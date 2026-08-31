@@ -15,6 +15,8 @@
       <dl class="admin-detail-list">
         <dt>Company</dt><dd><%= @summary[:company] %></dd>
         <dt>Role</dt><dd><%= @summary[:role_title] %></dd>
+        <dt>Source</dt><dd><span class="status-badge status-badge--<%= @summary[:source] == "manual" ? "signal" : "none" %>"><%= @summary[:source].humanize %></span></dd>
+        <dt>Purpose</dt><dd><%= @summary[:purpose].presence || "—" %></dd>
         <dt>Application</dt><dd><span class="status-badge status-badge--<%= @summary[:application_state] %>"><%= @summary[:application_state].presence || "Not submitted" %></span></dd>
         <dt>Submitted</dt><dd><%= @summary[:submitted_at] || "—" %></dd>
         <dt>Token</dt><dd><span class="status-badge status-badge--<%= @summary[:token_state] || "none" %>"><%= @summary[:token_state] || "Not assigned" %></span></dd>
