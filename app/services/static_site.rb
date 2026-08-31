@@ -75,7 +75,9 @@ module StaticSite
 
     def render_routes
       session = ActionDispatch::Integration::Session.new(Rails.application)
-      session.host! domain
+      # Render through an allowed local host; the public domain is emitted in
+      # CNAME/metadata and must not be used as an internal Host header.
+      session.host! "localhost"
       session.https!
 
       routes.paths.each do |path|
