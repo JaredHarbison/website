@@ -4,7 +4,7 @@ module AskJared
     MIN_QUESTION_LENGTH = 3
     GARBAGE_PATTERN = /\A(.)\1{20,}\z/
 
-    def initialize(token_service: TokenService.new, retriever: ApprovedKnowledgeRetriever.new, provider: NullProvider.new, engagement_service: EngagementService.new)
+    def initialize(token_service: TokenService.new, retriever: ApprovedKnowledgeRetriever.new, provider: OpenAiProvider.new, engagement_service: EngagementService.new)
       @token_service = token_service
       @retriever = retriever
       @provider = provider

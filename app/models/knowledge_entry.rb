@@ -14,4 +14,8 @@ class KnowledgeEntry < ApplicationRecord
   validates :visibility, inclusion: { in: VISIBILITIES }
 
   scope :recruiter_retrievable, -> { where(approval_status: "approved", visibility: "recruiter_visible") }
+
+  def recruiter_context
+    [ title, short_body.presence || body ].compact.join("\n")
+  end
 end

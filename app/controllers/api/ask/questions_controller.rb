@@ -3,6 +3,7 @@ module Api
     class QuestionsController < ApplicationController
       protect_from_forgery with: :null_session
       rescue_from ActiveRecord::RecordNotFound, ArgumentError, with: :bad_request
+      rescue_from AskJared::OpenAiProvider::ConfigurationError, AskJared::OpenAiProvider::ProviderError, with: :provider_unavailable
 
       def create
         render json: question_service.call(
@@ -22,6 +23,10 @@ module Api
 
       def bad_request(error)
         render json: { status: "blocked", answer: error.message, evidence_ids: [], source_urls: [] }, status: :unprocessable_entity
+      end
+
+      def provider_unavailable(_error)
+        render json: { status: "insufficient_information", answer: "The answer service is temporarily unavailable.", evidence_ids: [], source_urls: [] }, status: :service_unavailable
       end
     end
   end
