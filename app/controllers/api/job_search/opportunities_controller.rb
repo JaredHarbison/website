@@ -7,6 +7,8 @@ module Api
       rescue_from AskJared::TokenService::TokenAlreadyClaimed, with: :conflict
 
       def submit
+        raise ArgumentError, "Idempotency-Key is required" if request.headers["Idempotency-Key"].blank?
+
         submission = submission_params
         opportunity = AskJared::SubmissionService.new.call(**submission)
         render json: { status: "submitted", external_id: opportunity.external_id,

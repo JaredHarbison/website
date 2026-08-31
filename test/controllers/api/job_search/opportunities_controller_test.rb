@@ -24,7 +24,7 @@ class Api::JobSearch::OpportunitiesControllerTest < ActionDispatch::IntegrationT
   test "submits an opportunity and returns the usable AskLink" do
     post "/api/job_search/opportunities/submit",
          params: { raw_token: @raw_token, external_id: "role-api-1", company: "Acme", role_title: "Engineer" },
-         headers: { "X-Job-Search-Key" => "test-sync-key" }
+         headers: { "X-Job-Search-Key" => "test-sync-key", "Idempotency-Key" => "role-api-1:2026-08-31" }
 
     assert_response :success
     assert_equal "submitted", response.parsed_body.fetch("status")
@@ -33,7 +33,7 @@ class Api::JobSearch::OpportunitiesControllerTest < ActionDispatch::IntegrationT
   end
 
   test "repeated submission is harmless" do
-    headers = { "X-Job-Search-Key" => "test-sync-key" }
+    headers = { "X-Job-Search-Key" => "test-sync-key", "Idempotency-Key" => "role-api-1:2026-08-31" }
     params = { raw_token: @raw_token, external_id: "role-api-1", company: "Acme", role_title: "Engineer" }
     post "/api/job_search/opportunities/submit", params: params, headers: headers
     post "/api/job_search/opportunities/submit", params: params, headers: headers
