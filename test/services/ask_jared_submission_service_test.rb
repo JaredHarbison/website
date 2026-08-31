@@ -47,4 +47,16 @@ class AskJaredSubmissionServiceTest < ActiveSupport::TestCase
     end
     assert_equal "available", other_token.reload.status
   end
+
+  test "does not bind a direct-share token to a job-search opportunity" do
+    direct_token, direct_raw = @service.mint_direct_share!
+
+    assert_raises(ActiveRecord::RecordNotFound) do
+      AskJared::SubmissionService.new.call(
+        raw_token: direct_raw, external_id: "role-submit-direct", company: "Acme", role_title: "Engineer"
+      )
+    end
+    assert_nil direct_token.reload.opportunity
+    assert_equal "claimed", direct_token.status
+  end
 end

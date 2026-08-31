@@ -8,6 +8,17 @@
     <p class="admin-lede">Review professional evidence before it becomes available to recruiter-facing answers.</p>
   </header>
 
+  <section class="admin-panel admin-share-panel" aria-labelledby="share-title">
+    <div class="admin-section-heading">
+      <div><h2 id="share-title">Ask Jared access</h2><p class="admin-meta">Preview as owner or create a time-limited direct-share link.</p></div>
+      <%= link_to "Open owner preview", ask_path, class: "button-link" %>
+    </div>
+    <%= form_with url: admin_share_links_path, method: :post do %>
+      <%= submit_tag "Create direct-share link", class: "button-link button-link--primary" %>
+    <% end %>
+    <% if @direct_share_link %><div class="admin-generated-link" role="status"><p class="admin-meta">Copy this link now. The bearer value is not recoverable from Rails if lost.</p><code><%= @direct_share_link %></code></div><% end %>
+  </section>
+
   <section aria-labelledby="review-status-title">
     <div class="admin-section-heading">
       <h2 id="review-status-title">Knowledge review</h2>

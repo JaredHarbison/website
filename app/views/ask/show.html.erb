@@ -3,13 +3,15 @@
 <% end %>
 
 <main class="site-main content-page ask-page" aria-labelledby="ask-title">
-  <p class="eyebrow">Recruiter access</p>
+  <p class="eyebrow"><%= @admin_preview ? "Owner preview" : "Recruiter access" %></p>
   <h1 id="ask-title">Ask Jared</h1>
   <p class="lede">Ask about Jared's engineering experience, product work, technical decisions, and measurable outcomes.</p>
-  <p>This private link is associated with a specific opportunity. Answers will use approved professional evidence and link to public case studies when relevant.</p>
+  <p><%= @admin_preview ? "Preview the recruiter-safe experience using your owner session. This preview does not create recruiter engagement records." : "This private link is associated with a specific opportunity or direct share. Answers will use approved professional evidence and link to public case studies when relevant." %></p>
 
   <form class="ask-form" action="/api/ask/questions" method="post">
-    <input type="hidden" name="t" value="<%= @token && params[:t] %>">
+    <% unless @admin_preview %><input type="hidden" name="t" value="<%= params[:t] %>"><% end %>
+    <% if @admin_preview %><input type="hidden" name="admin_preview" value="1"><% end %>
+    <% if @admin_preview %><%= hidden_field_tag :authenticity_token, form_authenticity_token %><% end %>
     <label for="ask-question">Your question</label>
     <textarea id="ask-question" name="question" rows="5" maxlength="600" required placeholder="What kind of engineer is Jared?"></textarea>
     <button class="button-link button-link--primary" type="submit">Ask Jared</button>

@@ -7,6 +7,7 @@ Rails.application.routes.draw do
 
   namespace :admin do
     root "dashboard#index"
+    post "share_links" => "share_links#create", as: :share_links
     resources :knowledge_entries, only: %i[index update]
     resources :opportunities, only: %i[index show]
   end

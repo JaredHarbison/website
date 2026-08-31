@@ -150,10 +150,17 @@ unsupported claims, protected-characteristic requests, and off-topic questions
 return `blocked`, `out_of_scope`, or `insufficient_information` without
 retrieving private data.
 
-The MVP has no generic public Ask Jared tier and no work-email magic-link flow.
+The MVP has no anonymous public Ask Jared tier and no work-email magic-link flow.
 Without a valid opportunity token, the ordinary portfolio remains available but
-Ask Jared is unavailable. A valid opaque opportunity token unlocks that specific
-opportunity; it indicates provenance rather than verified human identity and
+Ask Jared is unavailable to ordinary visitors. Jared's authenticated Devise
+admin session may open an owner preview without a token; preview questions do
+not create recruiter engagement records. Jared may also mint an explicit,
+time-limited direct-share token from the admin dashboard for people outside the
+job-search workflow. Direct-share tokens use the same approved knowledge and
+rate/cost controls, indicate share-link provenance rather than identity, and
+cannot be used to submit or bind a job-search opportunity. Opportunity tokens
+remain scoped to their opportunity and indicate provenance rather than verified
+human identity and
 may be forwarded internally. Tokens are validated for expiry/revocation and
 never used to expose private knowledge. Deeper trust tiers are deferred.
 

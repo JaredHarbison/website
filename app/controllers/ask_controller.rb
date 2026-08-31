@@ -5,11 +5,12 @@ class AskController < ApplicationController
     response.headers["Referrer-Policy"] = "no-referrer"
     response.headers["X-Robots-Tag"] = "noindex, nofollow, noarchive"
     expires_now
-    @token = token_service.resolve(params[:t])
-    raise ActiveRecord::RecordNotFound unless token_service.recruiter_accessible?(@token)
+    @admin_preview = current_admin_user.present?
+    @token = token_service.resolve(params[:t]) unless @admin_preview
+    raise ActiveRecord::RecordNotFound unless @admin_preview || token_service.recruiter_accessible?(@token)
 
-    record_event("token_resolved")
-    record_event("page_view")
+    record_event("token_resolved") unless @admin_preview
+    record_event("page_view") unless @admin_preview
   end
 
   private

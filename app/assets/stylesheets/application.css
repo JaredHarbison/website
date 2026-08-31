@@ -747,6 +747,11 @@ p {
   padding: clamp(1rem, 3vw, 1.5rem);
 }
 
+.admin-share-panel .admin-section-heading { align-items: start; }
+.admin-share-panel form { margin-top: 1rem; }
+.admin-generated-link { border-left: 2px solid var(--color-heading); margin-top: 1rem; overflow-wrap: anywhere; padding: 0.7rem 0.9rem; }
+.admin-generated-link code { color: var(--color-link); font-family: var(--font-mono); font-size: 0.75rem; }
+
 .admin-main > section + section,
 .admin-detail-grid,
 .admin-entry-list {

@@ -7,8 +7,10 @@ module Api
       rescue_from AskJared::UsageGuard::LimitExceeded, with: :rate_limited
 
       def create
+        admin_preview = current_admin_user.present? && params[:admin_preview].to_s == "1"
         render json: question_service.call(
-          raw_token: request.headers["X-Ask-Token"].presence || params[:t],
+          raw_token: admin_preview ? nil : request.headers["X-Ask-Token"].presence || params[:t],
+          admin_preview: admin_preview,
           question: params[:question],
           session_id: request.session.id.to_s.presence || request.request_id,
           ip: request.remote_ip,

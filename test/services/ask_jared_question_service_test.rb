@@ -51,4 +51,16 @@ class AskJaredQuestionServiceTest < ActiveSupport::TestCase
 
     assert_raises(ArgumentError) { service.call(raw_token: @raw_token, question: "x" * 21, session_id: "session-1", request_id: "request-3") }
   end
+
+  test "allows an owner preview without token usage or engagement records" do
+    entry = KnowledgeEntry.create!(title: "Approved fact", body: "A recruiter-safe fact.", entry_type: "fact", approval_status: "approved", visibility: "recruiter_visible", source_type: "public_site", source_reference: "owner-preview", source_fingerprint: "preview")
+    provider = FakeProvider.new({ "status" => "answer", "answer" => "Supported.", "evidence_ids" => [ entry.id.to_s ], "source_urls" => [] })
+    service = AskJared::QuestionService.new(token_service: @token_service, provider: provider)
+
+    response = service.call(raw_token: nil, question: "What is approved?", session_id: "owner-session", request_id: "owner-request", admin_preview: true)
+
+    assert_equal "answer", response["status"]
+    assert_empty EngagementEvent.all
+    assert_empty AskUsageEvent.all
+  end
 end

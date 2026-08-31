@@ -1,6 +1,8 @@
 require "test_helper"
 
 class AskControllerTest < ActionDispatch::IntegrationTest
+  include Devise::Test::IntegrationHelpers
+
   setup do
     EngagementEvent.delete_all
     AskToken.delete_all
@@ -38,5 +40,28 @@ class AskControllerTest < ActionDispatch::IntegrationTest
     get "/ask", params: { t: available_raw }
 
     assert_response :not_found
+  end
+
+  test "allows the authenticated admin to preview Ask Jared without a token" do
+    admin = AdminUser.create!(email: "owner@example.com", password: "a-secure-password")
+    sign_in admin
+
+    get "/ask"
+
+    assert_response :success
+    assert_select "p", /owner session/
+    assert_select "input[name='admin_preview'][value='1']"
+    assert_select "input[name='authenticity_token']"
+    assert_equal 0, EngagementEvent.count
+  end
+
+  test "renders a direct-share token without an opportunity" do
+    token, raw = @token_service.mint_direct_share!
+
+    get "/ask", params: { t: raw }
+
+    assert_response :success
+    assert_equal "direct_share", token.reload.access_scope
+    assert_nil token.opportunity
   end
 end

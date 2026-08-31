@@ -19,6 +19,7 @@ module AskJared
         end
         token = @token_service.resolve(raw_token)
         raise ActiveRecord::RecordNotFound, "Ask token is invalid or unavailable" unless token
+        raise ActiveRecord::RecordNotFound, "Ask token is not an opportunity token" unless token.access_scope == "opportunity"
         if opportunity.company != company || opportunity.role_title != role_title
           raise SubmissionConflict, "External opportunity details do not match the existing record"
         end

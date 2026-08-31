@@ -12,14 +12,21 @@ module AskJared
       @secret = secret
     end
 
-    def mint!(expires_at: nil)
+    def mint!(expires_at: nil, access_scope: "opportunity")
       raw_token = SecureRandom.urlsafe_base64(TOKEN_BYTES)
       token = AskToken.create!(
         token_digest: digest(raw_token),
         token_prefix: raw_token.first(8),
         status: "available",
+        access_scope: access_scope,
         expires_at: expires_at
       )
+      [ token, raw_token ]
+    end
+
+    def mint_direct_share!
+      token, raw_token = mint!(expires_at: CLAIM_LIFETIME.from_now, access_scope: "direct_share")
+      token.update!(status: "claimed", claim_key: "direct:#{SecureRandom.uuid}", claimed_at: Time.current)
       [ token, raw_token ]
     end
 
@@ -32,7 +39,8 @@ module AskJared
     end
 
     def recruiter_accessible?(token)
-      token.present? && token.opportunity.present? && token.status.in?(%w[claimed submitted]) && !token.expires_at&.past?
+      token.present? && token.status.in?(%w[claimed submitted]) &&
+        (token.opportunity.present? || token.access_scope == "direct_share") && !token.expires_at&.past?
     end
 
     def claim!(raw_token:, external_id:, company:, role_title:, tracker_source: nil)

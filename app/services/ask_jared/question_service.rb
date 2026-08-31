@@ -12,12 +12,14 @@ module AskJared
       @usage_guard = usage_guard
     end
 
-    def call(raw_token:, question:, session_id:, ip: nil, request_id:)
+    def call(raw_token:, question:, session_id:, ip: nil, request_id:, admin_preview: false)
       token = @token_service.resolve(raw_token)
-      raise ActiveRecord::RecordNotFound, "Ask token is invalid or unavailable" unless @token_service.recruiter_accessible?(token)
+      unless admin_preview
+        raise ActiveRecord::RecordNotFound, "Ask token is invalid or unavailable" unless @token_service.recruiter_accessible?(token)
+      end
       validate_question!(question)
       session_digest = @usage_guard.digest_session(session_id)
-      @usage_guard.check!(token: token, session_digest: session_digest)
+      @usage_guard.check!(token: token, session_digest: session_digest) unless admin_preview
 
       entries = @retriever.call(question)
       evidence_ids = entries.map { |entry| entry.id.to_s }
@@ -27,9 +29,11 @@ module AskJared
       response["evidence_ids"] = response["evidence_ids"] & evidence_ids
       response["source_urls"] = response["source_urls"] & source_urls
 
-      @engagement_service.record!(raw_token: raw_token, event_type: "question_submitted", session_id: session_id, ip: ip, event_key: "#{request_id}:question")
-      @engagement_service.record!(raw_token: raw_token, event_type: "answer_returned", session_id: session_id, ip: ip, event_key: "#{request_id}:answer")
-      @usage_guard.record!(token: token, session_digest: session_digest, request_id: request_id, status: "completed", estimated_cost_cents: entries.empty? ? 0 : 1)
+      unless admin_preview
+        @engagement_service.record!(raw_token: raw_token, event_type: "question_submitted", session_id: session_id, ip: ip, event_key: "#{request_id}:question")
+        @engagement_service.record!(raw_token: raw_token, event_type: "answer_returned", session_id: session_id, ip: ip, event_key: "#{request_id}:answer")
+        @usage_guard.record!(token: token, session_digest: session_digest, request_id: request_id, status: "completed", estimated_cost_cents: entries.empty? ? 0 : 1)
+      end
       response
     end
 
