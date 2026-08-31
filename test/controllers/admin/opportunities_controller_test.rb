@@ -22,7 +22,7 @@ class Admin::OpportunitiesControllerTest < ActionDispatch::IntegrationTest
     get "/admin/opportunities"
 
     assert_response :success
-    assert_select "h2", "Acme · Engineer"
+    assert_select "a.admin-table__primary", "Acme · Engineer"
     assert_no_match(/session_digest|ip_digest|token_digest/, response.body)
   end
 

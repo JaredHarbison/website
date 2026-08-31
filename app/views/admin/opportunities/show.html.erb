@@ -1,13 +1,43 @@
 <% content_for :title, "Opportunity detail · Ask Jared admin" %>
 
-<section class="admin-dashboard">
-  <p><%= link_to "Recruiter intelligence", admin_opportunities_path %></p>
-  <h1><%= @summary[:company] %> · <%= @summary[:role_title] %></h1>
-  <p>Tracker ID: <%= @summary[:external_id] %></p>
-  <dl>
-    <% @summary.each do |key, value| %>
-      <dt><%= key.to_s.humanize %></dt>
-      <dd><%= value.nil? || value == "" ? "—" : value %></dd>
-    <% end %>
-  </dl>
-</section>
+<main class="site-main admin-main" aria-labelledby="opportunity-title">
+  <%= render "admin/navigation" %>
+  <p><%= link_to "← Recruiter intelligence", admin_opportunities_path, class: "admin-back-link" %></p>
+  <header class="admin-page-header">
+    <p class="eyebrow">Opportunity detail</p>
+    <h1 id="opportunity-title"><%= @summary[:company] %> · <%= @summary[:role_title] %></h1>
+    <p class="admin-meta">Tracker ID: <code><%= @summary[:external_id] %></code></p>
+  </header>
+
+  <div class="admin-detail-grid">
+    <section class="admin-panel" aria-labelledby="opportunity-status-title">
+      <h2 id="opportunity-status-title">Opportunity & status</h2>
+      <dl class="admin-detail-list">
+        <dt>Company</dt><dd><%= @summary[:company] %></dd>
+        <dt>Role</dt><dd><%= @summary[:role_title] %></dd>
+        <dt>Application</dt><dd><span class="status-badge status-badge--<%= @summary[:application_state] %>"><%= @summary[:application_state].presence || "Not submitted" %></span></dd>
+        <dt>Submitted</dt><dd><%= @summary[:submitted_at] || "—" %></dd>
+        <dt>Token</dt><dd><span class="status-badge status-badge--<%= @summary[:token_state] || "none" %>"><%= @summary[:token_state] || "Not assigned" %></span></dd>
+      </dl>
+    </section>
+
+    <section class="admin-panel" aria-labelledby="engagement-title">
+      <h2 id="engagement-title">Engagement</h2>
+      <dl class="admin-detail-list">
+        <dt>First meaningful engagement</dt><dd><%= @summary[:first_meaningful_engagement_at] || "—" %></dd>
+        <dt>Last meaningful engagement</dt><dd><%= @summary[:last_meaningful_engagement_at] || "—" %></dd>
+        <dt>Meaningful sessions</dt><dd><%= @summary[:meaningful_session_count] %></dd>
+        <dt>Questions</dt><dd><%= @summary[:meaningful_question_count] %></dd>
+        <dt>Possible internal share</dt><dd><%= @summary[:possible_internal_share] ? "Possible · #{@summary[:internal_share_confidence]} confidence" : "None indicated" %></dd>
+      </dl>
+    </section>
+
+    <section class="admin-panel" aria-labelledby="usage-title">
+      <h2 id="usage-title">Usage & follow-up</h2>
+      <dl class="admin-detail-list">
+        <dt>Ask usage cost</dt><dd><%= @summary[:usage_cost_cents] %>¢</dd>
+        <dt>Follow-up candidate</dt><dd><%= @summary[:follow_up_candidate] ? "Yes" : "No" %></dd>
+      </dl>
+    </section>
+  </div>
+</main>

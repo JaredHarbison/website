@@ -1,45 +1,59 @@
 <% content_for :title, "Knowledge entries · Ask Jared admin" %>
 
-<section class="admin-dashboard">
-  <p><%= link_to "Ask Jared admin", admin_root_path %></p>
-  <h1>Knowledge entries</h1>
-  <p>Only entries marked approved and recruiter-visible can be retrieved by Ask Jared.</p>
+<main class="site-main admin-main" aria-labelledby="knowledge-title">
+  <%= render "admin/navigation" %>
+  <header class="admin-page-header">
+    <p class="eyebrow">Ask Jared / Evidence</p>
+    <h1 id="knowledge-title">Knowledge entries</h1>
+    <p class="admin-lede">Review and approve only the claims that are safe and useful for recruiter-facing answers.</p>
+  </header>
 
-  <nav aria-label="Knowledge entry filters">
-    <%= link_to "All", admin_knowledge_entries_path %>
+  <nav class="admin-filter-tabs" aria-label="Knowledge entry filters">
+    <%= link_to "All", admin_knowledge_entries_path, class: (params[:status].blank? ? "is-active" : "") %>
     <% KnowledgeEntry::APPROVAL_STATUSES.each do |status| %>
-      <%= link_to status.humanize, admin_knowledge_entries_path(status: status) %>
+      <%= link_to status.humanize, admin_knowledge_entries_path(status: status), class: (params[:status] == status ? "is-active" : "") %>
     <% end %>
   </nav>
 
-  <% if flash[:notice] %><p role="status"><%= flash[:notice] %></p><% end %>
-  <% if flash[:alert] %><p role="alert"><%= flash[:alert] %></p><% end %>
+  <% if flash[:notice] %><p class="admin-flash admin-flash--notice" role="status"><%= flash[:notice] %></p><% end %>
+  <% if flash[:alert] %><p class="admin-flash admin-flash--alert" role="alert"><%= flash[:alert] %></p><% end %>
 
-  <% @knowledge_entries.each do |entry| %>
-    <article>
-      <h2><%= entry.title %></h2>
-      <p><%= entry.entry_type.humanize %> · <%= entry.source_type.humanize %> · updated <%= entry.updated_at.to_date %></p>
-      <p><%= entry.short_body.presence || truncate(entry.body, length: 280) %></p>
-      <p>Source: <%= entry.source_reference %></p>
-      <%= form_with model: entry, url: admin_knowledge_entry_path(entry), method: :patch do |form| %>
-        <%= form.label :title %>
-        <%= form.text_field :title %>
-        <%= form.label :body %>
-        <%= form.text_area :body, rows: 5 %>
-        <%= form.label :short_body %>
-        <%= form.text_area :short_body, rows: 2 %>
-        <%= form.label :source_url %>
-        <%= form.url_field :source_url %>
-        <%= form.label :public_url %>
-        <%= form.url_field :public_url %>
-        <%= form.label :approval_status %>
-        <%= form.select :approval_status, KnowledgeEntry::APPROVAL_STATUSES %>
-        <%= form.label :visibility %>
-        <%= form.select :visibility, KnowledgeEntry::VISIBILITIES %>
-        <%= form.label :reviewer_note %>
-        <%= form.text_area :reviewer_note, rows: 2 %>
-        <%= form.submit "Save review" %>
+  <% if @knowledge_entries.any? %>
+    <div class="admin-entry-list">
+      <% @knowledge_entries.each do |entry| %>
+        <article class="admin-entry-card">
+          <div class="admin-entry-card__header">
+            <div>
+              <span class="admin-meta"><%= entry.entry_type.humanize %> · <%= entry.source_type.humanize %></span>
+              <h2><%= entry.title %></h2>
+            </div>
+            <span class="status-badge status-badge--<%= entry.approval_status %>"><%= entry.approval_status.humanize %></span>
+          </div>
+          <p class="admin-entry-card__summary"><%= entry.short_body.presence || truncate(entry.body, length: 280) %></p>
+          <p class="admin-meta">Updated <%= entry.updated_at.to_date %> · Source: <%= entry.source_reference.presence || "Not specified" %></p>
+          <details class="admin-review-details">
+            <summary>Edit review</summary>
+            <%= form_with model: entry, url: admin_knowledge_entry_path(entry), method: :patch, class: "admin-form" do |form| %>
+              <div class="admin-form__grid">
+                <div class="admin-field admin-field--wide"><%= form.label :title %><%= form.text_field :title %></div>
+                <div class="admin-field admin-field--wide"><%= form.label :body %><%= form.text_area :body, rows: 5 %></div>
+                <div class="admin-field"><%= form.label :short_body %><%= form.text_area :short_body, rows: 2 %></div>
+                <div class="admin-field"><%= form.label :reviewer_note %><%= form.text_area :reviewer_note, rows: 2 %></div>
+                <div class="admin-field"><%= form.label :source_url %><%= form.url_field :source_url %></div>
+                <div class="admin-field"><%= form.label :public_url %><%= form.url_field :public_url %></div>
+                <div class="admin-field"><%= form.label :approval_status %><%= form.select :approval_status, KnowledgeEntry::APPROVAL_STATUSES %></div>
+                <div class="admin-field"><%= form.label :visibility %><%= form.select :visibility, KnowledgeEntry::VISIBILITIES %></div>
+              </div>
+              <%= form.submit "Save review", class: "button-link button-link--primary" %>
+            <% end %>
+          </details>
+        </article>
       <% end %>
-    </article>
+    </div>
+  <% else %>
+    <div class="admin-empty-state">
+      <h2>No entries match this filter</h2>
+      <p>Try another review status, or return to the overview for the current inventory.</p>
+    </div>
   <% end %>
-</section>
+</main>

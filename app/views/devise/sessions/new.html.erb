@@ -1,0 +1,29 @@
+<% content_for :title, "Admin sign in · Ask Jared" %>
+
+<main class="site-main auth-main" aria-labelledby="sign-in-title">
+  <div class="auth-card">
+    <p class="eyebrow">Ask Jared / Owner access</p>
+    <h1 id="sign-in-title">Admin sign in</h1>
+    <p class="auth-card__lede">Sign in to review the professional knowledge base and recruiter intelligence.</p>
+
+    <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "auth-form" }) do |f| %>
+      <div class="auth-field">
+        <%= f.label :email %>
+        <%= f.email_field :email, autofocus: true, autocomplete: "email", required: true %>
+      </div>
+      <div class="auth-field">
+        <%= f.label :password %>
+        <%= f.password_field :password, autocomplete: "current-password", required: true %>
+      </div>
+      <% if devise_mapping.rememberable? %>
+        <label class="auth-checkbox"><%= f.check_box :remember_me %><span>Remember me</span></label>
+      <% end %>
+      <%= f.submit "Sign in", class: "button-link button-link--primary auth-form__submit" %>
+    <% end %>
+
+    <% if resource.errors.any? %>
+      <div class="auth-error" role="alert"><%= resource.errors.full_messages.to_sentence %></div>
+    <% end %>
+    <p class="auth-card__footer"><%= link_to "Return to portfolio", root_path, class: "admin-text-link" %></p>
+  </div>
+</main>

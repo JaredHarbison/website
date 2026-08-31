@@ -1,21 +1,49 @@
-<% content_for :title, "Ask Jared Admin" %>
+<% content_for :title, "Admin overview · Ask Jared" %>
 
-<section class="admin-dashboard">
-  <p><%= link_to "Knowledge entries", admin_knowledge_entries_path %> · <%= link_to "Recruiter intelligence", admin_opportunities_path %></p>
-  <h1>Ask Jared admin</h1>
-  <p>Review evidence before it becomes available to recruiter-facing answers.</p>
+<main class="site-main admin-main" aria-labelledby="admin-title">
+  <%= render "admin/navigation" %>
+  <header class="admin-page-header">
+    <p class="eyebrow">Ask Jared / Admin</p>
+    <h1 id="admin-title">Overview</h1>
+    <p class="admin-lede">Review professional evidence before it becomes available to recruiter-facing answers.</p>
+  </header>
 
-  <dl>
-    <% KnowledgeEntry::APPROVAL_STATUSES.each do |status| %>
-      <dt><%= status.humanize %></dt>
-      <dd><%= @knowledge_counts.fetch(status, 0) %></dd>
+  <section aria-labelledby="review-status-title">
+    <div class="admin-section-heading">
+      <h2 id="review-status-title">Knowledge review</h2>
+      <span class="admin-meta">Current entries</span>
+    </div>
+    <div class="admin-summary-grid">
+      <% KnowledgeEntry::APPROVAL_STATUSES.each do |status| %>
+        <%= link_to admin_knowledge_entries_path(status: status), class: "admin-summary-card" do %>
+          <span class="admin-summary-card__label"><%= status.humanize %></span>
+          <strong class="admin-summary-card__value"><%= @knowledge_counts.fetch(status, 0) %></strong>
+          <span class="admin-summary-card__action">Review entries →</span>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+
+  <section class="admin-panel" aria-labelledby="recent-title">
+    <div class="admin-section-heading">
+      <h2 id="recent-title">Recently updated</h2>
+      <%= link_to "View all entries", admin_knowledge_entries_path, class: "admin-text-link" %>
+    </div>
+    <% if @recent_entries.any? %>
+      <ul class="admin-recent-list">
+        <% @recent_entries.each do |entry| %>
+          <li>
+            <%= link_to entry.title, admin_knowledge_entries_path(status: entry.approval_status), class: "admin-recent-list__title" %>
+            <span class="status-badge status-badge--<%= entry.approval_status %>"><%= entry.approval_status.humanize %></span>
+            <time class="admin-meta" datetime="<%= entry.updated_at.iso8601 %>"><%= entry.updated_at.to_date %></time>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <div class="admin-empty-state">
+        <h3>No knowledge entries yet</h3>
+        <p>Imported and discovered evidence will appear here for review.</p>
+      </div>
     <% end %>
-  </dl>
-
-  <h2>Recently updated</h2>
-  <ul>
-    <% @recent_entries.each do |entry| %>
-      <li><%= link_to entry.title, admin_knowledge_entries_path(status: entry.approval_status) %> (<%= entry.approval_status %>)</li>
-    <% end %>
-  </ul>
-</section>
+  </section>
+</main>
