@@ -131,7 +131,7 @@ entry to `needs_review` when its source evidence changes. Nothing is
 auto-approved or recruiter-visible.
 
 The public retriever queries `approval_status=approved` and
-`visibility=public` before assembling limited context. Candidate, rejected,
+`visibility=recruiter_visible` before assembling limited context. Candidate, rejected,
 private, and needs-review records are filtered at the storage/service boundary,
 not merely hidden by prompt instructions.
 
@@ -161,6 +161,30 @@ Admin actions require separate authorization and are audited. Logs store
 minimal anonymous metadata, status, evidence IDs, latency, and cost estimates;
 they do not store raw source text or model secrets.
 
+## Implemented operational slice
+
+The pre-minted token pool is maintained by `ask_jared:refill_token_pool`. It
+uses `ASK_JARED_TOKEN_POOL_MINIMUM` and `ASK_JARED_TOKEN_POOL_TARGET`, tops up
+only when available inventory is below the minimum, and uses a Postgres
+transaction advisory lock to prevent concurrent Heroku workers from overfilling
+the pool. Heroku Scheduler should run this rake task daily; the task performs
+the job synchronously so it remains easy to operate and observe.
+
+The protected Sheets integration endpoint is:
+
+```text
+POST /api/job_search/opportunities/submit
+X-Job-Search-Key: <JOB_SEARCH_SYNC_TOKEN>
+```
+
+It accepts `raw_token`, `external_id`, `company`, `role_title`, optional
+`tracker_source`, and optional `submitted_at`. It associates the token with the
+stable opportunity ID, marks both the token and opportunity submitted, returns
+the usable AskLink, and is safe to retry for the same association. The
+credential is a Rails/Heroku config var and is intentionally separate from
+Devise and all admin permissions. The endpoint is narrowly scoped: it cannot
+approve knowledge, query production, or generate recruiter answers.
+
 ## MVP implementation plan
 
 1. Add a backend-neutral knowledge contract and explicit importer with tests for
@@ -179,8 +203,8 @@ they do not store raw source text or model secrets.
    assumptions, and a follow-up roadmap.
 
 Actual anecdote synchronization, production metrics, magic-link delivery, and
-API deployment remain gated on supplying the source export, choosing a hosting
-provider, and configuring secrets outside GitHub Pages.
+API deployment remain gated on supplying the source export, identifying the
+Heroku app, and configuring secrets outside GitHub Pages.
 
 ## Jared follow-up actions
 
@@ -201,8 +225,10 @@ the workbooks.
 - Provide legitimate read-only production analytics access only if a proposed
   metric needs verification. Recruiter requests must never receive production
   credentials.
-- Install the delivered Apps Script as an installable `onEdit` trigger and run
-  its safe test procedure after workbook mapping is confirmed.
+- Install the Apps Script as an installable `onEdit` trigger and run its safe
+  test procedure after workbook mapping is confirmed. The script still needs
+  to be delivered in the next integration slice; its credential belongs in
+  Apps Script Script Properties, never in cells.
 - Review and explicitly approve candidate knowledge entries before enabling
   recruiter-visible retrieval.
 
@@ -233,10 +259,12 @@ model request is made.
 
 ## Follow-up roadmap
 
-- MVP: importer contract, approval state, approved-only retrieval contract,
-  structured response validation, static entry point, and hosted API boundary.
-- Next: managed Postgres/pgvector deployment, admin review UI, embedding jobs,
-  Turnstile, rate/cost dashboards, and verified work-email links.
-- Later: signed opportunity context, controlled job-description comparison,
-  interview-derived entries, evaluation datasets, answer-quality review, and an
-  edge deployment if the traffic pattern justifies it.
+- Complete now: importer contract, approval state, approved-only retrieval,
+  structured response validation, token-gated Ask endpoint, admin review UI,
+  token pool refill, and the protected submission boundary.
+- Next: workbook column mapping, installable Apps Script submission sync,
+  engagement synchronization back to the shared ledger, and actual pgvector
+  semantic retrieval on Heroku.
+- Later: Turnstile, verified work-email links, controlled job-description
+  comparison, interview-derived entries, evaluation datasets, and answer-
+  quality review.
