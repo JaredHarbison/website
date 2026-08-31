@@ -1,0 +1,45 @@
+<% content_for :title, "Knowledge entries · Ask Jared admin" %>
+
+<section class="admin-dashboard">
+  <p><%= link_to "Ask Jared admin", admin_root_path %></p>
+  <h1>Knowledge entries</h1>
+  <p>Only entries marked approved and recruiter-visible can be retrieved by Ask Jared.</p>
+
+  <nav aria-label="Knowledge entry filters">
+    <%= link_to "All", admin_knowledge_entries_path %>
+    <% KnowledgeEntry::APPROVAL_STATUSES.each do |status| %>
+      <%= link_to status.humanize, admin_knowledge_entries_path(status: status) %>
+    <% end %>
+  </nav>
+
+  <% if flash[:notice] %><p role="status"><%= flash[:notice] %></p><% end %>
+  <% if flash[:alert] %><p role="alert"><%= flash[:alert] %></p><% end %>
+
+  <% @knowledge_entries.each do |entry| %>
+    <article>
+      <h2><%= entry.title %></h2>
+      <p><%= entry.entry_type.humanize %> · <%= entry.source_type.humanize %> · updated <%= entry.updated_at.to_date %></p>
+      <p><%= entry.short_body.presence || truncate(entry.body, length: 280) %></p>
+      <p>Source: <%= entry.source_reference %></p>
+      <%= form_with model: entry, url: admin_knowledge_entry_path(entry), method: :patch do |form| %>
+        <%= form.label :title %>
+        <%= form.text_field :title %>
+        <%= form.label :body %>
+        <%= form.text_area :body, rows: 5 %>
+        <%= form.label :short_body %>
+        <%= form.text_area :short_body, rows: 2 %>
+        <%= form.label :source_url %>
+        <%= form.url_field :source_url %>
+        <%= form.label :public_url %>
+        <%= form.url_field :public_url %>
+        <%= form.label :approval_status %>
+        <%= form.select :approval_status, KnowledgeEntry::APPROVAL_STATUSES %>
+        <%= form.label :visibility %>
+        <%= form.select :visibility, KnowledgeEntry::VISIBILITIES %>
+        <%= form.label :reviewer_note %>
+        <%= form.text_area :reviewer_note, rows: 2 %>
+        <%= form.submit "Save review" %>
+      <% end %>
+    </article>
+  <% end %>
+</section>

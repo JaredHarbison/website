@@ -1,0 +1,21 @@
+<% content_for :title, "Ask Jared Admin" %>
+
+<section class="admin-dashboard">
+  <p><%= link_to "Knowledge entries", admin_knowledge_entries_path %></p>
+  <h1>Ask Jared admin</h1>
+  <p>Review evidence before it becomes available to recruiter-facing answers.</p>
+
+  <dl>
+    <% KnowledgeEntry::APPROVAL_STATUSES.each do |status| %>
+      <dt><%= status.humanize %></dt>
+      <dd><%= @knowledge_counts.fetch(status, 0) %></dd>
+    <% end %>
+  </dl>
+
+  <h2>Recently updated</h2>
+  <ul>
+    <% @recent_entries.each do |entry| %>
+      <li><%= link_to entry.title, admin_knowledge_entries_path(status: entry.approval_status) %> (<%= entry.approval_status %>)</li>
+    <% end %>
+  </ul>
+</section>

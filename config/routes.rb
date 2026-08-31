@@ -5,6 +5,11 @@ Rails.application.routes.draw do
 
   devise_for :admin_users, path: "admin/session"
 
+  namespace :admin do
+    root "dashboard#index"
+    resources :knowledge_entries, only: %i[index update]
+  end
+
   get "ask" => "ask#show"
   post "api/ask/questions" => "api/ask/questions#create"
 
