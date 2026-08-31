@@ -54,7 +54,6 @@ function askJaredProcessPendingClaims() {
     askJaredTrackerSheetNames_().forEach(function(sheetName) {
       var sheet = workbook.getSheetByName(sheetName);
       if (!sheet || sheet.getLastRow() < 2) return;
-      var rows = sheet.getRange(2, 1, sheet.getLastRow() - 1, ASK_JARED_SYNC_MESSAGE_COL).getValues();
       var pendingRows = sheet.getRange(2, ASK_JARED_CLAIM_STATE_COL, sheet.getLastRow() - 1, 1).getValues();
       pendingRows.forEach(function(claimValues, offset) {
         var row = offset + 2;
