@@ -9,8 +9,18 @@ gem "puma", ">= 5.0"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 
+# Runtime data store for Ask Jared on Heroku.
+gem "pg", "~> 1.5"
+
+# Jared-only administration; recruiters use opportunity tokens instead.
+gem "devise", "~> 5.0"
+
 # Render repository-backed Markdown content without a database.
 gem "redcarpet", "~> 3.6"
+
+group :development, :test do
+  gem "sqlite3", "~> 2.0"
+end
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem "bcrypt", "~> 3.1.7"
