@@ -2,6 +2,9 @@ class AskController < ApplicationController
   rescue_from ActiveRecord::RecordNotFound, with: :not_found
 
   def show
+    response.headers["Referrer-Policy"] = "no-referrer"
+    response.headers["X-Robots-Tag"] = "noindex, nofollow, noarchive"
+    expires_now
     @token = token_service.resolve(params[:t])
     raise ActiveRecord::RecordNotFound unless token_service.recruiter_accessible?(@token)
 

@@ -1,3 +1,7 @@
+<% content_for :head do %>
+  <meta name="robots" content="noindex, nofollow, noarchive">
+<% end %>
+
 <main class="site-main content-page ask-page" aria-labelledby="ask-title">
   <p class="eyebrow">Recruiter access</p>
   <h1 id="ask-title">Ask Jared</h1>
@@ -5,6 +9,7 @@
   <p>This private link is associated with a specific opportunity. Answers will use approved professional evidence and link to public case studies when relevant.</p>
 
   <form class="ask-form" action="/api/ask/questions" method="post">
+    <input type="hidden" name="t" value="<%= @token && params[:t] %>">
     <label for="ask-question">Your question</label>
     <textarea id="ask-question" name="question" rows="5" maxlength="600" required placeholder="What kind of engineer is Jared?"></textarea>
     <button class="button-link button-link--primary" type="submit">Ask Jared</button>
