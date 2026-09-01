@@ -18,6 +18,10 @@ class Admin::ShareLinksControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to "/admin"
     assert_match(%r{/ask\?t=}, flash[:direct_share_link])
+
+    follow_redirect!
+
+    assert_select ".admin-generated-link code", %r{/ask\?t=}
   end
 
   test "anonymous users cannot create a direct-share link" do
