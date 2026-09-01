@@ -65,13 +65,14 @@
       if (submit.disabled) return;
 
       var submittedQuestion = question.value.trim();
+      var formData = new FormData(form);
       submit.disabled = true;
       question.disabled = true;
       submit.textContent = "Finding evidence…";
 
       fetch(endpoint, {
         method: "POST",
-        body: new FormData(form),
+        body: formData,
         credentials: "same-origin",
         headers: { Accept: "application/json" }
       }).then(function (response) {

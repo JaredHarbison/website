@@ -72,6 +72,8 @@ class AskControllerTest < ActionDispatch::IntegrationTest
 
     assert_includes script, "event.preventDefault()"
     assert_includes script, "fetch(endpoint"
+    assert_includes script, "var formData = new FormData(form)"
+    assert_includes script, "body: formData"
     assert_includes script, "response.json()"
     assert_includes script, "Finding evidence…"
     assert_includes script, "Ask another question"
