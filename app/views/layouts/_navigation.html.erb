@@ -1,7 +1,7 @@
 <nav class="explorer" aria-label="Primary navigation">
   <ul class="explorer__tree">
     <li><%= navigation_link_to "About", about_path, class: "explorer__link explorer__link--root" %></li>
-    <li><%= navigation_link_to "Ask Jared", ask_path, class: "explorer__link explorer__link--root" %></li>
+    <li><%= navigation_link_to "Ask About Jared", ask_path, class: "explorer__link explorer__link--root" %></li>
 
     <li>
       <details class="explorer__section" <%= "open" if navigation_section_open?("case_studies") %>>

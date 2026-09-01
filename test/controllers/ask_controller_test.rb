@@ -28,7 +28,7 @@ class AskControllerTest < ActionDispatch::IntegrationTest
     get "/ask", params: { t: @raw_token }
 
     assert_response :success
-    assert_select "h1", "Ask Jared"
+    assert_select "h1", "Ask About Jared"
     assert_select "textarea[name='question']"
     assert_equal 1, EngagementEvent.where(event_type: "token_resolved").count
     assert_equal 1, EngagementEvent.where(event_type: "page_view").count
