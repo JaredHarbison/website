@@ -428,16 +428,7 @@ p {
 }
 
 .meta-label {
-  margin-bottom: -0.75rem;
-}
-
-.case-study-page > .meta-label {
-  color: var(--color-accent);
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.1em;
-  margin-top: 0.75rem;
-  text-transform: uppercase;
+  margin: 0;
 }
 
 .site-main p:not(.eyebrow):not(.lede),
@@ -516,8 +507,8 @@ p {
   padding: 0;
 }
 
-.case-study-page > .tag-list {
-  margin-top: 0;
+.meta-label + .tag-list {
+  margin-top: 0.35rem;
 }
 
 .tag-link {
