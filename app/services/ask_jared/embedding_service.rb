@@ -8,7 +8,7 @@ module AskJared
 
     def generate!(entry)
       vector = @provider.call(entry.recruiter_context)
-      entry.update!(embedding: vector, embedding_model: MODEL, embedding_generated_at: Time.current)
+      entry.update!(embedding: "[#{vector.join(',')}]", embedding_model: MODEL, embedding_generated_at: Time.current)
       entry
     end
   end
