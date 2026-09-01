@@ -197,6 +197,15 @@ function askJaredSubmitRow_(sheet, row, submittedDisplay, askId) {
     });
     var body = JSON.parse(response.getContentText() || '{}');
     if (response.getResponseCode() >= 200 && response.getResponseCode() < 300) {
+      try {
+        askJaredMarkPoolTokenSubmitted_(rawToken, askId);
+      } catch (poolError) {
+        // Rails accepted the submission. Never leave the Sheet-side row
+        // AVAILABLE after that point; keep the tracker recoverable so a later
+        // retry can reconcile the pool state without recycling the token.
+        askJaredWriteSync_(sheet, row, 'ERROR', 'Rails accepted; pool state update required');
+        return;
+      }
       if (body.ask_link) sheet.getRange(row, ASK_JARED_ASK_LINK_COL).setValue(body.ask_link);
       askJaredWriteSync_(sheet, row, 'SYNCED', 'Submitted to Rails');
     } else {
@@ -205,6 +214,15 @@ function askJaredSubmitRow_(sheet, row, submittedDisplay, askId) {
   } catch (error) {
     askJaredWriteSync_(sheet, row, 'ERROR', error.message);
   }
+}
+
+function askJaredMarkPoolTokenSubmitted_(rawToken, askId) {
+  var pool = askJaredPoolSheet_(SpreadsheetApp.getActive());
+  var match = askJaredPoolRows_(pool).filter(function(item) {
+    return item.state === 'CLAIMED' && item.token === rawToken && item.claimedAskId === askId;
+  })[0];
+  if (!match) throw new Error('Claimed pool token not found');
+  pool.getRange(match.row, 3).setValue('SUBMITTED');
 }
 
 function askJaredReleaseClaimForSentinel_(sheet, row, askId) {

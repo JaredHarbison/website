@@ -57,7 +57,7 @@ Create a protected tab named by `ASK_JARED_TOKEN_POOL_SHEET` with these headers:
 | --- | --- |
 | Inventory ID | Rails token record ID; non-secret inventory reference |
 | Ask Token | Raw bearer token; protect the tab and do not copy it into the ledger |
-| State | `AVAILABLE`, `CLAIMED`, or `SUBMITTED/CONSUMED` |
+| State | `AVAILABLE`, `CLAIMED`, `SUBMITTED`, or `REVOKED` |
 | Claimed External ID | Stable tracker/application ID, blank while available |
 | Exported At | Operational timestamp |
 
@@ -86,6 +86,15 @@ CLAIMED row for the same Ask ID, otherwise changes exactly one AVAILABLE row to
 CLAIMED, and writes only the AskLink to the tracker. The raw token is never
 written to another tracker column. Primary and secondary sessions coordinate by
 ordinary sheet writes, so they do not need authenticated HTTP.
+
+When the Applied trigger receives a successful Rails submission, it first
+changes the matching pool row (raw token plus Ask ID) from `CLAIMED` to
+`SUBMITTED`, then marks the tracker `SYNCED`. Refill and claim logic use only
+`AVAILABLE` rows, and orphan reconciliation uses only `CLAIMED` rows, so a
+submitted token cannot be recycled even if its tracker row later disappears.
+If Rails accepts the submission but the pool update fails, the tracker remains
+`ERROR` with a bounded recovery message; the token is never returned to
+`AVAILABLE`.
 
 At the start of each queue pass, the processor reconciles claimed pool rows
 whose `Claimed Ask ID` is no longer present in any configured active tracker.

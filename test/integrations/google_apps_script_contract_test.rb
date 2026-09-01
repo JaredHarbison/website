@@ -51,6 +51,14 @@ class GoogleAppsScriptContractTest < ActiveSupport::TestCase
     refute_includes @script, "targetHeaders.rawToken"
   end
 
+  test "marks successfully submitted pool tokens non-recyclable" do
+    assert_includes @script, "askJaredMarkPoolTokenSubmitted_(rawToken, askId)"
+    assert_includes @script, "function askJaredMarkPoolTokenSubmitted_(rawToken, askId)"
+    assert_includes @script, "item.state === 'CLAIMED' && item.token === rawToken && item.claimedAskId === askId"
+    assert_includes @script, "pool.getRange(match.row, 3).setValue('SUBMITTED')"
+    assert_includes @script, "Rails accepted; pool state update required"
+  end
+
   test "keeps pool and submission credentials separate" do
     assert_includes @script, "ASK_JARED_POOL_API_KEY"
     assert_includes @script, "ASK_JARED_SYNC_KEY"
