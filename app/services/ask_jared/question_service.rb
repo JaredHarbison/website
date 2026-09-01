@@ -52,7 +52,7 @@ module AskJared
 
     class NullProvider
       def call(**)
-        { "status" => "insufficient_information", "answer" => "The Ask Jared answer service is not configured yet.", "evidence_ids" => [], "source_urls" => [] }
+        { "status" => "insufficient_information", "answer" => "The answer service is not configured yet.", "evidence_ids" => [], "source_urls" => [] }
       end
     end
   end
