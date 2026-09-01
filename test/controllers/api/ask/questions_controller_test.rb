@@ -24,4 +24,18 @@ class ApiAskQuestionsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "insufficient_information", response.parsed_body["status"]
     assert_kind_of Array, response.parsed_body["evidence_ids"]
   end
+
+  test "accepts the recruiter form when the browser sends a null origin" do
+    previous = ActionController::Base.allow_forgery_protection
+    ActionController::Base.allow_forgery_protection = true
+
+    post "/api/ask/questions",
+      params: { t: @raw_token, question: "What kind of engineer is Jared?" },
+      headers: { "Origin" => "null" }
+
+    assert_response :success
+    assert_equal "insufficient_information", response.parsed_body["status"]
+  ensure
+    ActionController::Base.allow_forgery_protection = previous
+  end
 end
