@@ -101,4 +101,25 @@ class AskJaredAnecdoteImporterTest < ActiveSupport::TestCase
     assert_equal "candidate", entry.approval_status
     assert_equal 1, @store.entries.length
   end
+
+  test "maps a sheet row into structured recruiter-safe evidence" do
+    entry = @importer.sync_sheet_rows([
+      {
+        anecdote_id: "DOG-01", source_project: "Dogly SEO", situation: "SEO was weak",
+        what_i_did: "Modernized the site", technical_detail: "Added metadata",
+        product_result: "Improved search visibility", metric_evidence: "Scores rose from 15% to 85%",
+        competencies: "SEO; modernization", best_role_types: "Product engineer",
+        jd_signals: "SEO; performance", resume_visible: "Yes", source_link: "CV evidence",
+        confidence: "High", safe_claims: "Do not imply traffic impact"
+      }
+    ]).first
+
+    assert_equal "DOG-01", entry.source_reference
+    assert_equal "performance_story", entry.entry_type
+    assert_includes entry.body, "Situation: SEO was weak"
+    assert_includes entry.body, "Evidence: Scores rose from 15% to 85%"
+    assert_equal "Do not imply traffic impact", entry.metadata["safe_claims"]
+    assert_equal "candidate", entry.approval_status
+    assert_equal "private", entry.visibility
+  end
 end

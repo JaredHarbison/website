@@ -3,7 +3,44 @@ require "json"
 
 module AskJared
   class AnecdoteImporter
+    SHEET_COLUMNS = %w[
+      anecdote_id source_project situation what_i_did technical_detail product_result
+      metric_evidence competencies best_role_types jd_signals resume_visible source_link
+      confidence safe_claims
+    ].freeze
     IMPORT_FIELDS = %i[title body short_body entry_type confidence source_url public_url metadata].freeze
+
+    def self.record_from_sheet_row(row)
+      values = row.to_h.transform_keys(&:to_s)
+      source = values.fetch("source_project").to_s.strip
+      situation = values.fetch("situation").to_s.strip
+      action = values.fetch("what_i_did").to_s.strip
+      technical = values.fetch("technical_detail").to_s.strip
+      result = values.fetch("product_result").to_s.strip
+      evidence = values.fetch("metric_evidence").to_s.strip
+      safe_claims = values.fetch("safe_claims").to_s.strip
+      narrative = [
+        [ "Situation", situation ], [ "Action", action ], [ "Technical detail", technical ],
+        [ "Result", result ], [ "Evidence", evidence ]
+      ].filter_map { |label, value| "#{label}: #{value}" if value.present? }.join("\n")
+
+      {
+        "anecdote_id" => values.fetch("anecdote_id").to_s.strip,
+        "title" => source.presence || values.fetch("anecdote_id").to_s.strip,
+        "body" => narrative,
+        "short_body" => [ situation, action, result ].compact_blank.join(" ").truncate(500),
+        "entry_type" => entry_type_for(values),
+        "confidence" => values.fetch("confidence").to_s.strip,
+        "source_url" => values.fetch("source_link").to_s.strip.presence,
+        "public_url" => nil,
+        "metadata" => values.slice(
+          "anecdote_id", "source_project", "situation", "what_i_did", "technical_detail",
+          "product_result", "metric_evidence", "competencies", "best_role_types", "jd_signals",
+          "resume_visible", "source_link", "confidence", "safe_claims"
+        ),
+        "source_evidence" => values
+      }
+    end
 
     def initialize(store:, source_type: "anecdote")
       @store = store
@@ -12,6 +49,10 @@ module AskJared
 
     def sync(records)
       records.map { |record| sync_one(record) }
+    end
+
+    def sync_sheet_rows(rows)
+      sync(rows.map { |row| self.class.record_from_sheet_row(row) })
     end
 
     private
@@ -48,7 +89,7 @@ module AskJared
       entry.source_type = source_type
       entry.source_reference = source_reference
       entry.source_fingerprint = fingerprint
-      entry.metadata = (entry.metadata || {}).merge("anecdote_id" => source_reference)
+      entry.metadata = (entry.metadata || {}).merge(record["metadata"] || record[:metadata] || {}).merge("anecdote_id" => source_reference)
     end
 
     def fingerprint_for(value)
@@ -63,6 +104,16 @@ module AskJared
       when Array then value.map { |item| canonicalize(item) }
       else value
       end
+    end
+
+    def self.entry_type_for(values)
+      text = [ values["source_project"], values["what_i_did"], values["technical_detail"], values["jd_signals"] ].join(" ").downcase
+      return "performance_story" if text.match?(/performance|latency|pagination|speed|seo/)
+      return "integration_story" if text.match?(/integration|api|shopify|stripe|recharge|webhook/)
+      return "debugging_story" if text.match?(/debug|incident|failure|bug|reliability|security/)
+      return "product_story" if text.match?(/product|customer|revenue|onboarding|recommendation/)
+
+      "engineering_story"
     end
   end
 end
