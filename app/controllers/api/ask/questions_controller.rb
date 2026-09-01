@@ -2,7 +2,7 @@ module Api
   module Ask
     class QuestionsController < ApplicationController
       protect_from_forgery with: :null_session
-      skip_forgery_protection if: :bearer_authenticated_request?
+      skip_forgery_protection if: :trusted_request?
       rescue_from ActiveRecord::RecordNotFound, ArgumentError, with: :bad_request
       rescue_from AskJared::OpenAiProvider::ConfigurationError, AskJared::OpenAiProvider::ProviderError, with: :provider_unavailable
       rescue_from AskJared::UsageGuard::LimitExceeded, with: :rate_limited
@@ -21,8 +21,21 @@ module Api
 
       private
 
-      def bearer_authenticated_request?
-        request.headers["X-Ask-Token"].present? || params[:t].present?
+      def trusted_request?
+        return true if request.headers["X-Ask-Token"].present? || params[:t].present?
+
+        admin_preview_request_with_valid_token?
+      end
+
+      def admin_preview_request_with_valid_token?
+        return false unless current_admin_user.present? && params[:admin_preview].to_s == "1"
+        return false unless request.origin == "null"
+
+        valid_authenticity_token?(session, request_authenticity_token)
+      end
+
+      def request_authenticity_token
+        request.headers["X-CSRF-Token"].presence || params[:authenticity_token]
       end
 
       def question_service
