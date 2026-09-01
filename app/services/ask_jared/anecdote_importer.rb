@@ -42,9 +42,10 @@ module AskJared
       }
     end
 
-    def initialize(store:, source_type: "anecdote")
+    def initialize(store:, source_type: "anecdote", entry_class: nil)
       @store = store
       @source_type = source_type
+      @entry_class = entry_class
     end
 
     def sync(records)
@@ -74,7 +75,7 @@ module AskJared
     end
 
     def create_entry(record, source_reference, fingerprint)
-      entry = KnowledgeEntry.new
+      entry = (@entry_class || KnowledgeEntry).new
       update_import_fields(entry, record, source_reference, fingerprint)
       entry.approval_status = "candidate"
       entry.visibility = "private"

@@ -31,6 +31,26 @@
           </div>
           <p class="admin-entry-card__summary"><%= entry.short_body.presence || truncate(entry.body, length: 280) %></p>
           <p class="admin-meta">Updated <%= entry.updated_at.to_date %> · Source: <%= entry.source_reference.presence || "Not specified" %></p>
+          <% review_flags = Array(entry.metadata["review_flags"]).compact_blank %>
+          <% publication_holds = Array(entry.metadata["publication_holds"]).compact_blank %>
+          <% proposed_excerpts = Array(entry.metadata["proposed_recruiter_excerpts"]).compact_blank %>
+          <% ownership_review = entry.metadata["ownership_review"] %>
+          <% missing_methodology = Array(entry.metadata["missing_methodology"]).compact_blank %>
+          <% if review_flags.any? || publication_holds.any? || proposed_excerpts.any? || ownership_review.present? || missing_methodology.any? %>
+            <div class="admin-review-evidence">
+              <% if review_flags.any? %><p><strong>Review flags:</strong> <%= review_flags.to_sentence %></p><% end %>
+              <% if publication_holds.any? %><p><strong>Publication holds:</strong> <%= publication_holds.to_sentence %></p><% end %>
+              <% if missing_methodology.any? %><p><strong>Missing methodology:</strong> <%= missing_methodology.to_sentence %></p><% end %>
+              <% if proposed_excerpts.any? %>
+                <p><strong>Proposed recruiter excerpts (approval required):</strong></p>
+                <ul><% proposed_excerpts.each do |excerpt| %><li><%= excerpt %></li><% end %></ul>
+              <% end %>
+              <% if ownership_review.present? %>
+                <p><strong>Ownership review:</strong> <%= ownership_review["review_question"] %></p>
+                <ul><% Array(ownership_review["statements"]).each do |statement| %><li><%= statement %></li><% end %></ul>
+              <% end %>
+            </div>
+          <% end %>
           <details class="admin-review-details">
             <summary>Edit review</summary>
             <%= form_with model: entry, url: admin_knowledge_entry_path(entry), method: :patch, class: "admin-form" do |form| %>

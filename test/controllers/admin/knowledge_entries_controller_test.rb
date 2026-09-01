@@ -44,6 +44,22 @@ class Admin::KnowledgeEntriesControllerTest < ActionDispatch::IntegrationTest
     assert_not_nil @entry.approved_at
   end
 
+  test "admin review displays evidence holds and unresolved methodology" do
+    @entry.update!(metadata: {
+      "publication_holds" => [ "exact_commercial_figures" ],
+      "missing_methodology" => [ "comparison_window" ],
+      "review_flags" => [ "metric_methodology_review_required" ]
+    })
+    sign_in @admin
+
+    get "/admin/knowledge_entries"
+
+    assert_response :success
+    assert_includes response.body, "exact_commercial_figures"
+    assert_includes response.body, "comparison_window"
+    assert_includes response.body, "metric_methodology_review_required"
+  end
+
   test "admin review never exposes private token material" do
     sign_in @admin
 
