@@ -57,6 +57,7 @@ class AskJaredOpenAiProviderTest < ActiveSupport::TestCase
     assert_includes instruction, "Do not turn chronology, association, comparable behavior, correlation, or co-occurrence into causality"
     assert_includes instruction, "Project leadership does not imply sole authorship or people management"
     assert_includes instruction, "Never put internal evidence IDs in answer prose"
+    assert_includes instruction, "Recommend role families only when the supplied evidence demonstrates the relevant work"
     refute_includes instruction, "Shopify"
   end
 end
