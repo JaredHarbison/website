@@ -58,6 +58,9 @@ class AskJaredOpenAiProviderTest < ActiveSupport::TestCase
     assert_includes instruction, "Project leadership does not imply sole authorship or people management"
     assert_includes instruction, "Never put internal evidence IDs in answer prose"
     assert_includes instruction, "Recommend role families only when the supplied evidence demonstrates the relevant work"
+    assert_includes instruction, "do not generalize a missing context-specific experience into inability"
+    assert_includes instruction, "one well-supported example answers"
+    assert_includes instruction, "comparable conversion rates and other associated observations as observations"
     refute_includes instruction, "Shopify"
   end
 end

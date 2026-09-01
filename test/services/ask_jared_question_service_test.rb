@@ -67,12 +67,12 @@ class AskJaredQuestionServiceTest < ActiveSupport::TestCase
 
   test "sanitizes model markdown and internal evidence references before recruiter delivery" do
     entry = KnowledgeEntry.create!(title: "Approved fact", body: "A recruiter-safe fact.", entry_type: "fact", approval_status: "approved", visibility: "recruiter_visible", source_type: "public_site", source_reference: "sanitized", source_fingerprint: "sanitized")
-    provider = FakeProvider.new({ "status" => "answer", "answer" => "**Onboarding UX** improved. (Evidence [17])", "evidence_ids" => [ entry.id.to_s ], "source_urls" => [] })
+    provider = FakeProvider.new({ "status" => "answer", "answer" => "**Onboarding UX** improved. (Evidence [17]) &#x20; 1\\.", "evidence_ids" => [ entry.id.to_s ], "source_urls" => [] })
     service = AskJared::QuestionService.new(token_service: @token_service, provider: provider)
 
     response = service.call(raw_token: @raw_token, question: "What is approved?", session_id: "session-1", request_id: "request-sanitize")
 
-    assert_equal "Onboarding UX improved.", response["answer"]
+    assert_equal "Onboarding UX improved. 1.", response["answer"]
     refute_includes response["answer"], "17"
     refute_includes response["answer"], "**"
   end
