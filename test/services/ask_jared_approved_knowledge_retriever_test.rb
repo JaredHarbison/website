@@ -50,6 +50,7 @@ class AskJaredApprovedKnowledgeRetrieverTest < ActiveSupport::TestCase
   test "classifies synthesis signals as broad but leaves named questions narrow" do
     assert retriever.send(:broad_query?, "What technologies and systems has Jared demonstrated?")
     assert retriever.send(:broad_query?, "Tell me about work that was unfinished or unmeasured")
+    assert retriever.send(:broad_query?, "What did Jared learn about what should be improved next?")
     assert_not retriever.send(:broad_query?, "How much revenue did Shopify generate?")
     assert_not retriever.send(:broad_query?, "Has Jared dealt with concurrency or locking problems?")
   end

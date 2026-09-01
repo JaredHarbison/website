@@ -7,7 +7,8 @@ module AskJared
       /\b(?:technologies|systems|roles|examples)\b/,
       /\bstrongest evidence\b/,
       /\b(?:breadth|characteri[sz]ation)\b/,
-      /\b(?:unfinished|unmeasured|limitations?|unproven)\b/
+      /\b(?:unfinished|unmeasured|limitations?|unproven)\b/,
+      /\b(?:learned|learning|improved next|should be improved)\b/
     ].freeze
 
     def initialize(scope: ::KnowledgeEntry.recruiter_retrievable, embedding_provider: OpenAiEmbeddingProvider.new)
