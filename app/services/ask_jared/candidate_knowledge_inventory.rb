@@ -280,6 +280,8 @@ module AskJared
     def federation_checkout_commit
       stdout, status = Open3.capture2("git", "-C", federation_path, "rev-parse", "HEAD")
       status.success? ? stdout.strip : nil
+    rescue Errno::ENOENT
+      nil
     end
   end
 end
