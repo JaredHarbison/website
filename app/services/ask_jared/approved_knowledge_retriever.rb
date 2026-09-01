@@ -8,8 +8,10 @@ module AskJared
       /\bstrongest evidence\b/,
       /\b(?:breadth|characteri[sz]ation)\b/,
       /\b(?:unfinished|unmeasured|limitations?|unproven)\b/,
-      /\b(?:learned|learning|improved next|should be improved)\b/
+      /\b(?:learned|learning|improved next|should be improved)\b/,
+      /\bcommercial\b/
     ].freeze
+    SPECIFIC_QUERY_PATTERNS = /\b(?:shopify|stripe|refunds?|concurrenc|locking|paperclip|activestorage)\b/
 
     def initialize(scope: ::KnowledgeEntry.recruiter_retrievable, embedding_provider: OpenAiEmbeddingProvider.new)
       @scope = scope
@@ -44,6 +46,8 @@ module AskJared
 
     def broad_query?(question)
       text = question.to_s.downcase
+      return false if text.match?(SPECIFIC_QUERY_PATTERNS)
+
       BROAD_QUERY_PATTERNS.any? { |pattern| text.match?(pattern) }
     end
 

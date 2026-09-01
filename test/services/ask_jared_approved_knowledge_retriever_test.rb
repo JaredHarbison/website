@@ -51,8 +51,10 @@ class AskJaredApprovedKnowledgeRetrieverTest < ActiveSupport::TestCase
     assert retriever.send(:broad_query?, "What technologies and systems has Jared demonstrated?")
     assert retriever.send(:broad_query?, "Tell me about work that was unfinished or unmeasured")
     assert retriever.send(:broad_query?, "What did Jared learn about what should be improved next?")
+    assert retriever.send(:broad_query?, "What is the strongest commercial result associated with Jared's work?")
     assert_not retriever.send(:broad_query?, "How much revenue did Shopify generate?")
     assert_not retriever.send(:broad_query?, "Has Jared dealt with concurrency or locking problems?")
+    assert_not retriever.send(:broad_query?, "How much experience does Jared have with Stripe, refunds, and checkout systems?")
   end
 
   test "diversifies broad candidates toward product learning and independent evidence" do
