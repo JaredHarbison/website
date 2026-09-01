@@ -55,6 +55,31 @@ class AskControllerTest < ActionDispatch::IntegrationTest
     assert_equal 0, EngagementEvent.count
   end
 
+  test "renders the Ask About Jared state-transition contract" do
+    get "/ask", params: { t: @raw_token }
+
+    assert_response :success
+    assert_select "[data-ask-controller][data-ask-endpoint='/api/ask/questions']"
+    assert_select "form[data-ask-form][action='/api/ask/questions']"
+    assert_select "textarea[data-ask-question]"
+    assert_select "button[data-ask-submit]", "Ask About Jared"
+    assert_select "script[src*='ask']"
+    refute_includes response.body, "evidence_ids"
+  end
+
+  test "Ask About Jared frontend owns safe asynchronous state transitions" do
+    script = Rails.root.join("app/assets/javascripts/ask.js").read
+
+    assert_includes script, "event.preventDefault()"
+    assert_includes script, "fetch(endpoint"
+    assert_includes script, "response.json()"
+    assert_includes script, "Finding evidence…"
+    assert_includes script, "Ask another question"
+    assert_includes script, "replaceChildren(form)"
+    assert_includes script, "text.textContent = answer"
+    refute_includes script, "innerHTML"
+  end
+
   test "renders a manual direct-share token through the normal opportunity lifecycle" do
     opportunity, _token, raw = AskJared::ManualShareService.new.create!(label: "Portfolio review", purpose: "General introduction")
 
