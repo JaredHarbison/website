@@ -3,6 +3,13 @@
 <% end %>
 
 <main class="site-main content-page ask-page" aria-labelledby="ask-title">
+  <% if @ask_unavailable %>
+    <p class="eyebrow">Recruiter access</p>
+    <h1 id="ask-title">Ask Jared</h1>
+    <p class="lede">This experience is available through a private AskLink.</p>
+    <p>Ask Jared links are shared directly with hiring teams and are not open as a public chatbot.</p>
+    <p><%= link_to "Return to portfolio", root_path, class: "button-link" %></p>
+  <% else %>
   <p class="eyebrow"><%= @admin_preview ? "Owner preview" : "Recruiter access" %></p>
   <h1 id="ask-title">Ask Jared</h1>
   <p class="lede">Ask about Jared's engineering experience, product work, technical decisions, and measurable outcomes.</p>
@@ -16,4 +23,5 @@
     <textarea id="ask-question" name="question" rows="5" maxlength="600" required placeholder="What kind of engineer is Jared?"></textarea>
     <button class="button-link button-link--primary" type="submit">Ask Jared</button>
   </form>
+  <% end %>
 </main>

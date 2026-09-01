@@ -5,7 +5,8 @@ module Admin
         label: params[:label], purpose: params[:purpose], company: params[:company], expires_at: expiration_time
       )
       link = "#{request.base_url}/ask?t=#{ERB::Util.url_encode(raw_token)}"
-      redirect_to admin_root_path, notice: "Direct share link created.", flash: { direct_share_link: link }
+      flash[:direct_share_link] = link
+      redirect_to admin_root_path, notice: "Direct share link created."
     end
 
     def revoke

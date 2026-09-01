@@ -290,7 +290,7 @@ p {
   margin: 0;
   max-width: none;
   min-height: 100%;
-  padding: clamp(5rem, 14vw, 10rem) var(--space-page);
+  padding: 2rem var(--space-page);
 }
 
 .case-study-page {
@@ -316,8 +316,12 @@ p {
 }
 
 .button-link {
+  appearance: none;
   border: 1px solid var(--color-border);
+  background: transparent;
   color: var(--color-text);
+  cursor: pointer;
+  display: inline-block;
   font-family: var(--font-mono);
   font-size: 0.8125rem;
   padding: 0.65rem 0.9rem;
@@ -325,13 +329,25 @@ p {
 }
 
 .button-link:hover {
-  background: color-mix(in srgb, var(--color-border), transparent 55%);
+  background: color-mix(in srgb, var(--color-border), var(--color-surface) 35%);
   color: var(--color-text);
 }
 
 .button-link--primary {
+  background: var(--color-heading);
   border-color: var(--color-heading);
-  color: var(--color-heading);
+  color: var(--color-bg);
+  font-weight: 600;
+}
+
+.button-link--primary:hover {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-bg);
+}
+
+.button-link:active {
+  transform: translateY(1px);
 }
 
 .about-hero {

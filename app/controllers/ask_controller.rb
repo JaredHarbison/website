@@ -6,8 +6,15 @@ class AskController < ApplicationController
     response.headers["X-Robots-Tag"] = "noindex, nofollow, noarchive"
     expires_now
     @admin_preview = current_admin_user.present?
+    if params[:static].present?
+      @ask_unavailable = true
+      return render :show
+    end
     @token = token_service.resolve(params[:t]) unless @admin_preview
-    raise ActiveRecord::RecordNotFound unless @admin_preview || token_service.recruiter_accessible?(@token)
+    unless @admin_preview || token_service.recruiter_accessible?(@token)
+      @ask_unavailable = true
+      return render :show, status: :not_found
+    end
 
     record_event("token_resolved") unless @admin_preview
     record_event("page_view") unless @admin_preview

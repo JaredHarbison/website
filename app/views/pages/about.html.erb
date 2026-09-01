@@ -11,5 +11,8 @@
           height: 600,
           width: 480 %>
   </div>
+  <div class="home-actions" aria-label="About Jared actions">
+    <%= link_to "Ask Jared", ask_path, class: "button-link" %>
+  </div>
   <%= MarkdownRenderer.render(@page.body) %>
 </main>

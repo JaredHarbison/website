@@ -10,6 +10,7 @@ module StaticSite
       [
         "/",
         "/about",
+        "/ask",
         "/contact",
         "/case-studies",
         *case_studies.map { |entry| "/case-studies/#{entry.slug}" },
@@ -81,7 +82,7 @@ module StaticSite
       session.https!
 
       routes.paths.each do |path|
-        session.get(path)
+        session.get(path, params: path == "/ask" ? { static: "1" } : {})
         response = session.response
 
         unless (200..299).cover?(response.status)
