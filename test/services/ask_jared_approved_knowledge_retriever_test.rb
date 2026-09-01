@@ -86,4 +86,60 @@ class AskJaredApprovedKnowledgeRetrieverTest < ActiveSupport::TestCase
     assert_equal [ 1, 2, 3, 4, 5 ], selected.map(&:id)
     assert_equal 5, selected.length
   end
+
+  test "recognizes recruiter intents across nested recruiter evidence" do
+    large_team = entry(1, "J.Crew Store Director", entry_type: "leadership_story", evidence: {
+      "competencies" => "Large-team leadership, management, organizational complexity",
+      "ownership" => { "people_management" => "approximately 12 managers" },
+      "result" => "Approximately 120 employees"
+    })
+    boundary = entry(2, "Engineering experience boundaries", entry_type: "career_context", evidence: {
+      "limitations" => "Large engineering-team experience is not established."
+    })
+    product = entry(3, "Agenda product direction", entry_type: "product_story", evidence: {
+      "product_learning" => "Users preferred the focused action loop over a generic community."
+    })
+
+    assert_operator retriever.send(:compatibility_boost, "Could Jared succeed on a larger engineering team?", large_team), :>, retriever.send(:compatibility_boost, "Could Jared succeed on a larger engineering team?", product)
+    assert_operator retriever.send(:compatibility_boost, "What is the biggest hiring risk?", boundary), :>, retriever.send(:compatibility_boost, "What is the biggest hiring risk?", large_team)
+    assert_operator retriever.send(:compatibility_boost, "What demonstrates product judgment?", product), :>, retriever.send(:compatibility_boost, "What demonstrates product judgment?", large_team)
+  end
+
+  test "semantic category boosts outrank technically adjacent evidence" do
+    implementation = ranked_entry(1, "Onboarding implementation", entry_type: "project", distance: 0.18, evidence: {
+      "competencies" => "Rails, React, route continuity"
+    })
+    agenda = ranked_entry(2, "Daily Agenda product direction", entry_type: "product_story", distance: 0.55, evidence: {
+      "product_learning" => "Users preferred Agenda after comparing it with Community."
+    })
+    integration = ranked_entry(3, "Dogly integration", entry_type: "integration_story", distance: 0.12, evidence: {
+      "competencies" => "Shopify, AWS, PostgreSQL"
+    })
+    retail = ranked_entry(4, "Large retail organization", entry_type: "leadership_story", distance: 0.52, evidence: {
+      "competencies" => "Large-team leadership, management, organizational complexity",
+      "ownership" => { "people_management" => "approximately 12 managers" }
+    })
+
+    product_order = [ implementation, agenda ].sort_by { |entry| entry.distance - retriever.send(:compatibility_boost, "What demonstrates product judgment?", entry) }
+    organization_order = [ integration, retail ].sort_by { |entry| entry.distance - retriever.send(:compatibility_boost, "Could Jared succeed on a larger engineering team?", entry) }
+
+    assert_equal [ 2, 1 ], product_order.map(&:id)
+    assert_equal [ 4, 3 ], organization_order.map(&:id)
+  end
+
+  test "lexical fallback searches competencies and bounded results" do
+    scope = Struct.new(:entries) { def to_a = entries }.new([
+      entry(1, "Retail leadership", entry_type: "leadership_story", evidence: {
+        "competencies" => "coaching, management, organizational complexity",
+        "result" => "Approximately 120 employees"
+      }),
+      entry(2, "Unquantified project", entry_type: "project", evidence: {
+        "limitations" => "Outcome measurement is unavailable."
+      })
+    ])
+    retriever_instance = AskJared::ApprovedKnowledgeRetriever.new(scope: scope, embedding_provider: Object.new)
+    results = retriever_instance.send(:lexical_results, "What management experience has Jared had?", 2)
+
+    assert_equal [ 1 ], results.map(&:id)
+  end
 end

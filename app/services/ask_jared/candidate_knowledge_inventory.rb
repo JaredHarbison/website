@@ -23,7 +23,8 @@ module AskJared
         next unless CASE_STUDY_ENTRY_TYPES.key?(case_study.slug)
 
         record_for(case_study)
-      end + [ shopify_membership_story_record, membership_metric_record ]
+      end + [ shopify_membership_story_record, membership_metric_record, dogly_agenda_product_direction_record,
+               engineering_experience_boundaries_record ] + retail_career_records
     end
 
     def sync!(store: ::KnowledgeEntry)
@@ -124,6 +125,125 @@ module AskJared
           }
         },
         "source_evidence" => { "path" => "content/case_studies/dogly-membership.md", "claim" => "more than 40%", "provenance" => "internal pre/post comparison" }
+      }
+    end
+
+    def dogly_agenda_product_direction_record
+      recruiter_record(
+        "story:dogly-agenda-product-direction",
+        "Dogly Agenda product direction",
+        "The Dogly founders were considering a Community or message-board direction. Jared argued for an Agenda/daily-plan experience after repeated user feedback that people wanted to know what to do with their dogs. He identified the misinformation, moderation, and legal burden of Community, as well as the availability of generic community alternatives. Agenda instead used vetted Dogly expert content across training, nutrition, and wellness to provide actionable guidance. Long-time users compared Community with Agenda and preferred Agenda. After launch, tag follows increased and Daily Agenda emails showed stronger open-rate behavior than the legacy approach; Jared continued monitoring engagement.",
+        "Jared redirected a proposed Community direction toward an evidence-backed daily plan based on user need, explicit tradeoffs, user comparison, and post-launch engagement signals.",
+        {
+          "relationship" => "Dogly product strategy and daily guidance experience",
+          "ownership" => {
+            "leadership" => "product_direction_lead",
+            "sole_authorship" => "not established",
+            "people_management" => "not established",
+            "personal_contributions" => "Identified the user problem, articulated the Community tradeoffs, argued for Agenda, and continued monitoring engagement after launch.",
+            "collaborators" => "Dogly founders, long-time users, and Dogly experts"
+          },
+          "competencies" => "User research synthesis, product judgment, prioritization, tradeoff analysis, experimentation, customer understanding, engagement measurement",
+          "product_learning" => "A focused, expert-backed action loop better matched the repeated user need than a generic community destination.",
+          "result" => "Long-time users preferred Agenda in a Community-versus-Agenda comparison; tag follows increased and Daily Agenda emails showed stronger open-rate behavior than the legacy approach.",
+          "limitations" => "The evidence does not provide the size of the preference study or numeric changes in follows or open rates.",
+          "safe_attribution" => "This supports product judgment and measured learning, not a claim that Jared alone caused all engagement changes."
+        },
+        "content/case_studies/dogly-membership.md"
+      )
+    end
+
+    def engineering_experience_boundaries_record
+      recruiter_record(
+        "fact:engineering-experience-boundaries",
+        "Engineering experience boundaries",
+        "Most of Jared's professional engineering experience has been in a very small or solo engineering environment at Dogly rather than a conventional large engineering organization. His approved engineering evidence demonstrates product-minded full-stack work, collaboration with founders and domain stakeholders, and work across mature product and operational systems. Depth varies by technology and should be assessed directly; JavaScript and React evidence should not be generalized into TypeScript expertise unless separate TypeScript evidence is available.",
+        "Jared has substantial experience operating with autonomy in a small company, while conventional large engineering-team experience and technology-specific depth remain areas of less experience to validate.",
+        {
+          "relationship" => "Recruiter-safe engineering experience boundary",
+          "competencies" => "Autonomous engineering, product-minded delivery, cross-functional collaboration, organizational adaptability",
+          "limitations" => "Large engineering-team experience is not established; technology depth varies; direct TypeScript evidence is not established in the approved knowledge base.",
+          "safe_attribution" => "Do not claim success on a large engineering team or TypeScript expertise from JavaScript/React experience alone.",
+          "status" => "Boundary for candid hiring discussion"
+        },
+        "recruiter-confirmed context"
+      )
+    end
+
+    def retail_career_records
+      [
+        recruiter_record(
+          "career:jcrew-store-director-columbus-circle", "J.Crew + Madewell Store Director, Columbus Circle NYC (2016–2018)",
+          "At J.Crew Group, Jared led a large store organization of approximately 120 employees and approximately 12 managers reporting to or supporting him. Through 2018, the store frequently achieved the #1 increase to sales plan and prior-year sales in the NYC region. He launched a full Madewell store inside a J.Crew store, the first concept of its kind within the umbrella brand. He created team satisfaction surveys and used the feedback operationally; the satisfaction score increased 20% in one year. He improved the sales trajectory through fitting-room service and higher units per transaction, and moved credit-card signup performance from approximately 30% below prior year in Q2 2016 to approximately 60% above prior year in Q3 2016.",
+          "Large-store leadership, team feedback, concept launch, and measurable commercial and people outcomes.",
+          { "relationship" => "J.Crew Group retail leadership", "ownership" => { "leadership" => "store_director", "people_management" => "directly led a large store organization; approximately 12 managers reported to or supported Jared", "sole_authorship" => "not established", "personal_contributions" => "Led operations, launched the embedded Madewell concept, used satisfaction feedback operationally, and improved service and signup processes" }, "competencies" => "Large-team leadership, management, coaching, stakeholder management, experimentation, customer understanding, operational leadership, measurable business outcomes", "result" => "Approximately 120 employees and approximately 12 managers; satisfaction score increased 20% in one year; credit-card signup performance moved from approximately 30% below prior year to approximately 60% above prior year in the next quarter.", "safe_attribution" => "These are retail leadership outcomes and do not imply engineering people management." }, "Jared-supplied career facts"
+        ),
+        recruiter_record(
+          "career:jcrew-associate-store-manager-columbus-circle", "J.Crew Associate Store Manager, Columbus Circle NYC (2015–2016)",
+          "Jared scheduled processes and employees at a 90%+ Dayforce HCM efficiency score, participated in assessment of SaaS products and provided feedback to providers, and increased stylist sales 25% through more consistent and effective client relationships.",
+          "Operational systems adoption, SaaS evaluation, and coaching translated into measurable sales improvement.",
+          { "relationship" => "J.Crew Group retail operations and management", "ownership" => { "leadership" => "associate_store_manager", "people_management" => "store management responsibility; engineering management not implied", "sole_authorship" => "not established", "personal_contributions" => "Improved scheduling/process efficiency, evaluated SaaS tools, and strengthened stylist-client practices" }, "competencies" => "Operational leadership, SaaS evaluation, product feedback, process improvement, coaching, customer understanding, measurable outcomes", "result" => "90%+ Dayforce HCM efficiency score and 25% increase in stylist sales.", "safe_attribution" => "The evidence supports retail operations and software adoption, not software product ownership." }, "Jared-supplied career facts"
+        ),
+        recruiter_record(
+          "career:jcrew-store-director-pentagon-city", "J.Crew Store Director, Pentagon City (2014–2015)",
+          "Jared improved variance to sales plan from -18% in Q3 2014 to +1% in Q4 2014, provided initial training for store directors across the DC/MD/VA market, recruited and developed an HR assistant manager into a market training role, and was asked to participate with the NYC home office in rewriting company-wide training materials.",
+          "Turnaround leadership extended into regional training, talent development, and partnership with a central office—working across organizational levels.",
+          { "relationship" => "J.Crew Group regional store leadership", "ownership" => { "leadership" => "store_director", "people_management" => "managed a store team; broader engineering management not implied", "sole_authorship" => "not established", "personal_contributions" => "Led turnaround, trained peers, developed a manager, and contributed to company-wide training materials" }, "competencies" => "Change management, coaching, mentorship, executive/director partnership, cross-functional collaboration, organizational complexity, operational leadership, measurable outcomes", "result" => "Variance to sales plan improved from -18% to +1% in one quarter.", "safe_attribution" => "This is evidence of retail and organizational leadership, not an engineering-team result." }, "Jared-supplied career facts"
+        ),
+        recruiter_record(
+          "career:jcrew-store-director-f-street", "J.Crew Store Director, F Street Washington DC (2013–2014)",
+          "Jared maintained the company's #1 visitor-to-customer conversion for a full year at greater than 25%, surpassed sales goals for three quarters reaching +15% versus prior year, ranked #1 for customer service in the Southeast region in Q3 2014, coached managers across the market during SaaS rollouts, provided regional manager training and follow-up plans, and was chosen for a leading operations role in store openings and relocations across the DC/MD/VA market.",
+          "Market-level leadership combined customer conversion, training, software rollout, and complex opening/relocation execution.",
+          { "relationship" => "J.Crew Group store-opening and regional operations leadership", "ownership" => { "leadership" => "store_director_and_market_operations_lead", "people_management" => "managed store and coached market managers; engineering management not implied", "sole_authorship" => "not established", "personal_contributions" => "Led conversion and service performance, coached managers through SaaS rollouts, and led opening/relocation operations" }, "competencies" => "Operational leadership, change management, SaaS rollout, coaching, communication, program execution, customer understanding, measurable outcomes", "result" => "Greater than 25% visitor-to-customer conversion for a full year and +15% versus prior year after three quarters of surpassed sales goals.", "safe_attribution" => "Retail market leadership should not be conflated with engineering management." }, "Jared-supplied career facts"
+        ),
+        recruiter_record(
+          "career:urbn-general-manager-georgetown", "URBN General Manager, Urban Outfitters Georgetown (2012–2013)",
+          "Jared managed a $12M flagship location, one of Urban Outfitters' five highest-volume stores. He hosted a company-wide quarterly visual prototype process involving store-opening-scale shipments and coordination, and implemented web-based communication tools for a large store team.",
+          "Large-scale operations combined executive-facing coordination, prototyping, and adoption of communication tools.",
+          { "relationship" => "URBN flagship retail operations", "ownership" => { "leadership" => "general_manager", "people_management" => "managed a large flagship store team", "sole_authorship" => "not established", "personal_contributions" => "Managed the flagship, coordinated the company-wide prototype process, and implemented team communication tools" }, "competencies" => "Large-organization operations, stakeholder management, project execution, communication, product/software adoption, operational leadership", "result" => "$12M flagship location; one of five highest-volume stores.", "safe_attribution" => "This demonstrates retail organizational scale, not engineering-team scale." }, "Jared-supplied career facts"
+        ),
+        recruiter_record(
+          "career:urbn-store-manager-anthropologie", "URBN Store Manager, Anthropologie DC/MD (2009–2012)",
+          "Jared mentored and developed six managers into store-manager-level positions, worked with local businesses, media, and nonprofits, ran a 300-customer store-opening event that generated $30,000 in two hours on a $1,500 budget, assisted the District Manager in guiding other store managers through large objectives, managed an experimental accessories boutique opening, and relocated a 15-year-old store while achieving record-breaking sales.",
+          "Multi-stakeholder store leadership combined mentorship, experimentation, event execution, and change management.",
+          { "relationship" => "URBN multi-store management and community partnership", "ownership" => { "leadership" => "store_manager", "people_management" => "developed six managers into store-manager-level roles", "sole_authorship" => "not established", "personal_contributions" => "Mentored managers, led openings and relocation, partnered externally, and executed a high-return launch event" }, "competencies" => "Coaching, mentorship, stakeholder management, cross-functional collaboration, experimentation, ambiguous objectives, program execution, measurable outcomes", "result" => "Six managers developed into store-manager-level positions; a $30,000 event ran in two hours on a $1,500 budget.", "safe_attribution" => "These are retail management and operating outcomes, not engineering management." }, "Jared-supplied career facts"
+        ),
+        recruiter_record(
+          "career:urbn-people-operations-manager-anthropologie", "URBN People & Operations Manager, Anthropologie (2008–2009)",
+          "Jared managed people and operational processes in a roughly $10M location, improved average loss-prevention audit scores by 8 points in a high-theft environment, and managed scheduling and processes against payroll targets.",
+          "People operations and process control produced a measurable audit improvement while balancing labor constraints.",
+          { "relationship" => "URBN people and operations leadership", "ownership" => { "leadership" => "people_and_operations_manager", "people_management" => "managed people processes; engineering management not implied", "sole_authorship" => "not established", "personal_contributions" => "Managed people operations, loss-prevention improvement, and payroll-aligned scheduling" }, "competencies" => "People operations, process improvement, operational controls, organizational complexity, measurable outcomes", "result" => "Roughly $10M location; average loss-prevention audit scores improved by 8 points.", "safe_attribution" => "The evidence supports operational and people-process leadership." }, "Jared-supplied career facts"
+        ),
+        recruiter_record(
+          "career:urbn-senior-merchandiser", "URBN Senior Merchandiser, Urban Outfitters (2001–2008)",
+          "Jared managed the men's Back-to-School visual prototype in San Francisco for three years, reduced men's merchandising store-opening time by approximately 40% across 12 openings, led district workshops that completed seasonal setups in approximately 50% of normal time, prototyped new approaches including clothing and home-goods integration, and participated on a leadership team that grew a business from approximately $4M to $10M over four years.",
+          "Repeated prototyping, rollout, workshop facilitation, and measurable process improvement across a multi-store organization.",
+          { "relationship" => "URBN merchandising, rollout, and business-growth leadership", "ownership" => { "leadership" => "senior_merchandiser_and_leadership_team_member", "people_management" => "led workshops and cross-store initiatives; direct engineering reports not implied", "sole_authorship" => "not established", "personal_contributions" => "Led prototypes, workshops, openings, and new merchandising experiments" }, "competencies" => "Experimentation, iteration, program execution, communication, change management, cross-functional collaboration, measurable outcomes", "result" => "Approximately 40% reduction in opening time across 12 openings; seasonal setups completed in approximately 50% of normal time; business grew from approximately $4M to $10M over four years.", "safe_attribution" => "The growth figure belongs to the leadership team and is not solely attributed to Jared." }, "Jared-supplied career facts"
+        )
+      ]
+    end
+
+    def recruiter_record(reference, title, body, short_body, recruiter_evidence, source_reference)
+      {
+        "anecdote_id" => reference,
+        "title" => title,
+        "body" => body,
+        "short_body" => short_body,
+        "entry_type" => reference.start_with?("career:") ? "leadership_story" : (reference.start_with?("fact:") ? "career_context" : "product_story"),
+        "confidence" => "jared_confirmed_recruiter_safe",
+        "source_url" => nil,
+        "public_url" => nil,
+        "metadata" => {
+          "evidence_classification" => "jared_supplied_recruiter_safe_fact",
+          "source_path" => source_reference,
+          "source_kind" => "direct_statement_from_jared",
+          "publication_holds" => [],
+          "review_flags" => [],
+          "human_review" => sufficient_review("Facts supplied directly by Jared and scoped for recruiter-safe use."),
+          "approval_readiness" => { "ready_for_jared_approval" => true, "reason" => "Directly supplied recruiter-safe facts; retain explicit attribution and boundaries." },
+          "recruiter_evidence" => recruiter_evidence
+        },
+        "source_evidence" => { "source" => source_reference, "reference" => reference, "body" => body }
       }
     end
 

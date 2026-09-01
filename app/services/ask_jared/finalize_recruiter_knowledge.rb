@@ -10,7 +10,17 @@ module AskJared
       case-study:federation-briefing
       case-study:karaoke-queue
       story:dogly-shopify-membership-acquisition
+      story:dogly-agenda-product-direction
       metric:dogly-membership-subscription-growth
+      fact:engineering-experience-boundaries
+      career:jcrew-store-director-columbus-circle
+      career:jcrew-associate-store-manager-columbus-circle
+      career:jcrew-store-director-pentagon-city
+      career:jcrew-store-director-f-street
+      career:urbn-general-manager-georgetown
+      career:urbn-store-manager-anthropologie
+      career:urbn-people-operations-manager-anthropologie
+      career:urbn-senior-merchandiser
     ].freeze
 
     def initialize(store: ::KnowledgeEntry, inventory: CandidateKnowledgeInventory.new)

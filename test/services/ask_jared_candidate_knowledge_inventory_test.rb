@@ -13,7 +13,10 @@ class AskJaredCandidateKnowledgeInventoryTest < ActiveSupport::TestCase
     assert_includes shopify.metadata["proposed_recruiter_excerpts"], "The first month began with a limited rollout to a single product from a single brand."
     assert_equal [ "comparison_window", "denominator", "attribution_boundaries", "original_metric_query" ], metric.metadata["missing_methodology"]
     assert_includes metric.metadata["review_flags"], "metric_methodology_review_required"
-    assert_equal 10, entries.length
+    assert_equal 20, entries.length
+    assert_equal "leadership_story", entries.find { |entry| entry.source_reference == "career:jcrew-store-director-columbus-circle" }.entry_type
+    assert_includes entries.find { |entry| entry.source_reference == "career:jcrew-store-director-columbus-circle" }.metadata.dig("recruiter_evidence", "competencies"), "Large-team leadership"
+    assert_includes entries.find { |entry| entry.source_reference == "story:dogly-agenda-product-direction" }.body, "Community or message-board"
     assert_equal true, entries.find { |entry| entry.source_reference == "case-study:fridge-no-more-bulk-ordering" }.metadata.dig("approval_readiness", "ready_for_jared_approval")
     assert_equal true, metric.metadata.dig("approval_readiness", "ready_for_jared_approval")
   end
@@ -63,7 +66,7 @@ class AskJaredCandidateKnowledgeInventoryTest < ActiveSupport::TestCase
 
     finalized = AskJared::FinalizeRecruiterKnowledge.new.call(generate_embeddings: false)
 
-    assert_equal 10, finalized.length
+    assert_equal 20, finalized.length
     assert finalized.all? { |entry| entry.approval_status == "approved" && entry.visibility == "recruiter_visible" }
     finalized.each { |entry| assert_equal fingerprints.fetch(entry.source_reference), entry.source_fingerprint }
     assert_equal [], KnowledgeEntry.where.not(approval_status: "approved").where(visibility: "recruiter_visible").pluck(:source_reference)

@@ -1,7 +1,8 @@
 module AskJared
   class ApprovedKnowledgeRetriever
-    DEFAULT_LIMIT = 5
-    BROAD_CANDIDATE_LIMIT = 24
+    attr_reader :last_trace
+    DEFAULT_LIMIT = 6
+    BROAD_CANDIDATE_LIMIT = 30
     BROAD_QUERY_PATTERNS = [
       /\bwhat kind of\b/,
       /\b(?:technologies|systems|roles|examples)\b/,
@@ -9,7 +10,10 @@ module AskJared
       /\b(?:breadth|characteri[sz]ation)\b/,
       /\b(?:unfinished|unmeasured|limitations?|unproven)\b/,
       /\b(?:learned|learning|improved next|should be improved)\b/,
-      /\bcommercial\b/
+      /\bcommercial\b/,
+      /\b(?:risk|risks|gap|gaps|less experience|larger team|organizational levels|management)\b/,
+      /\b(?:business result|business impact|measurable impact|measurable result)\b/,
+      /\b(?:product judgment|product thinking|product direction)\b/
     ].freeze
     SPECIFIC_QUERY_PATTERNS = /\b(?:shopify|stripe|refunds?|concurrenc|locking|paperclip|activestorage)\b/
 
@@ -32,14 +36,28 @@ module AskJared
       vector = @embedding_provider.call(question)
       literal = "[#{vector.join(',')}]"
       distance_sql = ::KnowledgeEntry.sanitize_sql_array([ "embedding <=> ?::vector", literal ])
-      entries = @scope.where.not(embedding: nil).select("knowledge_entries.*, #{distance_sql} AS retrieval_distance").to_a
+      embedded_entries = @scope.where.not(embedding: nil).select("knowledge_entries.*, #{distance_sql} AS retrieval_distance").to_a
+      unembedded_entries = @scope.where(embedding: nil).to_a
+      @retrieval_distances = {}
+      unembedded_entries.each do |entry|
+        @retrieval_distances[entry.id] = lexical_distance(question, entry)
+      end
+      entries = embedded_entries + unembedded_entries
 
       ranked_entries = entries.sort_by do |entry|
-        distance = entry.attributes["retrieval_distance"].to_f
+        distance = distance_for(entry)
         [ distance - compatibility_boost(question, entry), entry.id ]
       end
 
-      return ranked_entries.first(limit) unless broad_query?(question)
+      @last_trace = {
+        mode: "semantic",
+        considered: entries.map { |entry| trace_entry(entry, distance_for(entry)) },
+        ranked: ranked_entries.map { |entry| trace_entry(entry, adjusted_distance(entry, question)) }
+      }
+
+      selected = broad_query?(question) ? diversified_results(ranked_entries.first([ BROAD_CANDIDATE_LIMIT, limit ].max), limit, question) : ranked_entries.first(limit)
+      @last_trace[:selected] = selected.map { |entry| entry.id }
+      selected
 
       diversified_results(ranked_entries.first([ BROAD_CANDIDATE_LIMIT, limit ].max), limit, question)
     end
@@ -76,7 +94,7 @@ module AskJared
     end
 
     def adjusted_distance(entry, question)
-      entry.attributes["retrieval_distance"].to_f - compatibility_boost(question, entry)
+      distance_for(entry) - compatibility_boost(question, entry)
     end
 
     def diversity_bonus(entry, selected)
@@ -117,7 +135,63 @@ module AskJared
         boost += 0.08 if evidence["ownership"].present?
       end
 
-      boost + (context.include?("shopify") && text.include?("shopify") ? 0.08 : 0)
+      if text.match?(/\b(?:larger|large|big|sizable)\s+(?:engineering\s+)?team|organizational levels|layered organization|management|managed large|team leadership/)
+        boost += 0.16 if evidence["competencies"].to_s.match?(/large|team|management|organizational|leadership/i)
+        boost += 0.10 if evidence.dig("ownership", "people_management").present?
+      end
+
+      if text.match?(/risk|gap|less experience|weakness|concern|boundary|limited|unknown/)
+        boost += 0.18 if evidence["limitations"].present?
+        boost += 0.10 if entry.entry_type == "career_context"
+      end
+
+      if text.match?(/measurable|metric|impact|business result|outcome|result/)
+        boost += 0.12 if evidence["result"].present?
+        boost += 0.06 if entry.entry_type == "metric"
+      end
+
+      if text.match?(/product judgment|product thinking|product direction|challenged|proposed direction|user problem|tradeoff/)
+        boost += 0.18 if evidence["product_learning"].present?
+        boost += 0.08 if entry.entry_type == "product_story"
+      end
+
+      boost + category_boost(question, entry)
+    end
+
+    def category_boost(question, entry)
+      text = question.to_s.downcase
+      evidence = entry.metadata.fetch("recruiter_evidence", {})
+      competencies = evidence["competencies"].to_s
+      result = evidence["result"].to_s
+      limitations = evidence["limitations"].to_s
+      boost = 0.0
+
+      if text.match?(/larger|large|sizable|organizational levels|layered organization|team leadership|managed large/)
+        boost += 0.42 if competencies.match?(/large|team|management|organizational|leadership/i)
+        boost += 0.30 if evidence.dig("ownership", "people_management").present?
+        boost += 0.38 if limitations.match?(/large engineering.team|conventional large/i)
+      end
+
+      if text.match?(/risk|gap|less experience|weakness|concern|boundary|limited|unknown/)
+        boost += 0.45 if limitations.present?
+        boost += 0.35 if entry.entry_type == "career_context"
+      end
+
+      if text.match?(/measurable|metric|impact|business result|outcome|result/)
+        boost += 0.25 if evidence["result"].present?
+        boost += 0.15 if result.match?(/\d|%|\$/)
+      end
+
+      if text.match?(/product judgment|product thinking|product direction|challenged|proposed direction|user problem|tradeoff|validation|learning/)
+        boost += 0.65 if evidence["product_learning"].present?
+        boost += 0.20 if entry.entry_type == "product_story"
+      end
+
+      if text.match?(/typescript|javascript|react/)
+        boost += 0.70 if limitations.match?(/typescript/i)
+      end
+
+      boost
     end
 
     def title_or_entity_overlap(question, title, relationship)
@@ -130,11 +204,71 @@ module AskJared
       terms = question.to_s.downcase.scan(/[a-z0-9]{3,}/).uniq
       return [] if terms.empty?
 
-      @scope.to_a.filter_map do |entry|
-        haystack = [ entry.title, entry.short_body, entry.body, Array(entry.metadata["tags"]) ].compact.join(" ").downcase
+      scored = @scope.to_a.filter_map do |entry|
+        haystack = [ entry.title, entry.short_body, entry.body, metadata_text(entry.metadata) ].compact.join(" ").downcase
         score = terms.count { |term| haystack.include?(term) }
+        score += lexical_intent_bonus(question, entry)
         [ entry, score ] if score.positive?
-      end.sort_by { |entry, score| [ -score, entry.id ] }.first(limit).map(&:first)
+      end.sort_by { |entry, score| [ -score, entry.id ] }
+      selected = scored.first(limit).map(&:first)
+      @last_trace = {
+        mode: "lexical",
+        considered: scored.map { |entry, score| trace_entry(entry, score) },
+        ranked: scored.map { |entry, score| trace_entry(entry, score) },
+        selected: selected.map(&:id)
+      }
+      selected
+    end
+
+    def lexical_distance(question, entry)
+      score = lexical_score(question, entry)
+      score.positive? ? [ 0.9 - (score * 0.08), 0.45 ].max : 0.95
+    end
+
+    def lexical_score(question, entry)
+      terms = question.to_s.downcase.scan(/[a-z0-9]{3,}/).uniq
+      return 0 if terms.empty?
+
+      haystack = [ entry.title, entry.short_body, entry.body, metadata_text(entry.metadata) ].compact.join(" ").downcase
+      terms.count { |term| haystack.include?(term) } + lexical_intent_bonus(question, entry)
+    end
+
+    def distance_for(entry)
+      @retrieval_distances&.fetch(entry.id, nil) || entry.attributes["retrieval_distance"].to_f
+    end
+
+    def trace_entry(entry, score)
+      evidence = entry.metadata.fetch("recruiter_evidence", {})
+      { id: entry.id, source_reference: entry.respond_to?(:source_reference) ? entry.source_reference : nil,
+        approval_status: entry.respond_to?(:approval_status) ? entry.approval_status : nil,
+        visibility: entry.respond_to?(:visibility) ? entry.visibility : nil, entry_type: entry.entry_type,
+        score: score, competencies: evidence["competencies"], limitations: evidence["limitations"],
+        product_learning: evidence["product_learning"], result: evidence["result"] }
+    end
+
+    def lexical_intent_bonus(question, entry)
+      text = question.to_s.downcase
+      evidence = entry.metadata.fetch("recruiter_evidence", {})
+      bonus = 0
+      bonus += 5 if text.match?(/larger|large|sizable/) && evidence["competencies"].to_s.match?(/large|team|organizational|management/i)
+      bonus += 3 if text.match?(/organizational levels|layered organization/) && evidence["competencies"].to_s.match?(/organizational|stakeholder|cross-functional/i)
+      bonus += 4 if text.match?(/measurable|metric|impact|result|outcome/) && evidence["result"].present?
+      bonus += 8 if text.match?(/measurable|metric|impact|result|outcome/) && entry.entry_type == "leadership_story" && evidence["result"].to_s.match?(/\d|%|\$/)
+      if text.match?(/risk|gap|less experience|weakness|boundary/) && evidence["limitations"].present?
+        bonus += 4
+        bonus += 8 if entry.entry_type == "career_context"
+      end
+      bonus += 10 if text.match?(/typescript|javascript|react/) && evidence["limitations"].to_s.match?(/technology|typescript/i)
+      bonus += 5 if text.match?(/product judgment|product thinking|product direction|challenged|proposed direction|user problem|tradeoff/) && evidence["product_learning"].present?
+      bonus
+    end
+
+    def metadata_text(value)
+      case value
+      when Hash then value.values.map { |item| metadata_text(item) }.join(" ")
+      when Array then value.map { |item| metadata_text(item) }.join(" ")
+      else value.to_s
+      end
     end
 
     def postgres_scope_with_embeddings?

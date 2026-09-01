@@ -26,6 +26,7 @@ module AskJared
       source_urls = entries.filter_map(&:public_url).select { |url| url.start_with?("https://") }.uniq
       response = entries.empty? ? insufficient_response : @provider.call(question: question.to_s.strip, context: entries)
       response = StructuredResponse.validate!(response)
+      response["answer"] = RecruiterAnswerSanitizer.clean(response["answer"])
       response["evidence_ids"] = response["evidence_ids"] & evidence_ids
       response["source_urls"] = response["source_urls"] & source_urls
 
