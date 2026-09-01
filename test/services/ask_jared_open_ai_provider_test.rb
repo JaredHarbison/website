@@ -46,4 +46,17 @@ class AskJaredOpenAiProviderTest < ActiveSupport::TestCase
     assert_equal false, schema.fetch("additionalProperties")
     assert_includes http.request_body.fetch("messages").first.fetch("content"), "status=insufficient_information"
   end
+
+  test "includes general grounding boundaries without question-specific rules" do
+    body = { choices: [ { message: { content: { status: "answer", answer: "Grounded.", evidence_ids: [], source_urls: [] }.to_json } } ] }.to_json
+    http = CapturingHttp.new(Net::HTTPSuccess.allocate.tap { |response| response.define_singleton_method(:body) { body } })
+
+    AskJared::OpenAiProvider.new(api_key: "test-key", http: http).call(question: "Question", context: [ entry(1) ])
+
+    instruction = http.request_body.fetch("messages").first.fetch("content")
+    assert_includes instruction, "Do not turn chronology, association, comparable behavior, correlation, or co-occurrence into causality"
+    assert_includes instruction, "Project leadership does not imply sole authorship or people management"
+    assert_includes instruction, "Never put internal evidence IDs in answer prose"
+    refute_includes instruction, "Shopify"
+  end
 end

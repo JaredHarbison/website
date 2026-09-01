@@ -64,7 +64,8 @@ module AskJared
         "publication_holds" => publication_holds_for(case_study.slug),
         "proposed_recruiter_excerpts" => proposed_excerpts_for(case_study.slug),
         "technical_inferences" => technical_inferences_for(case_study.slug),
-        "review_flags" => review_flags_for(case_study.slug)
+        "review_flags" => review_flags_for(case_study.slug),
+        "recruiter_evidence" => recruiter_evidence_for(case_study.slug)
       }
       metadata["external_repository"] = federation_repository_metadata if case_study.slug == "federation-briefing"
       metadata["ownership_review"] = product_design_ownership_review if case_study.slug == "dogly-product-design"
@@ -114,6 +115,12 @@ module AskJared
           "safe_publication" => {
             "required_qualification" => "State that the figure came from an internal pre/post subscription comparison associated with the membership work.",
             "disallowed_claims" => [ "controlled causal measurement", "Shopify independently caused the result", "quantified acquisition lift", "later fulfillment caused the result" ]
+          },
+          "recruiter_evidence" => {
+            "relationship" => "Dogly product metric associated with the membership work",
+            "limitations" => "The denominator, comparison window, eligible population, and attribution boundaries are unknown; later Stripe synchronization prevents reliable reconstruction.",
+            "result" => "An internal pre/post subscription comparison associated with the membership work was reported as greater than 40%.",
+            "safe_attribution" => "This is not a controlled causal measurement; do not attribute it to Shopify, fulfillment, or Jared's work alone."
           }
         },
         "source_evidence" => { "path" => "content/case_studies/dogly-membership.md", "claim" => "more than 40%", "provenance" => "internal pre/post comparison" }
@@ -144,6 +151,20 @@ module AskJared
           "safe_publication" => {
             "required_qualification" => "Describe Shopify as an expanded acquisition source into Dogly's existing visitor-to-user-to-member journey; describe the >40% figure only as an internal pre/post comparison associated with the membership work.",
             "disallowed_claims" => [ "Shopify was the membership experience", "Shopify independently caused the >40% result", "quantified acquisition lift", "later fulfillment caused the membership metric", "unnecessary proprietary source-code publication" ]
+          },
+          "recruiter_evidence" => {
+            "relationship" => "Dogly product story connecting an acquisition path to an existing membership journey",
+            "ownership" => {
+              "leadership" => "project_lead",
+              "sole_authorship" => "not established",
+              "people_management" => "not established",
+              "personal_contributions" => "Product planning and engineering across the connected acquisition and membership experience",
+              "collaborators" => "Dogly founders, domain experts, and users where the case studies describe close partnership"
+            },
+            "result" => "Qualifying partner purchases expanded acquisition into Dogly's existing visitor-to-user-to-member journey; partner-purchase conversion was approximately at the existing journey's rate.",
+            "product_learning" => "Carefully selected partnerships could expand acquisition, while the larger remaining opportunity was improving DoglyDaily and Agenda use after acquisition and strengthening member value.",
+            "limitations" => "The >40% figure is an internal pre/post comparison; its denominator, window, eligible population, and causal attribution are unavailable.",
+            "safe_attribution" => "Do not claim Shopify caused or contributed to the >40% result; later fulfillment work was separate."
           }
         },
         "source_evidence" => { "paths" => [ "content/case_studies/dogly-membership.md", "content/case_studies/dogly-shopify-integration.md" ], "claim" => "coherent acquisition and membership evidence chain" }
@@ -194,6 +215,91 @@ module AskJared
       holds ||= []
       holds << "proposed_source_code_excerpts" if slug == "dogly-shopify-integration"
       holds
+    end
+
+    def recruiter_evidence_for(slug)
+      ownership = {
+        "leadership" => "project_lead",
+        "sole_authorship" => "not established",
+        "people_management" => "not established"
+      }
+      evidence = {
+        "dogly-product-design" => {
+          "relationship" => "Dogly product design direction",
+          "ownership" => ownership.merge(
+            "personal_contributions" => "Primary responsibility for visual and interaction design direction; designed the 2026 multi-state homepage in Figma and implemented its Rails architecture, responsive components, and focused Stimulus interactions.",
+            "collaborators" => "Dogly founders and domain owners contributed product direction, requirements, feedback, and constraints."
+          ),
+          "competencies" => "Product design, Figma, responsive Rails interfaces, Stimulus, translating customer feedback into product decisions"
+        },
+        "dogly-membership" => {
+          "relationship" => "Dogly membership product experience",
+          "ownership" => ownership.merge(
+            "personal_contributions" => "Product planning and full-stack work across subscription state, content access, tagging, comments, notifications, daily guidance, Zoom workflows, reporting, and connecting product surfaces.",
+            "collaborators" => "Dogly founders and Advocates"
+          ),
+          "competencies" => "Rails, PostgreSQL, Stripe, Zoom, product planning, lifecycle and member experience"
+        },
+        "dogly-shopify-integration" => {
+          "relationship" => "Dogly external-platform integration",
+          "ownership" => ownership.merge(
+            "personal_contributions" => "Owned technical planning through implementation and production support for the acquisition path, plus design, implementation, and limited rollout of the fulfillment path.",
+            "collaborators" => "Dogly founders"
+          ),
+          "competencies" => "Rails, PostgreSQL, Shopify Admin API, Spree Commerce, Active Job, webhooks, background jobs, catalog and inventory reconciliation",
+          "result" => "A qualifying partner purchase could enter Dogly through signed webhooks and configured invitations; later fulfillment was a separate limited rollout.",
+          "limitations" => "The repository does not establish revenue generated by the integration or a quantified acquisition lift.",
+          "safe_attribution" => "Do not connect the integration causally to the >40% membership comparison."
+        },
+        "dogly-partner-applications" => {
+          "relationship" => "Dogly partner onboarding inside a mature Rails marketplace",
+          "ownership" => ownership.merge(
+            "personal_contributions" => "Designed and implemented the Partner Pro onboarding flow, JSON-backed application session manager, and review workflow.",
+            "collaborators" => "Partner and internal domain stakeholders where requirements and review rules were involved"
+          ),
+          "competencies" => "Rails, PostgreSQL, Stimulus, Haml, SCSS, resumable workflows, authorization, operational UX"
+        },
+        "fridge-no-more-bulk-ordering" => {
+          "relationship" => "Dogly operational commerce workflow",
+          "ownership" => ownership.merge(
+            "personal_contributions" => "Designed and implemented the Rails workflow, data model, admin and partner interfaces, product selection, shipping calculations, order history, tracking, notes, and access controls.",
+            "collaborators" => "Dogly founders and Fridge No More partnership stakeholders"
+          ),
+          "competencies" => "Rails, Spree Commerce, PostgreSQL, operational product design, access control",
+          "result" => "The first retained order was $11,935.90 across 210 cases.",
+          "limitations" => "This is a first retained order, not a quantified claim about overall sales growth."
+        },
+        "dogly-advocate-discovery" => {
+          "relationship" => "Dogly advocate discovery product",
+          "ownership" => ownership.merge(
+            "personal_contributions" => "Designed and implemented the Rails query layer, controller integration, Haml page structure, Stimulus interactions, and focused matching and visibility tests.",
+            "collaborators" => "Dogly users and content/domain stakeholders where taxonomy and visibility rules were involved"
+          ),
+          "competencies" => "Rails, PostgreSQL, Stimulus, taxonomy-backed search, accessibility, visibility rules",
+          "result" => "Shipped Browse and Match modes for the public advocate directory.",
+          "limitations" => "The repository does not establish conversion-quality improvement from matching."
+        },
+        "federation-briefing" => {
+          "relationship" => "Independent project outside Dogly",
+          "ownership" => ownership.merge(
+            "personal_contributions" => "Designed and built the complete prototype: ingestion, reviewed snapshots, search, OpenAI integration, source selection, prompts, fallbacks, comparison interface, and tests."
+          ),
+          "competencies" => "Python, OpenAI API, Streamlit, scikit-learn, retrieval, evidence citation, failure handling",
+          "result" => "A sourced AI briefing prototype that shows its work and falls back when evidence is insufficient.",
+          "status" => "Prototype; shipped foundations are distinct from future work."
+        },
+        "karaoke-queue" => {
+          "relationship" => "Independent project outside Dogly",
+          "ownership" => ownership.merge(
+            "personal_contributions" => "Designed and implemented the product model, Rails boundaries, queue and event behavior, responsive surfaces, YouTube integration, accessibility behavior, and focused tests."
+          ),
+          "competencies" => "Rails, PostgreSQL, Hotwire, Stimulus, YouTube Data API, accessibility, contextual authorization",
+          "result" => "A shared, multi-role karaoke queue with performer, host, owner, and display contexts.",
+          "status" => "Work in progress; shipped foundations and roadmap work are explicitly separated.",
+          "limitations" => "The case study does not claim a measured business outcome."
+        }
+      }
+      evidence.fetch(slug) { { "ownership" => ownership } }
     end
 
     def human_review_for(slug)

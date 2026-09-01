@@ -16,6 +16,41 @@ class KnowledgeEntry < ApplicationRecord
   scope :recruiter_retrievable, -> { where(approval_status: "approved", visibility: "recruiter_visible") }
 
   def recruiter_context
-    [ title, short_body.presence || body ].compact.join("\n")
+    evidence = metadata.fetch("recruiter_evidence", {})
+    [
+      title,
+      "Entry type: #{entry_type}",
+      "Summary: #{short_body.presence || body}",
+      labeled_context("Relationship", evidence["relationship"]),
+      ownership_context(evidence["ownership"]),
+      labeled_context("Personal contributions", evidence["personal_contributions"]),
+      labeled_context("Collaborators", evidence["collaborators"]),
+      labeled_context("Demonstrated competencies", evidence["competencies"]),
+      labeled_context("Result", evidence["result"]),
+      labeled_context("Product learning", evidence["product_learning"]),
+      labeled_context("Evidence limitations", evidence["limitations"]),
+      labeled_context("Safe attribution", evidence["safe_attribution"]),
+      labeled_context("Status", evidence["status"])
+    ].compact_blank.join("\n")
+  end
+
+  private
+
+  def ownership_context(ownership)
+    return if ownership.blank?
+
+    values = [
+      "leadership=#{ownership["leadership"]}",
+      "sole_authorship=#{ownership["sole_authorship"]}",
+      "people_management=#{ownership["people_management"]}"
+    ].compact_blank.join(", ")
+    [ "Ownership: #{values}", labeled_context("Personal contributions", ownership["personal_contributions"]), labeled_context("Collaborators", ownership["collaborators"]) ].compact_blank.join("; ")
+  end
+
+  def labeled_context(label, value)
+    values = Array(value).compact_blank
+    return if values.empty?
+
+    "#{label}: #{values.join('; ')}"
   end
 end
