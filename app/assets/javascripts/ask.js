@@ -39,7 +39,7 @@
       var text = document.createElement("p");
       text.className = "ask-state__text";
       text.textContent = message;
-      state.append(label, text, button("Ask another question", "button-link", restoreForm));
+      state.append(label, text, button("Ask another question", "button-link button-link--primary", restoreForm));
       body.append(state);
     }
 
@@ -56,7 +56,7 @@
       var text = document.createElement("p");
       text.className = "ask-state__text";
       text.textContent = answer;
-      state.append(asked, label, text, button("Ask another question", "button-link", restoreForm));
+      state.append(asked, label, text, button("Ask another question", "button-link button-link--primary", restoreForm));
       body.append(state);
     }
 
