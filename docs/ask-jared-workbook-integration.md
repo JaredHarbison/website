@@ -87,6 +87,15 @@ CLAIMED, and writes only the AskLink to the tracker. The raw token is never
 written to another tracker column. Primary and secondary sessions coordinate by
 ordinary sheet writes, so they do not need authenticated HTTP.
 
+At the start of each queue pass, the processor reconciles claimed pool rows
+whose `Claimed Ask ID` is no longer present in any configured active tracker.
+When all configured tracker tabs are readable, those orphaned Sheet-side claims
+are returned to `AVAILABLE` under the same document lock. Claims that still
+have a tracker row—including rows already marked `SYNCED`—are left untouched;
+Rails remains authoritative for whether a token was submitted. If a configured
+tracker tab cannot be read, reconciliation does nothing so an unavailable
+workbook surface cannot cause a legitimate claim to be released.
+
 ## Installable Apps Script setup
 
 1. Open the shared workbook and choose **Extensions → Apps Script**.

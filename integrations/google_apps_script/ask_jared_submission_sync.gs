@@ -51,6 +51,7 @@ function askJaredProcessPendingClaims() {
   lock.waitLock(10000);
   try {
     var pool = askJaredPoolSheet_(workbook);
+    askJaredReconcileOrphanedClaims_(pool, workbook);
     askJaredTrackerSheetNames_().forEach(function(sheetName) {
       var sheet = workbook.getSheetByName(sheetName);
       if (!sheet || sheet.getLastRow() < 2) return;
@@ -85,6 +86,33 @@ function askJaredProcessPendingClaims() {
   } finally {
     lock.releaseLock();
   }
+}
+
+// A role can be removed from an active tracker after it claimed a token. Keep
+// that Sheet-side inventory usable, but only reconcile claims when every
+// configured tracker is readable and the Ask ID is absent from all of them.
+// A synced/submitted row remains in the active tracker and is therefore never
+// released by this pass. Rails remains authoritative for submitted tokens.
+function askJaredReconcileOrphanedClaims_(pool, workbook) {
+  var activeAskIds = {};
+  var trackerSheets = askJaredTrackerSheetNames_().map(function(sheetName) {
+    return workbook.getSheetByName(sheetName);
+  });
+  if (trackerSheets.some(function(sheet) { return !sheet; })) return;
+
+  trackerSheets.forEach(function(sheet) {
+    if (sheet.getLastRow() < 2) return;
+    var rows = sheet.getRange(2, ASK_JARED_ASK_ID_COL, sheet.getLastRow() - 1, 4).getValues();
+    rows.forEach(function(values) {
+      var askId = String(values[0] || '').trim();
+      if (askId) activeAskIds[askId] = true;
+    });
+  });
+
+  askJaredPoolRows_(pool).forEach(function(item) {
+    if (item.state !== 'CLAIMED' || !item.claimedAskId || activeAskIds[item.claimedAskId]) return;
+    pool.getRange(item.row, 3, 1, 2).setValues([['AVAILABLE', '']]);
+  });
 }
 
 // Install daily. Rails returns raw tokens only in this authenticated response;

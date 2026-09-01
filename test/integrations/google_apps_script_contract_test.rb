@@ -26,6 +26,15 @@ class GoogleAppsScriptContractTest < ActiveSupport::TestCase
     assert_includes @script, "claimState !== 'PENDING'"
   end
 
+  test "reconciles claimed pool rows orphaned from active trackers" do
+    assert_includes @script, "askJaredReconcileOrphanedClaims_(pool, workbook)"
+    assert_includes @script, "function askJaredReconcileOrphanedClaims_(pool, workbook)"
+    assert_includes @script, "activeAskIds[askId] = true"
+    assert_includes @script, "item.state !== 'CLAIMED' || !item.claimedAskId || activeAskIds[item.claimedAskId]"
+    assert_includes @script, "pool.getRange(item.row, 3, 1, 2).setValues([['AVAILABLE', '']])"
+    assert_includes @script, "trackerSheets.some(function(sheet) { return !sheet; })"
+  end
+
   test "reconciles stale pool rows and sends bounded claimed inventory metadata" do
     assert_includes @script, "ASK_JARED_EXPORTED_UNCLAIMED_TTL_DAYS = 30"
     assert_includes @script, "askJaredReconcileStaleAvailableRows_"
