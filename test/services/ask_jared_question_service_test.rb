@@ -79,7 +79,7 @@ class AskJaredQuestionServiceTest < ActiveSupport::TestCase
 
   test "removes unsupported predictive transfer claims while retaining factual evidence" do
     entry = KnowledgeEntry.create!(title: "Risk evidence", body: "A recruiter-safe fact.", entry_type: "fact", approval_status: "approved", visibility: "recruiter_visible", source_type: "public_site", source_reference: "transfer-sanitized", source_fingerprint: "transfer-sanitized")
-    provider = FakeProvider.new({ "status" => "answer", "answer" => "Large-team experience is not established. This could impact his adaptability. His retail leadership is documented.", "evidence_ids" => [ entry.id.to_s ], "source_urls" => [] })
+    provider = FakeProvider.new({ "status" => "answer", "answer" => "Large-team experience is not established, Additionally, This could impact his adaptability. His retail leadership is documented.", "evidence_ids" => [ entry.id.to_s ], "source_urls" => [] })
     service = AskJared::QuestionService.new(token_service: @token_service, provider: provider)
 
     response = service.call(raw_token: @raw_token, question: "What is the biggest hiring risk?", session_id: "session-1", request_id: "request-transfer-sanitize")

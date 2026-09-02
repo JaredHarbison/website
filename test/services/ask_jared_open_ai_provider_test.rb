@@ -63,6 +63,8 @@ class AskJaredOpenAiProviderTest < ActiveSupport::TestCase
     assert_includes instruction, "comparable conversion rates and other associated observations as observations"
     assert_includes instruction, "This is a required two-part answer"
     assert_includes instruction, "never say that the absence may not translate"
+    assert_includes instruction, "once one complete example covers user problem"
+    assert_includes instruction, "do not say the work resulted in, led to, or produced the rate"
     refute_includes instruction, "Shopify"
   end
 end
