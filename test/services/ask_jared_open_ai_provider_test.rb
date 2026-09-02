@@ -61,6 +61,8 @@ class AskJaredOpenAiProviderTest < ActiveSupport::TestCase
     assert_includes instruction, "Do not generalize a missing context-specific experience into inability"
     assert_includes instruction, "one well-supported example answers"
     assert_includes instruction, "comparable conversion rates and other associated observations as observations"
+    assert_includes instruction, "This is a required two-part answer"
+    assert_includes instruction, "never say that the absence may not translate"
     refute_includes instruction, "Shopify"
   end
 end
