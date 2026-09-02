@@ -6,6 +6,9 @@ module AskJared
 
     def clean(answer)
       CGI.unescapeHTML(answer.to_s)
+        .gsub(/\bThis could impact [^.?!]*[.?!]/i, "")
+        .gsub(/\bwhich may limit [^.?!]*[.?!]/i, "")
+        .gsub(/\bwhich may not translate directly to [^.?!]*[.?!]/i, "")
         .gsub(/\(?\s*Evidence\s*\[[^\]]+\]\s*\)?/i, "")
         .gsub(/\[\s*Evidence\s*#?\s*[A-Za-z0-9_-]+\s*\]/i, "")
         .gsub(/\(?\s*Evidence\s*(?:ID\s*)?[:#]\s*[A-Za-z0-9_-]+\s*\)?/i, "")
