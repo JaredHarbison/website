@@ -23,7 +23,7 @@ module AskJared
         event.session_digest = digest(session_id)
         event.ip_digest = digest(ip) if ip.present?
         event.user_agent_class = user_agent_class.to_s.first(80)
-        event.metadata = metadata.slice("source", "question_category")
+        event.metadata = metadata.slice("source", "question_category", "primary_evidence_reference", "question_intent")
         event.occurred_at = Time.current
         event.meaningful = MEANINGFUL_EVENTS.include?(event_type)
       end

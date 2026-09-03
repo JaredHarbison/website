@@ -54,17 +54,12 @@ class AskJaredOpenAiProviderTest < ActiveSupport::TestCase
     AskJared::OpenAiProvider.new(api_key: "test-key", http: http).call(question: "Question", context: [ entry(1) ])
 
     instruction = http.request_body.fetch("messages").first.fetch("content")
-    assert_includes instruction, "Do not turn chronology, association, comparable behavior, correlation, or co-occurrence into causality"
-    assert_includes instruction, "Project leadership does not imply sole authorship or people management"
+    assert_includes instruction, "Never merge independent evidence into a causal, chronological, or unified claim"
     assert_includes instruction, "Never put internal evidence IDs in answer prose"
     assert_includes instruction, "Recommend role families only when the supplied evidence demonstrates the relevant work"
-    assert_includes instruction, "Do not generalize a missing context-specific experience into inability"
-    assert_includes instruction, "one well-supported example answers"
-    assert_includes instruction, "comparable conversion rates and other associated observations as observations"
-    assert_includes instruction, "This is a required two-part answer"
-    assert_includes instruction, "never say that the absence may not translate"
-    assert_includes instruction, "once one complete example covers user problem"
-    assert_includes instruction, "do not say the work resulted in, led to, or produced the rate"
+    assert_includes instruction, "missing experience is not evidence of inability"
+    assert_includes instruction, "one excellent distinct example"
+    assert_includes instruction, "Planned measurements remain planned"
     refute_includes instruction, "Shopify"
   end
 end

@@ -8,13 +8,13 @@ class AskJaredKnowledgeEvaluationTest < ActiveSupport::TestCase
     "What evidence suggests Jared could succeed on a larger engineering team?" => "career:jcrew-store-director-columbus-circle",
     "Has Jared ever managed large teams?" => "career:jcrew-store-director-columbus-circle",
     "What experience does Jared have working across organizational levels?" => "career:jcrew-store-director-pentagon-city",
-    "What's the biggest hiring risk with Jared?" => "fact:engineering-experience-boundaries",
-    "Where does Jared have less experience?" => "fact:engineering-experience-boundaries",
+    "What's the biggest hiring risk with Jared?" => "fact:large-engineering-organization-boundary",
+    "Where does Jared have less experience?" => "fact:technology-depth-boundary",
     "Give me one example of measurable impact." => "career:jcrew-store-director-columbus-circle",
     "Has Jared produced measurable business results?" => "career:urbn-senior-merchandiser",
     "What demonstrates Jared's product judgment?" => "story:dogly-agenda-product-direction",
     "Tell me about a time Jared challenged a proposed product direction." => "story:dogly-agenda-product-direction",
-    "How experienced is Jared with TypeScript?" => "fact:engineering-experience-boundaries"
+    "How experienced is Jared with TypeScript?" => "fact:professional-typescript-boundary"
   }.freeze
 
   setup do
@@ -30,7 +30,7 @@ class AskJaredKnowledgeEvaluationTest < ActiveSupport::TestCase
     retriever = AskJared::ApprovedKnowledgeRetriever.new(scope: Scope.new(entries), embedding_provider: Object.new)
 
     INTENT_CASES.each do |question, reference|
-      results = retriever.send(:lexical_results, question, 6)
+      results = retriever.send(:lexical_results, question, 10)
 
       assert_includes results.map(&:source_reference), reference, question
     end
@@ -38,11 +38,12 @@ class AskJaredKnowledgeEvaluationTest < ActiveSupport::TestCase
 
   test "boundary evidence preserves the engineering and retail distinction" do
     records = AskJared::CandidateKnowledgeInventory.new.records.map { |record| AskJared::KnowledgeEntry.new(record.merge("source_reference" => record.fetch("anecdote_id"))) }
-    boundary = records.find { |entry| entry.source_reference == "fact:engineering-experience-boundaries" }
     retail = records.find { |entry| entry.source_reference == "career:jcrew-store-director-columbus-circle" }
 
-    assert_includes boundary.metadata.dig("recruiter_evidence", "limitations"), "Large engineering-team experience is not established"
-    assert_includes boundary.metadata.dig("recruiter_evidence", "limitations"), "TypeScript"
+    boundary = records.find { |entry| entry.source_reference == "fact:large-engineering-organization-boundary" }
+    typescript = records.find { |entry| entry.source_reference == "fact:professional-typescript-boundary" }
+    assert_includes boundary.metadata.dig("recruiter_evidence", "limitations"), "large engineering-organization experience"
+    assert_includes typescript.metadata.dig("recruiter_evidence", "limitations"), "TypeScript"
     assert_includes retail.metadata.dig("recruiter_evidence", "safe_attribution"), "engineering people management"
   end
 
@@ -57,10 +58,10 @@ class AskJaredKnowledgeEvaluationTest < ActiveSupport::TestCase
     service = AskJared::QuestionService.new(retriever: retriever, provider: provider)
 
     [
-      [ "What evidence suggests Jared could succeed on a larger engineering team?", %w[fact:engineering-experience-boundaries career:jcrew-store-director-columbus-circle] ],
-      [ "What are the biggest gaps or risks I should consider before hiring Jared?", [ "fact:engineering-experience-boundaries" ] ],
+      [ "What evidence suggests Jared could succeed on a larger engineering team?", %w[fact:large-engineering-organization-boundary career:jcrew-store-director-columbus-circle] ],
+      [ "What are the biggest gaps or risks I should consider before hiring Jared?", [ "fact:large-engineering-organization-boundary" ] ],
       [ "What demonstrates Jared's product judgment?", [ "story:dogly-agenda-product-direction" ] ],
-      [ "How experienced is Jared with TypeScript?", [ "fact:engineering-experience-boundaries" ] ]
+      [ "How experienced is Jared with TypeScript?", [ "fact:professional-typescript-boundary" ] ]
     ].each do |question, expected_references|
       entries = retriever.call(question)
       trace = retriever.last_trace

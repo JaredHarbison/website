@@ -42,7 +42,7 @@ module AskJared
       unembedded_entries.each do |entry|
         @retrieval_distances[entry.id] = lexical_distance(question, entry)
       end
-      entries = embedded_entries + unembedded_entries
+      entries = (embedded_entries + unembedded_entries).reject { |entry| archive_only?(entry) }
 
       ranked_entries = entries.sort_by do |entry|
         distance = distance_for(entry)
@@ -155,7 +155,51 @@ module AskJared
         boost += 0.08 if entry.entry_type == "product_story"
       end
 
-      boost + category_boost(question, entry)
+      boost + category_boost(question, entry) + metadata_intent_boost(question, entry)
+    end
+
+    def metadata_intent_boost(question, entry)
+      intent = intent_for(question)
+      return 0.0 unless intent
+
+      evidence = entry.metadata.fetch("recruiter_evidence", {})
+      mapping = evidence["capability_map"] || {}
+      capabilities = mapping.any? ? mapping.keys : evidence["competencies"].to_s.split(/,\s*/)
+      aliases = intent_capabilities.fetch(intent, [])
+      direct = capabilities.count do |capability|
+        text = capability.to_s.downcase.tr("_", " ")
+        text.include?(intent) || aliases.any? { |name| text.include?(name) }
+      end
+      utility = entry.metadata.dig("recruiter_evidence", "recruiter_utility")
+      direct * 4.0 + (utility == "primary_recruiter_evidence" ? 2.0 : 0.0)
+    end
+
+    def intent_for(question)
+      text = question.to_s.downcase
+      return "product" if text.match?(/\bproduct(?:\s|$)|product judgment|product thinking|product direction|prioriti|tradeoff|\buser\b|\bux\b|stakeholder misunderstanding/)
+      return "debug" if text.match?(/debug|incident|failure|mistake|reliab|production/)
+      return "learning" if text.match?(/learn|typescript|unfamiliar|ramp/)
+      return "mentorship" if text.match?(/mentor|coach|feedback|people development|succession/)
+      return "organization" if text.match?(/larger team|large team|organizational|management|scale/)
+      return "collaboration" if text.match?(/collaborat|disagreement|worked with other engineers/)
+      return "impact" if text.match?(/impact|metric|result|outcome/)
+      nil
+    end
+
+    def intent_capabilities
+      {
+        "product" => %w[product judgment prioritization tradeoff user research ux stakeholder],
+        "debug" => %w[debug failure reliability incident production],
+        "learning" => %w[learning technology integration],
+        "mentorship" => %w[mentorship coaching people development succession],
+        "organization" => %w[organization management leadership scale],
+        "collaboration" => %w[collaboration engineer code review cross functional reciprocal ownership],
+        "impact" => %w[impact measurable outcome result]
+      }
+    end
+
+    def archive_only?(entry)
+      entry.metadata.dig("recruiter_evidence", "recruiter_utility") == "archive_only"
     end
 
     def category_boost(question, entry)
@@ -187,7 +231,7 @@ module AskJared
         boost += 0.20 if entry.entry_type == "product_story"
       end
 
-      if text.match?(/typescript|javascript|react/)
+      if text.match?(/typescript/) && text.match?(/experience|depth|professional|proficien|background|familiar/i)
         boost += 0.70 if limitations.match?(/typescript/i)
       end
 
@@ -204,10 +248,11 @@ module AskJared
       terms = question.to_s.downcase.scan(/[a-z0-9]{3,}/).uniq
       return [] if terms.empty?
 
-      scored = @scope.to_a.filter_map do |entry|
+      scored = @scope.to_a.reject { |entry| archive_only?(entry) }.filter_map do |entry|
         haystack = [ entry.title, entry.short_body, entry.body, metadata_text(entry.metadata) ].compact.join(" ").downcase
         score = terms.count { |term| haystack.include?(term) }
         score += lexical_intent_bonus(question, entry)
+        score += metadata_intent_boost(question, entry)
         [ entry, score ] if score.positive?
       end.sort_by { |entry, score| [ -score, entry.id ] }
       selected = scored.first(limit).map(&:first)
@@ -258,7 +303,7 @@ module AskJared
         bonus += 4
         bonus += 8 if entry.entry_type == "career_context"
       end
-      bonus += 10 if text.match?(/typescript|javascript|react/) && evidence["limitations"].to_s.match?(/technology|typescript/i)
+      bonus += 10 if text.match?(/typescript/) && evidence["limitations"].to_s.match?(/technology|typescript/i)
       bonus += 5 if text.match?(/product judgment|product thinking|product direction|challenged|proposed direction|user problem|tradeoff/) && evidence["product_learning"].present?
       bonus
     end

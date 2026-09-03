@@ -11,15 +11,12 @@ namespace :ask_jared do
 
   desc "Finalize Jared-approved recruiter knowledge and generate production embeddings"
   task finalize_recruiter_knowledge: :environment do
-    entries = AskJared::FinalizeRecruiterKnowledge.new.call
-    retrievable = KnowledgeEntry.recruiter_retrievable
-    missing_embeddings = retrievable.where(embedding: nil).pluck(:source_reference)
-    private_leaks = KnowledgeEntry.where.not(id: retrievable.select(:id)).where(visibility: "recruiter_visible").pluck(:source_reference)
-    raise "Recruiter-visible entries missing embeddings: #{missing_embeddings.join(', ')}" if missing_embeddings.any?
-    raise "Unapproved recruiter-visible entries: #{private_leaks.join(', ')}" if private_leaks.any?
-
-    counts = KnowledgeEntry.group(:approval_status, :visibility).count
-    puts "Finalized #{entries.length} entries with #{retrievable.count} recruiter embeddings."
-    puts "Counts: #{counts.inspect}"
+    finalizer = AskJared::FinalizeRecruiterKnowledge.new
+    entries = finalizer.call
+    puts "Finalized #{entries.length} entries."
+    puts "Preflight:"
+    puts JSON.pretty_generate(finalizer.preflight_report)
+    puts "Postflight:"
+    puts JSON.pretty_generate(finalizer.validation_report)
   end
 end

@@ -19,12 +19,13 @@ module AskJared
     end
 
     def records
-      @repository.all.filter_map do |case_study|
+      entries = @repository.all.filter_map do |case_study|
         next unless CASE_STUDY_ENTRY_TYPES.key?(case_study.slug)
 
         record_for(case_study)
       end + [ shopify_membership_story_record, membership_metric_record, dogly_agenda_product_direction_record,
-               engineering_experience_boundaries_record ] + retail_career_records
+               *new_recruiter_evidence_records, *retail_career_records ]
+      entries.map { |record| with_structured_recruiter_metadata(record) }
     end
 
     def sync!(store: ::KnowledgeEntry)
@@ -170,6 +171,86 @@ module AskJared
       )
     end
 
+    def new_recruiter_evidence_records
+      [
+        recruiter_record("fact:large-engineering-organization-boundary", "Large engineering organization boundary",
+          "Sustained professional engineering work inside a large conventional engineering organization is not established. Jared does have direct professional engineer-to-engineer collaboration at Dogly and extensive earlier experience leading layered, multi-stakeholder retail organizations. Those domains should remain distinct.",
+          "Large conventional engineering-team experience is a boundary; adjacent collaboration and organizational-scale experience are demonstrated.",
+          { "relationship" => "Engineering organizational-scale boundary", "competencies" => "organizational_scale, engineering_collaboration, stakeholder_alignment", "limitations" => "Sustained large engineering-organization experience is not established.", "safe_attribution" => "Do not equate retail organizational scale with engineering-team experience." }, "jared-confirmed-2026-09-02"),
+        recruiter_record("fact:professional-typescript-boundary", "Professional TypeScript experience boundary",
+          "Prolonged professional TypeScript experience is not established. Jared is studying TypeScript through coursework, targeted instructional and debugging exercises, and side-project practice.",
+          "Professional TypeScript depth is not established; a current learning trajectory is documented.",
+          { "relationship" => "Technology-specific experience boundary", "competencies" => "learning_new_technology", "limitations" => "Prolonged professional TypeScript experience is not established.", "safe_attribution" => "Do not infer TypeScript expertise from JavaScript or React evidence." }, "jared-confirmed-2026-09-02"),
+        recruiter_record("fact:technology-depth-boundary", "Technology-specific depth boundary",
+          "Jared's technology experience is uneven by technology and should be assessed directly. JavaScript and React experience do not establish TypeScript expertise.",
+          "Technology depth varies and should be evaluated by technology rather than inferred globally.",
+          { "relationship" => "Technology-specific experience boundary", "competencies" => "learning_new_technology", "limitations" => "Depth varies by technology; individual technology evidence must stand on its own." }, "jared-confirmed-2026-09-02"),
+        recruiter_record("story:doglydaily-technical-debt-learning", "DoglyDaily technical debt and learning",
+          "To implement the complicated initial DoglyDaily system quickly, Jared placed substantial logic in rake tasks and jobs expecting an immediate refactor. Priorities moved, so later changes were harder to reason about; scheduled execution had memory issues and observability was insufficient. He later separated jobs by type, extracted services and queries, kept models small, improved logging and observability, and added inspection of a user's expected progression. Performance improved significantly, but no defensible numeric metric exists.",
+          "A technical-debt mistake led to a structural refactor and a clearer lesson about observability in scheduled systems.",
+          { "relationship" => "DoglyDaily scheduled/background system", "competencies" => "failure_learning, production_reliability, debugging, technical_ownership", "result" => "Performance improved significantly; no numeric performance result is established.", "limitations" => "No defensible numeric performance metric exists.", "safe_attribution" => "Do not present the improvement as quantified." }, "jared-confirmed-2026-09-02"),
+        recruiter_record("story:jcrew-dress-swim-decision", "J.Crew dress and swim decision",
+          "When company direction replaced a dress wall with swim during peak dress season, the dress wall had produced approximately $10,000 the prior week and swim produced approximately $800 in its first week. Jared candidly raised the concern with the CEO, proposed restoring the dress wall and moving swim to secondary placement, and implemented that direction that evening after notifying his boss and Visual District Manager. The following week the dress wall produced approximately $12,000 and swim approximately $1,500. He would now explain the unusual chain of command more proactively.",
+          "A candid commercial recommendation produced a strong reset, while Jared identifies a communication improvement to make today.",
+          { "relationship" => "J.Crew commercial and executive decision", "competencies" => "executive_communication, technical_disagreement, stakeholder_alignment, measurable_impact", "result" => "Dress approximately $12,000; swim approximately $1,500 in secondary placement after the reset.", "limitations" => "The sales result does not prove the communication process was flawless.", "safe_attribution" => "Attribute the sales observations to the post-reset week, not to flawless communication." }, "jared-confirmed-2026-09-02"),
+        recruiter_record("story:jcrew-crisis-leadership-feedback", "J.Crew crisis leadership feedback",
+          "A trusted senior manager told Jared that during crises he could shift too quickly from guide and mentor into delegation and execution mode. Jared changed his approach: experienced managers now align on objective and timeline and own the approach, while greener managers receive more direction with decision involvement. He later used that approach when an experienced manager led a short-timeline training pilot successfully.",
+          "Feedback changed Jared's crisis-management style toward calibrated autonomy.",
+          { "relationship" => "J.Crew management feedback and delegation", "competencies" => "feedback_coachability, mentorship, people_development, leadership", "result" => "The manager led the team meeting and the team accomplished the training objective.", "safe_attribution" => "Jared supported the manager's development; do not claim sole causation." }, "jared-confirmed-2026-09-02"),
+        recruiter_record("story:anthropologie-succession-mentorship", "Anthropologie succession and mentorship",
+          "During the F Street Anthropologie opening, Jared hired and developed a comparatively green manager with strong People, Product, Process thinking and aesthetic vision. He partnered with her manager, provided exposure to higher-level meetings, and used a supportive guide posture. Her manager became ASM after roughly six months; the lower-level manager then moved into that role and developed her own replacement behind her.",
+          "Jared used succession-oriented development to build readiness behind each promotion.",
+          { "relationship" => "Anthropologie succession and manager development", "competencies" => "mentorship, people_development, organizational_scale, leadership", "result" => "The manager was promoted into the role after her supervisor advanced.", "safe_attribution" => "Do not claim Jared alone caused these people's success." }, "jared-confirmed-2026-09-02"),
+        recruiter_record("story:dogly-pre-accelerator-prioritization", "Dogly pre-accelerator prioritization", "Before an accelerator, Jared prioritized dependency upgrades, then email notifications, expert profiles, and finally aesthetic redesign. He evaluated foundational risk, reuse, expected requirement stability, and throwaway-work risk. The aesthetic work began after discovery started, avoiding multiple aesthetic passes.", "Prioritized partly by expected requirement stability and half-life, not urgency alone.", { "relationship" => "Dogly roadmap prioritization", "competencies" => "prioritization, product_judgment, stakeholder_alignment", "result" => "Aesthetic work aligned with accelerator discovery and avoided multiple aesthetic passes." }, "jared-confirmed-2026-09-02"),
+        recruiter_record("story:doglydaily-three-send-ux", "DoglyDaily three-send UX", "Users were confused by the same unfinished guide arriving three days in a row. Jared proposed differentiated imagery, explicit progression language, an Ignore action, and a final restart explanation. The treatment shipped Friday. Planned measurement is explicit resolution through completion or Ignore rather than passive automatic ignore; no outcome is established.", "A shipped UX treatment has a defined measurement plan, not an asserted result.", { "relationship" => "DoglyDaily progression UX", "competencies" => "product_judgment, ambiguity, measurable_impact", "claims" => [ { "text" => "The treatment shipped with a planned explicit-resolution measurement.", "kind" => "planned", "provenance" => "story:doglydaily-three-send-ux" } ], "limitations" => "No outcome claim is established." }, "jared-confirmed-2026-09-02"),
+        recruiter_record("story:dogly-engineering-collaboration", "Dogly engineering collaboration", "Dogly began with a senior engineer, a frontend engineer/designer, and Jared focused on backend before becoming full-stack. Jared used code review and senior guidance, independently implemented an MVP React frontend with documentation and targeted help, and later reciprocated by retaining migrations and routing while the frontend engineer implemented bounded controller actions. Later work became highly autonomous; sustained larger-team engineering experience remains new context.", "Direct professional engineer-to-engineer collaboration is demonstrated alongside a genuine larger-team boundary.", { "relationship" => "Dogly engineer-to-engineer collaboration", "competencies" => "engineering_collaboration, learning_new_technology, technical_ownership", "limitations" => "Most later engineering work was highly autonomous; sustained larger-team engineering experience is not established.", "safe_attribution" => "Do not infer TypeScript expertise from the React example." }, "jared-confirmed-2026-09-02"),
+        recruiter_record("story:stripe-learning-ramp", "Stripe learning and technical ramp", "Before Dogly's Stripe integration, Jared had not built a third-party integration and had implementation-level gaps around subscriptions, webhooks, concurrency, idempotency, and rate limiting. He researched the design, wrote an implementation plan, identified gaps, used Stripe documentation and technical material, and implemented the subscription integration. His roughly 15% time estimate is a self-estimate, not a hard metric.", "Structured research and primary documentation closed implementation gaps during a successful unfamiliar integration.", { "relationship" => "Dogly Stripe subscription integration", "competencies" => "learning_new_technology, technical_ownership, integration", "result" => "Jared successfully implemented the subscription integration.", "claims" => [ { "text" => "The learning ramp was roughly 15% by Jared's retrospective estimate.", "kind" => "self_estimate", "provenance" => "story:stripe-learning-ramp" } ] }, "jared-confirmed-2026-09-02"),
+        recruiter_record("story:dogly-react-migration-disagreement", "Dogly full React migration disagreement", "Dogly's frontend engineer favored broader React use, including relatively static authentication pages. Jared pushed back because Rails already handled those flows securely, SEO was already limited partly by insufficient server-side rendering, the migration had downstream work, and revenue-generating roadmap work had priority. He documented the dependencies and time cost, while acknowledging the consistency benefit.", "A technical disagreement made opportunity cost visible without treating either framework as universally correct.", { "relationship" => "Dogly frontend architecture tradeoff", "competencies" => "technical_disagreement, prioritization, stakeholder_alignment, technical_ownership", "safe_attribution" => "Do not frame this as Rails-good or React-bad." }, "jared-confirmed-2026-09-02"),
+        recruiter_record("story:dogly-agenda-simplification", "Daily Agenda simplification", "Daily Agenda launched with a compromise UX containing a hero, follows, Training, Nutrition, and Wellness sections. A tour moved engagement only minimally. Jared returned to the simplification hypothesis, removed the hero, moved follows before entry, surfaced purpose immediately, presented categories sequentially, and moved secondary functions behind buttons. Task completion increased 15%. A separate wrap-up later produced observed new follows without a quantified conversion metric.", "A measured 15% task-completion increase belongs to the simplification redesign, not the separate wrap-up feature.", { "relationship" => "Dogly Daily Agenda UX simplification", "competencies" => "product_judgment, measurable_impact, failure_learning, user_research", "result" => "Daily Agenda task completion increased 15% after the simplification redesign.", "safe_attribution" => "Do not attach the 15% result to the separate wrap-up/follow feature." }, "jared-confirmed-2026-09-02"),
+        recruiter_record("story:dogly-agenda-completion-alignment", "Daily Agenda completion-metric alignment", "When a stakeholder rejected granular Agenda completion metrics, Jared recognized a possible misunderstanding of the proposal. He illustrated guide, task, topic, channel, and category levels so the team could evaluate the actual hierarchy. The team implemented the feature with guide-level completion as the default.", "Resolved a hidden stakeholder misunderstanding to improve decision quality.", { "relationship" => "Dogly stakeholder and peer decision alignment", "competencies" => "stakeholder_alignment, influence_without_authority, executive_communication, product_judgment", "result" => "The team implemented guide-level completion as the default.", "safe_attribution" => "This demonstrates decision-quality intervention, not merely advocacy for Jared's preferred feature." }, "jared-confirmed-2026-09-02")
+      ]
+    end
+
+    def with_structured_recruiter_metadata(record)
+      evidence = record.dig("metadata", "recruiter_evidence") || {}
+      metadata = record["metadata"] || {}
+      metadata["recruiter_evidence"] = evidence.merge(
+        "recruiter_utility" => evidence["recruiter_utility"].presence || utility_for(record["anecdote_id"]),
+        "claims" => Array(evidence["claims"]).presence || [ { "text" => record["short_body"].presence || record["body"], "kind" => evidence["evidence_kind"].presence || (evidence["limitations"].present? ? "boundary" : "demonstrated"), "provenance" => record["anecdote_id"] } ],
+        "capability_map" => Array(evidence["competencies"].to_s.split(/,\s*/)).index_with { |capability| { "strength" => "supporting", "evidence_kind" => "demonstrated", "domain" => evidence["relationship"], "role" => "supporting" } },
+        "approved_relationships" => Array(evidence["approved_relationships"]).presence || approved_relationships_for(record["anecdote_id"])
+      )
+      metadata["recruiter_evidence"]["capability_map"].merge!(implicit_capabilities(record))
+      record.merge("metadata" => metadata)
+    end
+
+    def implicit_capabilities(record)
+      text = [ record["title"], record["body"], record.dig("metadata", "recruiter_evidence", "competencies") ].join(" ").downcase
+      names = %w[rails react typescript production_reliability debugging security engineering_collaboration mentorship prioritization ambiguity technical_disagreement]
+      names.filter_map do |name|
+        next unless text.include?(name.tr("_", " "))
+
+        [ name, { "strength" => "demonstrated", "evidence_kind" => "demonstrated", "domain" => record.dig("metadata", "recruiter_evidence", "relationship"), "role" => "supporting" } ]
+      end.to_h
+    end
+
+    def utility_for(reference)
+      return "archive_only" if reference.start_with?("archive:")
+      return "primary_recruiter_evidence" if reference.start_with?("fact:") || reference.match?(/agenda|stripe|collaboration|prioritization|mentorship|disagreement/)
+
+      "secondary_recruiter_evidence"
+    end
+
+    def approved_relationships_for(reference)
+      {
+        "fact:professional-typescript-boundary" => [ { "type" => "mitigated_by", "target" => "story:stripe-learning-ramp" }, { "type" => "trajectory", "target" => "fact:professional-typescript-boundary" } ],
+        "fact:large-engineering-organization-boundary" => [ { "type" => "mitigated_by", "target" => "story:dogly-engineering-collaboration" }, { "type" => "transferable_foundation", "target" => "career:jcrew-store-director-columbus-circle" } ],
+        "story:dogly-agenda-simplification" => [ { "type" => "supports_outcome", "target" => "story:dogly-agenda-simplification", "claim" => "15% task-completion increase" } ],
+        "story:jcrew-crisis-leadership-feedback" => [ { "type" => "applied_in", "target" => "story:jcrew-crisis-leadership-feedback" } ],
+        "story:doglydaily-three-send-ux" => [ { "type" => "planned_measurement", "target" => "story:doglydaily-three-send-ux" } ]
+      }.fetch(reference, [])
+    end
+
     def retail_career_records
       [
         recruiter_record(
@@ -216,9 +297,15 @@ module AskJared
         ),
         recruiter_record(
           "career:urbn-senior-merchandiser", "URBN Senior Merchandiser, Urban Outfitters (2001–2008)",
-          "Jared managed the men's Back-to-School visual prototype in San Francisco for three years, reduced men's merchandising store-opening time by approximately 40% across 12 openings, led district workshops that completed seasonal setups in approximately 50% of normal time, prototyped new approaches including clothing and home-goods integration, and participated on a leadership team that grew a business from approximately $4M to $10M over four years.",
-          "Repeated prototyping, rollout, workshop facilitation, and measurable process improvement across a multi-store organization.",
-          { "relationship" => "URBN merchandising, rollout, and business-growth leadership", "ownership" => { "leadership" => "senior_merchandiser_and_leadership_team_member", "people_management" => "led workshops and cross-store initiatives; direct engineering reports not implied", "sole_authorship" => "not established", "personal_contributions" => "Led prototypes, workshops, openings, and new merchandising experiments" }, "competencies" => "Experimentation, iteration, program execution, communication, change management, cross-functional collaboration, measurable outcomes", "result" => "Approximately 40% reduction in opening time across 12 openings; seasonal setups completed in approximately 50% of normal time; business grew from approximately $4M to $10M over four years.", "safe_attribution" => "The growth figure belongs to the leadership team and is not solely attributed to Jared." }, "Jared-supplied career facts"
+          "Jared reduced men's merchandising store-opening time by approximately 40% across 12 openings. This result is specifically attached to the repeated opening-process work.",
+          "Measured process improvement across repeated store openings.",
+          { "relationship" => "URBN men's merchandising store-opening process", "ownership" => { "leadership" => "senior_merchandiser", "people_management" => "not established", "sole_authorship" => "not established", "personal_contributions" => "Improved the men's merchandising store-opening process" }, "competencies" => "process improvement, program execution, measurable impact", "result" => "Approximately 40% reduction in opening time across 12 openings.", "recruiter_utility" => "primary_recruiter_evidence", "safe_attribution" => "This metric belongs only to the men's merchandising store-opening process." }, "Jared-supplied career facts"
+        ),
+        recruiter_record(
+          "archive:urbn-senior-merchandiser-prototype-workshops", "URBN prototype and workshop responsibilities",
+          "Jared managed the men's Back-to-School visual prototype in San Francisco for three years, led district workshops that completed seasonal setups in approximately 50% of normal time, and prototyped new approaches including clothing and home-goods integration.",
+          "Preserved historical prototype and workshop responsibilities without attaching them to the separate opening-time metric.",
+          { "relationship" => "URBN merchandising prototypes and district workshops", "competencies" => "experimentation, facilitation, change management", "result" => "Seasonal setups were completed in approximately 50% of normal time during the workshops.", "recruiter_utility" => "archive_only", "safe_attribution" => "Do not associate these responsibilities with the separate 40% opening-process result." }, "Jared-supplied career facts"
         )
       ]
     end

@@ -86,4 +86,56 @@ class AskJaredQuestionServiceTest < ActiveSupport::TestCase
 
     assert_equal "Large-team experience is not established. His retail leadership is documented.", response["answer"]
   end
+
+  test "uses a distinct primary evidence story for an another-example follow-up" do
+    first = KnowledgeEntry.create!(title: "First story", body: "First", entry_type: "project", approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "first", source_fingerprint: "first")
+    second = KnowledgeEntry.create!(title: "Second story", body: "Second", entry_type: "project", approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "second", source_fingerprint: "second")
+    third = KnowledgeEntry.create!(title: "Third story", body: "Third", entry_type: "project", approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "third", source_fingerprint: "third")
+    retriever = Class.new do
+      def initialize(entries) = @entries = entries
+      def call(*) = @entries
+    end.new([ first, second, third ])
+    provider = Class.new do
+      attr_reader :contexts
+      def initialize = @contexts = []
+      def call(question:, context:)
+        @contexts << context
+        { "status" => "answer", "answer" => "Grounded.", "evidence_ids" => [ context.first.id.to_s ], "source_urls" => [] }
+      end
+    end.new
+    service = AskJared::QuestionService.new(token_service: @token_service, retriever: retriever, provider: provider)
+
+    service.call(raw_token: @raw_token, question: "What demonstrates judgment?", session_id: "novel-session", request_id: "novel-1")
+    service.call(raw_token: @raw_token, question: "Tell me about another example.", session_id: "novel-session", request_id: "novel-2")
+
+    assert_equal [ first.id, second.id, third.id ], provider.contexts.first.map(&:id)
+    assert_equal [ second.id, third.id ], provider.contexts.last.map(&:id)
+  end
+
+  test "pins tell-me-more to the active primary evidence story" do
+    first = KnowledgeEntry.create!(title: "First story", body: "First", entry_type: "project", approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "first", source_fingerprint: "first")
+    second = KnowledgeEntry.create!(title: "Second story", body: "Second", entry_type: "project", approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "second", source_fingerprint: "second")
+    third = KnowledgeEntry.create!(title: "Third story", body: "Third", entry_type: "project", approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "third", source_fingerprint: "third")
+    retriever = Class.new do
+      def initialize(entries) = @entries = entries
+      def call(*) = @entries
+    end.new([ first, second, third ])
+    provider = Class.new do
+      attr_reader :contexts
+      def initialize = @contexts = []
+      def call(question:, context:)
+        @contexts << context
+        { "status" => "answer", "answer" => "Grounded.", "evidence_ids" => [ context.first.id.to_s ], "source_urls" => [] }
+      end
+    end.new
+    service = AskJared::QuestionService.new(token_service: @token_service, retriever: retriever, provider: provider)
+
+    service.call(raw_token: @raw_token, question: "What demonstrates judgment?", session_id: "pin-session", request_id: "pin-1")
+    service.call(raw_token: @raw_token, question: "Tell me about another example.", session_id: "pin-session", request_id: "pin-2")
+    service.call(raw_token: @raw_token, question: "Tell me more about that.", session_id: "pin-session", request_id: "pin-3")
+    service.call(raw_token: @raw_token, question: "Another example.", session_id: "pin-session", request_id: "pin-4")
+
+    assert_equal [ second.id ], provider.contexts[-2].map(&:id)
+    assert_equal [ third.id ], provider.contexts.last.map(&:id)
+  end
 end

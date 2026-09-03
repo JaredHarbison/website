@@ -142,4 +142,20 @@ class AskJaredApprovedKnowledgeRetrieverTest < ActiveSupport::TestCase
 
     assert_equal [ 1 ], results.map(&:id)
   end
+
+  test "lexical fallback applies metadata intent ranking and excludes archive-only evidence" do
+    failure = entry(1, "Technical debt learning", entry_type: "product_story", evidence: {
+      "competencies" => "failure_learning, debugging", "recruiter_utility" => "primary_recruiter_evidence"
+    })
+    generic = entry(2, "Generic Rails project", entry_type: "project", evidence: {
+      "competencies" => "Rails", "recruiter_utility" => "secondary_recruiter_evidence"
+    })
+    archive = entry(3, "Historical prototype", entry_type: "leadership_story", evidence: {
+      "competencies" => "failure_learning", "recruiter_utility" => "archive_only"
+    })
+    scope = Struct.new(:entries) { def to_a = entries }.new([ generic, archive, failure ])
+    results = AskJared::ApprovedKnowledgeRetriever.new(scope: scope, embedding_provider: Object.new).send(:lexical_results, "Tell me about a mistake Jared made", 3)
+
+    assert_equal [ failure.id ], results.map(&:id)
+  end
 end
