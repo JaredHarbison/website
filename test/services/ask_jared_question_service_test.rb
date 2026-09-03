@@ -99,7 +99,7 @@ class AskJaredQuestionServiceTest < ActiveSupport::TestCase
   end
 
   test "removes unsupported predictive transfer claims while retaining factual evidence" do
-    entry = KnowledgeEntry.create!(title: "Risk evidence", body: "A recruiter-safe fact.", entry_type: "fact", approval_status: "approved", visibility: "recruiter_visible", source_type: "public_site", source_reference: "transfer-sanitized", source_fingerprint: "transfer-sanitized")
+    entry = KnowledgeEntry.create!(title: "Risk evidence", body: "A recruiter-safe fact.", metadata: { "recruiter_evidence" => { "claims" => [ { "text" => "Large-team experience is not established.", "kind" => "boundary" } ] } }, entry_type: "fact", approval_status: "approved", visibility: "recruiter_visible", source_type: "public_site", source_reference: "transfer-sanitized", source_fingerprint: "transfer-sanitized")
     provider = FakeProvider.new({ "status" => "answer", "answer" => "Large-team experience is not established, Additionally, This could impact his adaptability. His retail leadership is documented.", "evidence_ids" => [ entry.id.to_s ], "source_urls" => [] })
     service = AskJared::QuestionService.new(token_service: @token_service, provider: provider)
 
@@ -176,7 +176,9 @@ class AskJaredQuestionServiceTest < ActiveSupport::TestCase
     strong = KnowledgeEntry.create!(title: "Strong alternate product story", body: "Alternate product", metadata: metadata.call("primary_recruiter_evidence", "demonstrated"), entry_type: "product_story", approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "qualified-second", source_fingerprint: "qualified-second")
     retriever = Class.new do
       def initialize(entries) = @entries = entries
-      def call(*) = @entries
+      def call(question, **)
+        question.match?(/another/i) ? [ @entries.last ] : @entries
+      end
       def classified_intent(question) = "product"
       def qualified_for_intent?(intent, entry)
         entry.metadata.dig("recruiter_evidence", "recruiter_utility") == "primary_recruiter_evidence"
@@ -219,7 +221,7 @@ class AskJaredQuestionServiceTest < ActiveSupport::TestCase
 
       def call(question, limit: 6, intent: nil)
         @calls << { question: question, intent: intent }
-        question.match?(/another/i) ? [ @weak, @strong ] : [ @first ]
+        question.match?(/another/i) ? [ @strong ] : [ @first ]
       end
 
       def qualified_for_intent?(intent, entry)

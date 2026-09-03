@@ -27,15 +27,12 @@ module AskJared
         entries = retrieve(question, limit: 12, intent: active_intent).select { |entry| entry.source_reference == prior_primary.last }
       else
         entries = retrieve(question, intent: active_intent).reject { |entry| another_example?(question) && prior_primary.include?(entry.source_reference) }
-        if another_example?(question) && active_intent && @retriever.respond_to?(:qualified_for_intent?)
-          entries = entries.select { |entry| @retriever.qualified_for_intent?(active_intent, entry) }
-        end
       end
       entries = retrieve(question, limit: 12, intent: active_intent).reject { |entry| prior_primary.include?(entry.source_reference) } if entries.empty? && prior_primary.any? && !another_example?(question) && !continuation?(question)
-      evidence_ids = entries.map { |entry| entry.id.to_s }
-      source_urls = entries.filter_map(&:public_url).select { |url| url.start_with?("https://") }.uniq
-      response = entries.empty? ? insufficient_response(another_example: another_example?(question)) : @provider.call(question: question.to_s.strip, context: entries)
-      response = validate_response(response, question: question.to_s.strip, entries: entries, evidence_ids: evidence_ids, source_urls: source_urls)
+      packet = SynthesisEvidencePacket.new(entries: entries, intent: active_intent)
+      response = packet.empty? ? insufficient_response(another_example: another_example?(question)) : @provider.call(question: question.to_s.strip, context: packet)
+      response = validate_response(response, question: question.to_s.strip, packet: packet)
+      response.delete("claim_refs")
 
       unless admin_preview
         @engagement_service.record!(raw_token: raw_token, event_type: "question_submitted", session_id: session_id, ip: ip, event_key: "#{request_id}:question")
@@ -55,19 +52,17 @@ module AskJared
       @retriever.call(question, **options)
     end
 
-    def validate_response(response, question:, entries:, evidence_ids:, source_urls:)
-      response = normalize_response(response, evidence_ids: evidence_ids, source_urls: source_urls)
-      EvidenceIntegrity.validate_response!(answer: response["answer"], evidence_ids: response["evidence_ids"], entries: entries)
+    def validate_response(response, question:, packet:)
+      response = normalize_response(response, packet: packet)
+      EvidenceIntegrity.validate_response!(answer: response["answer"], evidence_ids: response["evidence_ids"], claim_refs: response["claim_refs"], packet: packet)
       response
     rescue AskJared::EvidenceIntegrity::Violation => violation
       return insufficient_response unless @provider.respond_to?(:repair)
 
       begin
-        repaired = @provider.repair(question: question, context: entries, response: response, violations: violation.violations)
-        return insufficient_response unless Array(repaired["evidence_ids"]).all? { |id| evidence_ids.include?(id.to_s) }
-        return insufficient_response unless Array(repaired["source_urls"]).all? { |url| source_urls.include?(url) }
-        repaired = normalize_response(repaired, evidence_ids: evidence_ids, source_urls: source_urls)
-        EvidenceIntegrity.validate_response!(answer: repaired["answer"], evidence_ids: repaired["evidence_ids"], entries: entries)
+        repaired = @provider.repair(question: question, context: packet, response: response, violations: violation.violations)
+        repaired = normalize_response(repaired, packet: packet)
+        EvidenceIntegrity.validate_response!(answer: repaired["answer"], evidence_ids: repaired["evidence_ids"], claim_refs: repaired["claim_refs"], packet: packet)
         repaired
       rescue AskJared::EvidenceIntegrity::Violation, ArgumentError, KeyError, TypeError, AskJared::OpenAiProvider::ConfigurationError, AskJared::OpenAiProvider::ProviderError
         insufficient_response
@@ -76,11 +71,11 @@ module AskJared
       insufficient_response
     end
 
-    def normalize_response(response, evidence_ids:, source_urls:)
+    def normalize_response(response, packet:)
       response = StructuredResponse.validate!(response)
       response["answer"] = RecruiterAnswerSanitizer.clean(response["answer"])
-      response["evidence_ids"] = response["evidence_ids"] & evidence_ids
-      response["source_urls"] = response["source_urls"] & source_urls
+      response["evidence_ids"] = response["evidence_ids"] & packet.evidence_ids
+      response["source_urls"] = response["source_urls"] & packet.source_urls
       response
     end
 

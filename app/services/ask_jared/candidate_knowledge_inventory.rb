@@ -180,15 +180,15 @@ module AskJared
         recruiter_record("fact:large-engineering-organization-boundary", "Large engineering organization boundary",
           "Sustained professional engineering work inside a large conventional engineering organization is not established. Jared does have direct professional engineer-to-engineer collaboration at Dogly and extensive earlier experience leading layered, multi-stakeholder retail organizations. Those domains should remain distinct.",
           "Large conventional engineering-team experience is a boundary; adjacent collaboration and organizational-scale experience are demonstrated.",
-          { "relationship" => "Engineering organizational-scale boundary", "competencies" => "organizational_scale, engineering_collaboration, stakeholder_alignment", "limitations" => "Sustained large engineering-organization experience is not established.", "safe_attribution" => "Do not equate retail organizational scale with engineering-team experience." }, "jared-confirmed-2026-09-02"),
+          { "relationship" => "Engineering organizational-scale boundary", "competencies" => "organizational_scale, engineering_collaboration, stakeholder_alignment", "evidence_kind" => "boundary", "limitations" => "Sustained large engineering-organization experience is not established.", "safe_attribution" => "Do not equate retail organizational scale with engineering-team experience." }, "jared-confirmed-2026-09-02"),
         recruiter_record("fact:professional-typescript-boundary", "Professional TypeScript experience boundary",
           "Prolonged professional TypeScript experience is not established. Jared is studying TypeScript through coursework, targeted instructional and debugging exercises, and side-project practice.",
           "Professional TypeScript depth is not established; a current learning trajectory is documented.",
-          { "relationship" => "Technology-specific experience boundary", "competencies" => "learning_new_technology", "limitations" => "Prolonged professional TypeScript experience is not established.", "safe_attribution" => "Do not infer TypeScript expertise from JavaScript or React evidence." }, "jared-confirmed-2026-09-02"),
+          { "relationship" => "Technology-specific experience boundary", "competencies" => "learning_new_technology", "evidence_kind" => "boundary", "limitations" => "Prolonged professional TypeScript experience is not established.", "safe_attribution" => "Do not infer TypeScript expertise from JavaScript or React evidence." }, "jared-confirmed-2026-09-02"),
         recruiter_record("fact:technology-depth-boundary", "Technology-specific depth boundary",
           "Jared's technology experience is uneven by technology and should be assessed directly. JavaScript and React experience do not establish TypeScript expertise.",
           "Technology depth varies and should be evaluated by technology rather than inferred globally.",
-          { "relationship" => "Technology-specific experience boundary", "competencies" => "learning_new_technology", "limitations" => "Depth varies by technology; individual technology evidence must stand on its own." }, "jared-confirmed-2026-09-02"),
+          { "relationship" => "Technology-specific experience boundary", "competencies" => "learning_new_technology", "evidence_kind" => "boundary", "limitations" => "Depth varies by technology; individual technology evidence must stand on its own." }, "jared-confirmed-2026-09-02"),
         recruiter_record("story:doglydaily-technical-debt-learning", "DoglyDaily technical debt and learning",
           "To implement the complicated initial DoglyDaily system quickly, Jared placed substantial logic in rake tasks and jobs expecting an immediate refactor. Priorities moved, so later changes were harder to reason about; scheduled execution had memory issues and observability was insufficient. He later separated jobs by type, extracted services and queries, kept models small, improved logging and observability, and added inspection of a user's expected progression. Performance improved significantly, but no defensible numeric metric exists.",
           "A technical-debt mistake led to a structural refactor and a clearer lesson about observability in scheduled systems.",
@@ -220,7 +220,7 @@ module AskJared
       metadata = record["metadata"] || {}
       metadata["recruiter_evidence"] = evidence.merge(
         "recruiter_utility" => evidence["recruiter_utility"].presence || utility_for(record["anecdote_id"]),
-        "claims" => Array(evidence["claims"]).presence || [ { "text" => record["short_body"].presence || record["body"], "kind" => evidence["evidence_kind"].presence || (evidence["limitations"].present? ? "boundary" : "demonstrated"), "provenance" => record["anecdote_id"] } ],
+        "claims" => Array(evidence["claims"]).presence || [ { "text" => record["short_body"].presence || record["body"], "kind" => evidence["evidence_kind"].presence || "demonstrated", "provenance" => record["anecdote_id"] } ],
         "capability_map" => Array(evidence["competencies"].to_s.split(/,\s*/)).index_with { |capability| { "strength" => "supporting", "evidence_kind" => "demonstrated", "domain" => evidence["relationship"], "role" => "supporting" } },
         "approved_relationships" => Array(evidence["approved_relationships"]).presence || approved_relationships_for(record["anecdote_id"])
       )

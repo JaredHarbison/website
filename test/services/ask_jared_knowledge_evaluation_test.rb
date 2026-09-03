@@ -27,10 +27,12 @@ class AskJaredKnowledgeEvaluationTest < ActiveSupport::TestCase
     entries = AskJared::CandidateKnowledgeInventory.new.records.each_with_index.map do |record, index|
       AskJared::KnowledgeEntry.new(record.merge("id" => index + 1, "source_reference" => record.fetch("anecdote_id")))
     end
-    retriever = AskJared::ApprovedKnowledgeRetriever.new(scope: Scope.new(entries), embedding_provider: Object.new)
+    embedding_provider = Object.new
+    embedding_provider.define_singleton_method(:call) { |_question| raise AskJared::OpenAiEmbeddingProvider::ConfigurationError }
+    retriever = AskJared::ApprovedKnowledgeRetriever.new(scope: Scope.new(entries), embedding_provider: embedding_provider)
 
     INTENT_CASES.each do |question, reference|
-      results = retriever.send(:lexical_results, question, 10)
+      results = retriever.call(question, limit: 10)
 
       assert_includes results.map(&:source_reference), reference, question
     end

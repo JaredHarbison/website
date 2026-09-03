@@ -18,9 +18,10 @@ module AskJared
             status: { type: "string", enum: StructuredResponse::STATUSES },
             answer: { type: "string" },
             evidence_ids: { type: "array", items: { type: "string" } },
-            source_urls: { type: "array", items: { type: "string", pattern: "^https://" } }
+            source_urls: { type: "array", items: { type: "string", pattern: "^https://" } },
+            claim_refs: { type: "array", items: { type: "string" } }
           },
-          required: %w[status answer evidence_ids source_urls],
+          required: %w[status answer evidence_ids source_urls claim_refs],
           additionalProperties: false
         }
       }
@@ -41,7 +42,7 @@ module AskJared
         The previous draft failed server-side evidence validation: #{violations.join('; ')}.
         Rewrite only enough to remove the unsupported relationship. Use simpler factual sentences
         or omit the unrelated outcome. Keep the original question, approved evidence packet, status,
-        evidence_ids, and source_urls; do not add claims, evidence, causality, chronology, or conclusions.
+        evidence_ids, source_urls, and claim_refs; do not add claims, evidence, causality, chronology, or conclusions.
         Return the same strict JSON shape.
       PROMPT
       request(question: question, context: context.first(MAX_CONTEXT_ENTRIES), messages: [ { role: "user", content: repair_instructions } ], response: response)
@@ -69,7 +70,7 @@ module AskJared
     class ProviderError < StandardError; end
 
     def request_body(question:, context:, messages: nil, response: nil)
-      user_content = "Question: #{question}\n\nApproved evidence:\n#{format_context(context)}"
+      user_content = "Question: #{question}\n\nApproved claim packet:\n#{format_context(context)}"
       user_content = "#{user_content}\n\n#{messages.first[:content]}\n\nPrevious draft:\n#{response.to_json}" if messages
       {
         model: @model,
@@ -104,12 +105,15 @@ module AskJared
         or retrieval metadata. Never put internal evidence IDs in answer prose. Use status=insufficient_information
         when approved evidence is too limited, status=out_of_scope for unrelated questions, and status=blocked
         when access or safety requires refusal. Return exactly status, answer, evidence_ids, and source_urls.
+        Every factual proposition in the answer must be supported by one or more supplied claim
+        references. Return those references in claim_refs. Claim references are server-side and
+        must never appear in answer prose. Use only approved claims and relationships in the packet.
         Recommend role families only when the supplied evidence demonstrates the relevant work.
       PROMPT
     end
 
     def format_context(entries)
-      entries.map { |entry| "[#{entry.id}] #{entry.recruiter_context}" }.join("\n\n")
+      entries.respond_to?(:formatted_context) ? entries.formatted_context : entries.map { |entry| "[#{entry.id}] #{entry.recruiter_context}" }.join("\n\n")
     end
   end
 end

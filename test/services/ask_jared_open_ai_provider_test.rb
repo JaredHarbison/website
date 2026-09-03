@@ -42,7 +42,7 @@ class AskJaredOpenAiProviderTest < ActiveSupport::TestCase
 
     schema = http.request_body.fetch("response_format").fetch("json_schema").fetch("schema")
     assert_equal AskJared::StructuredResponse::STATUSES, schema.fetch("properties").fetch("status").fetch("enum")
-    assert_equal %w[status answer evidence_ids source_urls], schema.fetch("required")
+    assert_equal %w[status answer evidence_ids source_urls claim_refs], schema.fetch("required")
     assert_equal false, schema.fetch("additionalProperties")
     assert_includes http.request_body.fetch("messages").first.fetch("content"), "status=insufficient_information"
   end
@@ -60,6 +60,7 @@ class AskJaredOpenAiProviderTest < ActiveSupport::TestCase
     assert_includes instruction, "missing experience is not evidence of inability"
     assert_includes instruction, "one excellent distinct example"
     assert_includes instruction, "Planned measurements remain planned"
+    assert_includes instruction, "Every factual proposition in the answer must be supported"
     refute_includes instruction, "Shopify"
   end
 
