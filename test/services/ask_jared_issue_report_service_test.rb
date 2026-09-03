@@ -43,7 +43,6 @@ class AskJaredIssueReportServiceTest < ActiveSupport::TestCase
     end
     assert_equal 0, EngagementEvent.count
   end
-
   test "renders an owner notification without exposing the raw token" do
     event = EngagementEvent.create!(
       opportunity: Opportunity.first, ask_token: AskToken.first, event_type: "issue_reported",
