@@ -46,6 +46,15 @@ module AskJared
       [ "candidacy", /\bwhy (?:should|would) .*interview|why hire|case for Jared|recommend Jared/i ]
     ].freeze
 
+    INTENT_SOURCE_BOOSTS = {
+      "react" => { "story:dogly-engineering-collaboration" => 4.0, "story:dogly-react-migration-disagreement" => 3.0 },
+      "mentorship" => { "story:anthropologie-succession-mentorship" => 5.0 },
+      "ambiguity" => { "story:doglydaily-three-send-ux" => 5.0 },
+      "disagreement" => { "story:dogly-react-migration-disagreement" => 5.0 },
+      "stakeholder" => { "story:jcrew-dress-swim-decision" => 5.0 },
+      "impact" => { "story:jcrew-dress-swim-decision" => 5.0, "story:dogly-agenda-simplification" => 4.0, "career:jcrew-associate-store-manager-columbus-circle" => 3.0 }
+    }.freeze
+
     attr_reader :last_trace
 
     def initialize(scope: ::KnowledgeEntry.recruiter_retrievable, embedding_provider: OpenAiEmbeddingProvider.new)
@@ -177,7 +186,7 @@ module AskJared
         capability_match?(capability, spec[:terms]) ? strength_value(details["strength"]) : 0
       end : 0
       utility = evidence["recruiter_utility"] == "primary_recruiter_evidence" ? 1.0 : 0.0
-      direct + utility
+      direct + utility + INTENT_SOURCE_BOOSTS.fetch(intent.to_s, {}).fetch(entry.source_reference.to_s, 0.0)
     end
 
     def strength_value(strength)

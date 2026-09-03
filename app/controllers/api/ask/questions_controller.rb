@@ -1,3 +1,5 @@
+require "securerandom"
+
 module Api
   module Ask
     class QuestionsController < ApplicationController
@@ -13,7 +15,7 @@ module Api
           raw_token: admin_preview ? nil : request.headers["X-Ask-Token"].presence || params[:t],
           admin_preview: admin_preview,
           question: params[:question],
-          session_id: request.session.id.to_s.presence || request.request_id,
+          session_id: ask_session_id,
           ip: request.remote_ip,
           request_id: request.request_id
         )
@@ -40,6 +42,11 @@ module Api
 
       def question_service
         @question_service ||= AskJared::QuestionService.new
+      end
+
+      def ask_session_id
+        session[:ask_jared_session_marker] ||= SecureRandom.hex(16)
+        request.session.id.to_s.presence || session[:ask_jared_session_marker]
       end
 
       def bad_request(error)

@@ -27,6 +27,13 @@ class ApiAskQuestionsControllerTest < ActionDispatch::IntegrationTest
     assert_kind_of Array, response.parsed_body["evidence_ids"]
   end
 
+  test "persists the browser session used for continuation state" do
+    post "/api/ask/questions", params: { question: "What kind of engineer is Jared?" }, headers: { "X-Ask-Token" => @raw_token }
+
+    assert_response :success
+    assert response.headers["Set-Cookie"].present?
+  end
+
   test "accepts the recruiter form when the browser sends a null origin" do
     previous = ActionController::Base.allow_forgery_protection
     ActionController::Base.allow_forgery_protection = true

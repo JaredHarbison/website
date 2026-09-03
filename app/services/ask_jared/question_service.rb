@@ -33,7 +33,12 @@ module AskJared
         entries = retrieve(question, intent: active_intent).reject { |entry| another_example?(question) && prior_primary.include?(entry.source_reference) }
       end
       entries = retrieve(question, limit: 12, intent: active_intent).reject { |entry| prior_primary.include?(entry.source_reference) } if entries.empty? && prior_primary.any? && !another_example?(question) && !continuation?(question)
-      packet = SynthesisEvidencePacket.new(entries: entries, intent: active_intent, question: question.to_s.strip, max_claims: 3)
+      packet = SynthesisEvidencePacket.new(
+        entries: entries,
+        intent: active_intent,
+        question: question.to_s.strip,
+        max_claims: skeleton_path?(active_intent) ? nil : 3
+      )
       response = if packet.empty?
         insufficient_response(another_example: another_example?(question))
       elsif skeleton_path?(active_intent)
