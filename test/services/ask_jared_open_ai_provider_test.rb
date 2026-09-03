@@ -40,6 +40,23 @@ class AskJaredOpenAiProviderTest < ActiveSupport::TestCase
     assert_equal "story:50#claim-0", bounded.resolve_claim_aliases!([ "c1" ]).first
   end
 
+  test "question-aware packet keeps only the minimum relevant claims and preserves process detail" do
+    entry = KnowledgeEntry.new(
+      id: 51, title: "Stripe learning", body: "Approved body", source_reference: "story:stripe-learning-ramp",
+      entry_type: "project", metadata: { "recruiter_evidence" => { "claims" => [
+        { "text" => "Jared researched subscription-system design, wrote an implementation plan, identified knowledge gaps, used Stripe documentation, and implemented the integration.", "kind" => "demonstrated" },
+        { "text" => "The learning ramp was roughly 15% by Jared's retrospective estimate.", "kind" => "self_estimate" },
+        { "text" => "An unrelated claim.", "kind" => "demonstrated" }
+      ] } }
+    )
+    current = AskJared::SynthesisEvidencePacket.new(entries: [ entry ], intent: "learning", question: "How does Jared learn unfamiliar technology?", max_claims: 2)
+
+    assert_equal %w[c1 c2], current.claim_aliases.keys
+    assert_includes current.formatted_context, "researched subscription-system design"
+    assert_includes current.formatted_context, "c2: The learning ramp was roughly 15%"
+    refute_includes current.formatted_context, "An unrelated claim"
+  end
+
   test "provider formatting receives aliases without raw entry IDs" do
     body = { choices: [ { message: { content: { status: "answer", answer: "Grounded.", evidence_ids: [], source_urls: [], claim_refs: [ "c1" ] }.to_json } } ] }.to_json
     http = CapturingHttp.new(Net::HTTPSuccess.allocate.tap { |response| response.define_singleton_method(:body) { body } })

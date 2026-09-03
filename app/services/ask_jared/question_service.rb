@@ -29,7 +29,7 @@ module AskJared
         entries = retrieve(question, intent: active_intent).reject { |entry| another_example?(question) && prior_primary.include?(entry.source_reference) }
       end
       entries = retrieve(question, limit: 12, intent: active_intent).reject { |entry| prior_primary.include?(entry.source_reference) } if entries.empty? && prior_primary.any? && !another_example?(question) && !continuation?(question)
-      packet = SynthesisEvidencePacket.new(entries: entries, intent: active_intent)
+      packet = SynthesisEvidencePacket.new(entries: entries, intent: active_intent, question: question.to_s.strip, max_claims: 3)
       response = packet.empty? ? insufficient_response(another_example: another_example?(question)) : @provider.call(question: question.to_s.strip, context: packet)
       response = validate_response(response, question: question.to_s.strip, packet: packet)
       response.delete("claim_refs")

@@ -71,4 +71,28 @@ class AskJaredEvidenceIntegrityTest < ActiveSupport::TestCase
       AskJared::EvidenceIntegrity.validate_response!(answer: "The work led to the result.", evidence_ids: [ "1" ], claim_refs: [ "story:test#claim-0" ], packet: current)
     end
   end
+
+  test "rejects the six known cross-claim and unsupported interpretations" do
+    current = packet(claims: [
+      { "text" => "A technical disagreement made opportunity cost visible.", "kind" => "demonstrated", "provenance" => "story:react" },
+      { "text" => "The learning ramp was roughly 15% by Jared's retrospective estimate.", "kind" => "self_estimate", "provenance" => "story:stripe" },
+      { "text" => "The treatment shipped with a planned explicit-resolution measurement.", "kind" => "planned", "provenance" => "story:ambiguity" },
+      { "text" => "Jared prioritized partly by expected requirement stability and half-life.", "kind" => "demonstrated", "provenance" => "story:product" }
+    ])
+    refs = current.claim_references
+    evidence = [ "1" ]
+
+    [
+      "Jared ensured all voices were heard.",
+      "The Stripe learning ramp enhanced TypeScript skills.",
+      "TypeScript learning took roughly 15%.",
+      "Jared learned unfamiliar technology primarily through self-estimation.",
+      "Those decisions ensured sustainable roadmaps and user outcomes.",
+      "The treatment produced a successful user outcome."
+    ].each do |answer|
+      assert_raises(AskJared::EvidenceIntegrity::Violation, answer) do
+        AskJared::EvidenceIntegrity.validate_response!(answer: answer, evidence_ids: evidence, claim_refs: refs, packet: current)
+      end
+    end
+  end
 end
