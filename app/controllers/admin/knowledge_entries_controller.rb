@@ -3,7 +3,7 @@ module Admin
     before_action :set_knowledge_entry, only: :update
 
     def index
-      @status = params[:status].presence
+      @status = params[:status].presence || (KnowledgeEntry.where(approval_status: "needs_review").exists? ? "needs_review" : nil)
       @visibility = params[:visibility].presence
       @query = params[:q].to_s.strip
       @knowledge_entries = KnowledgeEntry.order(updated_at: :desc)
