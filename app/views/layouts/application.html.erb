@@ -4,6 +4,15 @@
     <title><%= content_for(:title) || "Jared Harbison" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="description" content="Personal website of Jared Harbison, Senior Software Engineer.">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Jared Harbison · Software Engineer">
+    <meta property="og:description" content="Senior Software Engineer building and owning product-focused web applications from concept through production.">
+    <meta property="og:url" content="<%= request.base_url %><%= request.path %>">
+    <meta property="og:image" content="<%= request.base_url %>/jared-harbison-headshot-icon.png">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Jared Harbison · Software Engineer">
+    <meta name="twitter:description" content="Senior Software Engineer building and owning product-focused web applications from concept through production.">
+    <meta name="twitter:image" content="<%= request.base_url %>/jared-harbison-headshot-icon.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <link rel="icon" type="image/png" sizes="512x512" href="/jared-harbison-headshot-icon.png">
