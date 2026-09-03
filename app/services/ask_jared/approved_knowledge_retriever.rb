@@ -52,6 +52,9 @@ module AskJared
       details = match.last
       utility = entry.metadata.dig("recruiter_evidence", "recruiter_utility")
       strength = details["strength"].to_s
+      evidence_kind = details["evidence_kind"].to_s
+      return false unless evidence_kind.blank? || evidence_kind == "demonstrated"
+
       utility == "primary_recruiter_evidence" || %w[demonstrated strong primary].include?(strength)
     end
 
