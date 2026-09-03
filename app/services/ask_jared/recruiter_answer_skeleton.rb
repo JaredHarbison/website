@@ -72,6 +72,9 @@ module AskJared
     end
 
     def selected_claims
+      continuation_claims = selected_continuation_claims
+      return continuation_claims unless continuation_claims.nil?
+
       policy = ROLE_POLICIES[@intent]
       return @packet.claims.first(3) unless policy
 
@@ -86,6 +89,23 @@ module AskJared
         [ normalized, role_rank, @packet.claims.index(claim) ]
       end.first(policy[:max])
       candidates.presence || (policy[:sources] ? [] : @packet.claims.first(policy[:max]))
+    end
+
+    def selected_continuation_claims
+      return nil unless @question.match?(/\btell me more\b/i) || @question.match?(/\bwhat happened afterward\b/i) || @question.match?(/\bwhat did (?:he|jared) learn\b/i) || @question.match?(/\bwhat was difficult\b/i) || @question.match?(/\bwhy did (?:he|jared) make that decision\b/i) || @question.match?(/\bwhat is the risk there\b/i)
+
+      claims = @packet.claims
+      if @question.match?(/\bwhat did (?:he|jared) learn\b/i)
+        claims = claims.select { |claim| claim.fetch("text").match?(/\blearn|lesson|would now|improv|reflection|feedback/i) }
+      elsif @question.match?(/\bwhat is the risk there\b/i)
+        claims = claims.select { |claim| %w[boundary risk].include?(claim.fetch("role")) }
+      elsif @question.match?(/\bwhat happened afterward\b/i)
+        claims = claims.select { |claim| %w[action metric result chronology].include?(claim.fetch("role")) }
+      elsif @question.match?(/\bwhy did (?:he|jared) make that decision\b/i)
+        claims = claims.select { |claim| %w[action context tradeoff direct_fact].include?(claim.fetch("role")) }
+      end
+
+      claims.sort_by { |claim| [ claim.fetch("ref").include?("#normalized-") ? 0 : 1, @packet.claims.index(claim) ] }.first(1)
     end
   end
 end

@@ -26,7 +26,9 @@ module AskJared
       @usage_guard.check!(token: token, session_digest: session_digest) unless admin_preview
 
       prior_primary = prior_primary_evidence(session_digest)
-      active_intent = @retriever.respond_to?(:classified_intent) ? (@retriever.classified_intent(question) || prior_question_intent(session_digest)) : nil
+      prior_intent = prior_question_intent(session_digest)
+      classified_intent = @retriever.respond_to?(:classified_intent) ? @retriever.classified_intent(question) : nil
+      active_intent = continuation?(question) ? (prior_intent || classified_intent) : (classified_intent || prior_intent)
       if continuation?(question) && prior_primary.last
         entries = retrieve(question, limit: 12, intent: active_intent).select { |entry| entry.source_reference == prior_primary.last }
       else
