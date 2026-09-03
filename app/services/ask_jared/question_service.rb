@@ -189,7 +189,7 @@ module AskJared
     end
 
     def another_example?(question)
-      question.to_s.match?(/\banother (?:example|time)\b|\bwhat else\b|\bgive me another\b/i)
+      question.to_s.match?(/\banother\b.*\b(?:example|time)\b|\bwhat else\b|\bgive me another\b/i)
     end
 
     def continuation?(question)

@@ -226,6 +226,29 @@ class AskJaredQuestionServiceTest < ActiveSupport::TestCase
     assert_equal [ second.id, third.id ], provider.contexts.last.map(&:id)
   end
 
+  test "recognizes another-example requests with an intent phrase between another and example" do
+    first = KnowledgeEntry.create!(title: "First story", body: "First", entry_type: "project", approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "first", source_fingerprint: "first")
+    second = KnowledgeEntry.create!(title: "Second story", body: "Second", entry_type: "project", approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "second", source_fingerprint: "second")
+    retriever = Class.new do
+      def initialize(entries) = @entries = entries
+      def call(*) = @entries
+    end.new([ first, second ])
+    provider = Class.new do
+      attr_reader :contexts
+      def initialize = @contexts = []
+      def call(question:, context:)
+        @contexts << context
+        { "status" => "answer", "answer" => "Grounded.", "evidence_ids" => [ context.first.id.to_s ], "source_urls" => [] }
+      end
+    end.new
+    service = AskJared::QuestionService.new(token_service: @token_service, retriever: retriever, provider: provider)
+
+    service.call(raw_token: @raw_token, question: "What demonstrates judgment?", session_id: "phrase-session", request_id: "phrase-1")
+    service.call(raw_token: @raw_token, question: "Tell me about another product judgment example.", session_id: "phrase-session", request_id: "phrase-2")
+
+    assert_equal [ second.id ], provider.contexts.last.map(&:id)
+  end
+
   test "does not choose a novel weak story over a qualified intent alternative" do
     metadata = ->(utility, strength) do
       { "recruiter_evidence" => {
