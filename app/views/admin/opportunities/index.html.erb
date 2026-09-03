@@ -5,7 +5,7 @@
   <header class="admin-page-header">
     <p class="eyebrow">Ask Jared / Applications</p>
     <h1 id="opportunities-title">Recruiter intelligence</h1>
-    <p class="admin-lede">Aggregate engagement signals for prioritization. Possible sharing is probabilistic, never an identity or viewer count.</p>
+    <p class="admin-lede">Prospect access records connect a company/role context to a tokenized portfolio visit. Activity is privacy-conscious: possible sharing is probabilistic, never an identity or viewer count.</p>
   </header>
 
   <% if @opportunities.any? %>
@@ -36,6 +36,7 @@
         </tbody>
       </table>
     </div>
+    <%= admin_pagination(page: @page, has_previous: @page > 1, has_next: @page * 20 < @opportunity_count, params: params.permit(:page).to_h.symbolize_keys) %>
   <% else %>
     <div class="admin-empty-state">
       <h2>No opportunities yet</h2>

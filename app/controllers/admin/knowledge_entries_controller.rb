@@ -4,8 +4,18 @@ module Admin
 
     def index
       @status = params[:status].presence
+      @visibility = params[:visibility].presence
+      @query = params[:q].to_s.strip
       @knowledge_entries = KnowledgeEntry.order(updated_at: :desc)
       @knowledge_entries = @knowledge_entries.where(approval_status: @status) if @status
+      @knowledge_entries = @knowledge_entries.where(visibility: @visibility) if @visibility
+      if @query.present?
+        pattern = "%#{KnowledgeEntry.sanitize_sql_like(@query)}%"
+        @knowledge_entries = @knowledge_entries.where("title LIKE :pattern OR body LIKE :pattern OR source_reference LIKE :pattern", pattern: pattern)
+      end
+      @knowledge_count = @knowledge_entries.count
+      @page = [ params.fetch(:page, 1).to_i, 1 ].max
+      @knowledge_entries = @knowledge_entries.limit(15).offset((@page - 1) * 15)
     end
 
     def update

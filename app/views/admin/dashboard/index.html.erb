@@ -5,12 +5,22 @@
   <header class="admin-page-header">
     <p class="eyebrow">Ask Jared / Admin</p>
     <h1 id="admin-title">Overview</h1>
-    <p class="admin-lede">Review professional evidence before it becomes available to recruiter-facing answers.</p>
+    <p class="admin-lede">Operational overview for prospect access, recruiter activity, approved knowledge, and feedback.</p>
   </header>
+
+  <section aria-labelledby="system-snapshot-title">
+    <div class="admin-section-heading"><h2 id="system-snapshot-title">System snapshot</h2><%= link_to "Open system status", admin_system_path, class: "admin-text-link" %></div>
+    <div class="admin-summary-grid">
+      <%= link_to admin_opportunities_path, class: "admin-summary-card" do %><span class="admin-summary-card__label">Prospect access</span><strong class="admin-summary-card__value"><%= @prospect_access_count %></strong><span class="admin-summary-card__action">View access →</span><% end %>
+      <%= link_to admin_opportunities_path, class: "admin-summary-card" do %><span class="admin-summary-card__label">Active links</span><strong class="admin-summary-card__value"><%= @active_access_count %></strong><span class="admin-summary-card__action">View activity →</span><% end %>
+      <%= link_to admin_knowledge_entries_path(status: "approved", visibility: "recruiter_visible"), class: "admin-summary-card" do %><span class="admin-summary-card__label">Recruiter-visible knowledge</span><strong class="admin-summary-card__value"><%= @recruiter_visible_count %></strong><span class="admin-summary-card__action">Inspect knowledge →</span><% end %>
+      <%= link_to admin_issues_path(status: "new"), class: "admin-summary-card" do %><span class="admin-summary-card__label">Open issues</span><strong class="admin-summary-card__value"><%= @open_issue_count %></strong><span class="admin-summary-card__action">Review feedback →</span><% end %>
+    </div>
+  </section>
 
   <section class="admin-panel admin-share-panel" aria-labelledby="share-title">
     <div class="admin-section-heading">
-      <div><h2 id="share-title">Ask Jared access</h2><p class="admin-meta">Preview as owner or create a time-limited direct-share link.</p></div>
+      <div><h2 id="share-title">Prospect access</h2><p class="admin-meta">An access record connects a company/role context to a tokenized portfolio visit. Preview as owner or create a time-limited direct-share link.</p></div>
       <%= link_to "Open owner preview", ask_path, class: "button-link" %>
     </div>
     <%= form_with url: admin_share_links_path, method: :post do %>
@@ -30,6 +40,20 @@
         <% end %>
       </ul>
     <% end %>
+  </section>
+
+  <section class="admin-panel" aria-labelledby="attention-title">
+    <div class="admin-section-heading"><h2 id="attention-title">Needs attention</h2><span class="admin-meta"><%= @mail_configured ? "Issue email configured" : "Issue email not configured" %></span></div>
+    <ul class="admin-recent-list">
+      <li><span><strong><%= @missing_embeddings_count %></strong> recruiter-visible entries missing embeddings</span><%= link_to "Check system", admin_system_path, class: "admin-text-link" %></li>
+      <li><span><strong><%= @issue_count %></strong> total reported issues</span><%= link_to "Review feedback", admin_issues_path, class: "admin-text-link" %></li>
+      <% unless @mail_configured %><li><span>Server-side issue email is not configured.</span><%= link_to "View status", admin_system_path, class: "admin-text-link" %></li><% end %>
+    </ul>
+  </section>
+
+  <section class="admin-panel" aria-labelledby="activity-snapshot-title">
+    <div class="admin-section-heading"><h2 id="activity-snapshot-title">Recent activity</h2><%= link_to "Open recruiter intelligence", admin_opportunities_path, class: "admin-text-link" %></div>
+    <% if @recent_activity.any? %><ul class="admin-recent-list"><% @recent_activity.each do |event| %><li><span><strong><%= event.event_type.humanize %></strong><span class="admin-meta"><%= event.opportunity&.company %> · <%= event.metadata["question"].presence || event.metadata["page"].presence || "Activity" %></span></span><time class="admin-meta"><%= event.occurred_at %></time></li><% end %></ul><% else %><div class="admin-empty-state"><h3>No prospect activity yet</h3><p>Tokenized page views, Ask turns, and issue reports will appear here.</p></div><% end %>
   </section>
 
   <section aria-labelledby="review-status-title">

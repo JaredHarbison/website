@@ -1,7 +1,10 @@
 module Admin
   class OpportunitiesController < BaseController
     def index
-      @opportunities = AskJared::EngagementExport.new.call
+      all = AskJared::EngagementExport.new.call
+      @page = [ params.fetch(:page, 1).to_i, 1 ].max
+      @opportunity_count = all.length
+      @opportunities = all.slice((@page - 1) * 20, 20) || []
     end
 
     def show

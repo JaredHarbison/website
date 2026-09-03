@@ -1,0 +1,5 @@
+<nav class="admin-pagination" aria-label="Pagination">
+  <% if has_previous %><%= link_to "Previous", url_for(query.merge(page: page - 1)), class: "button-link button-link--compact" %><% end %>
+  <span class="admin-meta">Page <%= page %></span>
+  <% if has_next %><%= link_to "Next", url_for(query.merge(page: page + 1)), class: "button-link button-link--compact" %><% end %>
+</nav>

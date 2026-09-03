@@ -11,6 +11,8 @@ Rails.application.routes.draw do
     delete "share_links/:id" => "share_links#revoke", as: :revoke_share_link
     resources :knowledge_entries, only: %i[index update]
     resources :opportunities, only: %i[index show]
+    resources :issues, only: %i[index show update]
+    get "system" => "system#index", as: :system
   end
 
   get "ask" => "ask#show"
