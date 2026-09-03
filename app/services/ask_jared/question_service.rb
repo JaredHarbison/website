@@ -33,6 +33,7 @@ module AskJared
         entries = retrieve(question, limit: 12, intent: active_intent).select { |entry| entry.source_reference == prior_primary.last }
       else
         entries = retrieve(question, intent: active_intent).reject { |entry| another_example?(question) && prior_primary.include?(entry.source_reference) }
+        entries = entries.first(1) if another_example?(question) && skeleton_path?(active_intent)
       end
       entries = retrieve(question, limit: 12, intent: active_intent).reject { |entry| prior_primary.include?(entry.source_reference) } if entries.empty? && prior_primary.any? && !another_example?(question) && !continuation?(question)
       packet = SynthesisEvidencePacket.new(
