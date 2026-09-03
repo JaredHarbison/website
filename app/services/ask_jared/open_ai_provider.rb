@@ -33,11 +33,28 @@ module AskJared
     end
 
     def call(question:, context:)
+      request(question: question, context: context.first(MAX_CONTEXT_ENTRIES), messages: nil)
+    end
+
+    def repair(question:, context:, response:, violations:)
+      repair_instructions = <<~PROMPT
+        The previous draft failed server-side evidence validation: #{violations.join('; ')}.
+        Rewrite only enough to remove the unsupported relationship. Use simpler factual sentences
+        or omit the unrelated outcome. Keep the original question, approved evidence packet, status,
+        evidence_ids, and source_urls; do not add claims, evidence, causality, chronology, or conclusions.
+        Return the same strict JSON shape.
+      PROMPT
+      request(question: question, context: context.first(MAX_CONTEXT_ENTRIES), messages: [ { role: "user", content: repair_instructions } ], response: response)
+    end
+
+    private
+
+    def request(question:, context:, messages:, response: nil)
       raise ConfigurationError, "OPENAI_API_KEY is not configured" if @api_key.blank?
 
       response = @http.post(
         ENDPOINT,
-        JSON.generate(request_body(question: question, context: context.first(MAX_CONTEXT_ENTRIES))),
+        JSON.generate(request_body(question: question, context: context, messages: messages, response: response)),
         { "Authorization" => "Bearer #{@api_key}", "Content-Type" => "application/json" }
       )
       raise ProviderError, "OpenAI request failed" unless response.is_a?(Net::HTTPSuccess)
@@ -51,9 +68,9 @@ module AskJared
     class ConfigurationError < StandardError; end
     class ProviderError < StandardError; end
 
-    private
-
-    def request_body(question:, context:)
+    def request_body(question:, context:, messages: nil, response: nil)
+      user_content = "Question: #{question}\n\nApproved evidence:\n#{format_context(context)}"
+      user_content = "#{user_content}\n\n#{messages.first[:content]}\n\nPrevious draft:\n#{response.to_json}" if messages
       {
         model: @model,
         temperature: 0,
@@ -61,7 +78,7 @@ module AskJared
         response_format: RESPONSE_SCHEMA,
         messages: [
           { role: "system", content: system_prompt },
-          { role: "user", content: "Question: #{question}\n\nApproved evidence:\n#{format_context(context)}" }
+          { role: "user", content: user_content }
         ]
       }
     end
@@ -78,6 +95,8 @@ module AskJared
         Never merge independent evidence into a causal, chronological, or unified claim without an
         approved relationship. Planned measurements remain planned; self-estimates remain labeled;
         correlation is not causation; missing experience is not evidence of inability.
+        When no approved causal relationship exists, prefer "the work included", "the evidence shows",
+        "afterward", and separate factual sentences; omit unrelated outcomes rather than implying causality.
         State boundaries accurately without volunteering unrelated weaknesses, and pair a material
         boundary with directly relevant demonstrated foundation or supported mitigation. Do not equate
         adjacent-domain experience with the target domain. Do not upgrade collaboration to sole authorship,

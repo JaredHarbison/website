@@ -14,6 +14,27 @@ class AskJaredQuestionServiceTest < ActiveSupport::TestCase
     end
   end
 
+  class RepairProvider
+    attr_reader :calls, :repair_calls
+
+    def initialize(response:, repair_response:)
+      @response = response
+      @repair_response = repair_response
+      @calls = 0
+      @repair_calls = 0
+    end
+
+    def call(**)
+      @calls += 1
+      @response
+    end
+
+    def repair(**)
+      @repair_calls += 1
+      @repair_response
+    end
+  end
+
   setup do
     EngagementEvent.delete_all
     KnowledgeEntry.delete_all
@@ -87,6 +108,37 @@ class AskJaredQuestionServiceTest < ActiveSupport::TestCase
     assert_equal "Large-team experience is not established. His retail leadership is documented.", response["answer"]
   end
 
+  test "repairs unsupported causal wording once using the same evidence packet" do
+    first = KnowledgeEntry.create!(title: "First", body: "First evidence", entry_type: "project", approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "repair-first", source_fingerprint: "repair-first")
+    second = KnowledgeEntry.create!(title: "Second", body: "Second evidence", entry_type: "project", approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "repair-second", source_fingerprint: "repair-second")
+    provider = RepairProvider.new(
+      response: { "status" => "answer", "answer" => "First led to second.", "evidence_ids" => [ first.id.to_s, second.id.to_s ], "source_urls" => [] },
+      repair_response: { "status" => "answer", "answer" => "The evidence describes First and Second separately.", "evidence_ids" => [ first.id.to_s, second.id.to_s ], "source_urls" => [] }
+    )
+    service = AskJared::QuestionService.new(token_service: @token_service, provider: provider)
+
+    response = service.call(raw_token: @raw_token, question: "Tell me about First and Second", session_id: "repair-session", request_id: "repair-request")
+
+    assert_equal "The evidence describes First and Second separately.", response["answer"]
+    assert_equal 1, provider.calls
+    assert_equal 1, provider.repair_calls
+  end
+
+  test "fails closed when a repair introduces evidence or fails validation" do
+    first = KnowledgeEntry.create!(title: "First", body: "First evidence", entry_type: "project", approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "repair-fail-first", source_fingerprint: "repair-fail-first")
+    second = KnowledgeEntry.create!(title: "Second", body: "Second evidence", entry_type: "project", approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "repair-fail-second", source_fingerprint: "repair-fail-second")
+    provider = RepairProvider.new(
+      response: { "status" => "answer", "answer" => "First led to second.", "evidence_ids" => [ first.id.to_s, second.id.to_s ], "source_urls" => [] },
+      repair_response: { "status" => "answer", "answer" => "First led to second.", "evidence_ids" => [ first.id.to_s, "999" ], "source_urls" => [] }
+    )
+    service = AskJared::QuestionService.new(token_service: @token_service, provider: provider)
+
+    response = service.call(raw_token: @raw_token, question: "Tell me about First and Second", session_id: "repair-fail-session", request_id: "repair-fail-request")
+
+    assert_equal "insufficient_information", response["status"]
+    assert_equal 1, provider.repair_calls
+  end
+
   test "uses a distinct primary evidence story for an another-example follow-up" do
     first = KnowledgeEntry.create!(title: "First story", body: "First", entry_type: "project", approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "first", source_fingerprint: "first")
     second = KnowledgeEntry.create!(title: "Second story", body: "Second", entry_type: "project", approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "second", source_fingerprint: "second")
@@ -110,6 +162,41 @@ class AskJaredQuestionServiceTest < ActiveSupport::TestCase
 
     assert_equal [ first.id, second.id, third.id ], provider.contexts.first.map(&:id)
     assert_equal [ second.id, third.id ], provider.contexts.last.map(&:id)
+  end
+
+  test "does not choose a novel weak story over a qualified intent alternative" do
+    metadata = ->(utility, strength) do
+      { "recruiter_evidence" => {
+        "recruiter_utility" => utility,
+        "capability_map" => { "product judgment" => { "strength" => strength } }
+      } }
+    end
+    first = KnowledgeEntry.create!(title: "First product story", body: "First product", metadata: metadata.call("primary_recruiter_evidence", "demonstrated"), entry_type: "product_story", approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "qualified-first", source_fingerprint: "qualified-first")
+    weak = KnowledgeEntry.create!(title: "Weak operations story", body: "Operations", metadata: metadata.call("secondary_recruiter_evidence", "supporting"), entry_type: "project", approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "weak-product", source_fingerprint: "weak-product")
+    strong = KnowledgeEntry.create!(title: "Strong alternate product story", body: "Alternate product", metadata: metadata.call("primary_recruiter_evidence", "demonstrated"), entry_type: "product_story", approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "qualified-second", source_fingerprint: "qualified-second")
+    retriever = Class.new do
+      def initialize(entries) = @entries = entries
+      def call(*) = @entries
+      def classified_intent(question) = "product"
+      def qualified_for_intent?(intent, entry)
+        entry.metadata.dig("recruiter_evidence", "recruiter_utility") == "primary_recruiter_evidence"
+      end
+    end.new([ first, weak, strong ])
+    provider = Class.new do
+      attr_reader :contexts
+      def initialize = @contexts = []
+      def call(**args)
+        @contexts << args.fetch(:context)
+        { "status" => "answer", "answer" => "Grounded.", "evidence_ids" => [ args.fetch(:context).first.id.to_s ], "source_urls" => [] }
+      end
+    end.new
+    service = AskJared::QuestionService.new(token_service: @token_service, retriever: retriever, provider: provider)
+
+    service.call(raw_token: @raw_token, question: "What demonstrates product judgment?", session_id: "qualified-session", request_id: "qualified-1")
+    service.call(raw_token: @raw_token, question: "Tell me about another example.", session_id: "qualified-session", request_id: "qualified-2")
+
+    assert_equal [ strong.id ], provider.contexts.last.map(&:id)
+    refute_includes provider.contexts.last.map(&:id), weak.id
   end
 
   test "pins tell-me-more to the active primary evidence story" do

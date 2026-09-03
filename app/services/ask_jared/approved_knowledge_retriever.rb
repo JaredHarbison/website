@@ -30,6 +30,31 @@ module AskJared
       lexical_results(question, limit)
     end
 
+    def classified_intent(question)
+      intent_for(question)
+    end
+
+    def qualified_for_intent?(intent_or_question, entry)
+      intent = intent_or_question.to_s
+      intent = intent_for(intent) unless intent_capabilities.key?(intent)
+      return true unless intent
+
+      mapping = entry.metadata.dig("recruiter_evidence", "capability_map") || {}
+      return true if mapping.empty?
+      aliases = intent_capabilities.fetch(intent, [])
+      match = mapping.find do |capability, details|
+        capability_text = capability.to_s.downcase.tr("_", " ")
+        matches = capability_text.include?(intent) || aliases.any? { |name| capability_text.include?(name) }
+        matches && details.is_a?(Hash)
+      end
+      return false unless match
+
+      details = match.last
+      utility = entry.metadata.dig("recruiter_evidence", "recruiter_utility")
+      strength = details["strength"].to_s
+      utility == "primary_recruiter_evidence" || %w[demonstrated strong primary].include?(strength)
+    end
+
     private
 
     def semantic_results(question, limit)

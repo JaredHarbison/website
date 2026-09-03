@@ -62,4 +62,19 @@ class AskJaredOpenAiProviderTest < ActiveSupport::TestCase
     assert_includes instruction, "Planned measurements remain planned"
     refute_includes instruction, "Shopify"
   end
+
+  test "repair request keeps the original packet and reports the violation" do
+    body = { choices: [ { message: { content: { status: "answer", answer: "Separate facts.", evidence_ids: [ "1" ], source_urls: [] }.to_json } } ] }.to_json
+    http = CapturingHttp.new(Net::HTTPSuccess.allocate.tap { |response| response.define_singleton_method(:body) { body } })
+
+    AskJared::OpenAiProvider.new(api_key: "test-key", http: http).repair(
+      question: "What happened?", context: [ entry(1) ],
+      response: { "status" => "answer", "answer" => "Unsupported.", "evidence_ids" => [ "1" ], "source_urls" => [] },
+      violations: [ "causal language requires an approved causal relationship" ]
+    )
+
+    content = http.request_body.fetch("messages").last.fetch("content")
+    assert_includes content, "Rewrite only enough to remove the unsupported relationship"
+    assert_includes content, "Unsupported."
+  end
 end
