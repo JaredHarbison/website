@@ -34,7 +34,7 @@ module AskJared
     end
 
     def call(question:, context:)
-      request(question: question, context: context.first(MAX_CONTEXT_ENTRIES), messages: nil)
+      request(question: question, context: bounded_context(context), messages: nil)
     end
 
     def repair(question:, context:, response:, violations:)
@@ -47,7 +47,7 @@ module AskJared
         entry IDs or internal claim references as claim_refs. The same aliases apply to this repair.
         Return the same strict JSON shape.
       PROMPT
-      request(question: question, context: context.first(MAX_CONTEXT_ENTRIES), messages: [ { role: "user", content: repair_instructions } ], response: response)
+      request(question: question, context: bounded_context(context), messages: [ { role: "user", content: repair_instructions } ], response: response)
     end
 
     private
@@ -117,6 +117,10 @@ module AskJared
 
     def format_context(entries)
       entries.respond_to?(:formatted_context) ? entries.formatted_context : entries.map { |entry| "[#{entry.id}] #{entry.recruiter_context}" }.join("\n\n")
+    end
+
+    def bounded_context(context)
+      context.respond_to?(:bounded) ? context.bounded(MAX_CONTEXT_ENTRIES) : context.first(MAX_CONTEXT_ENTRIES)
     end
   end
 end

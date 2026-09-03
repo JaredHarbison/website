@@ -17,6 +17,10 @@ module AskJared
       entries.first(*args)
     end
 
+    def bounded(limit)
+      self.class.new(entries: entries.first(limit), intent: intent)
+    end
+
     def map(...)
       entries.map(...)
     end
@@ -55,14 +59,15 @@ module AskJared
     def formatted_context
       claims.group_by { |claim| claim.fetch("entry_id") }.map do |entry_id, entry_claims|
         entry = entries.find { |candidate| candidate.id.to_s == entry_id }
-        lines = [ "[#{entry_id}] #{entry.title}" ]
+        lines = [ entry.title ]
         lines << "Source: #{entry.source_reference}"
         lines << "Entry type: #{entry.entry_type}"
         lines << "Allowed claims:"
         entry_claims.each do |claim|
           lines << "- #{claim.fetch("alias")}: #{claim.fetch("text")} (#{claim.fetch("kind")}; provenance: #{claim.fetch("provenance")})"
         end
-        lines << "Approved relationships: #{relationships.select { |relationship| relationship.fetch("entry_id") == entry_id }.to_json}" if relationships.any? { |relationship| relationship.fetch("entry_id") == entry_id }
+        entry_relationships = relationships.select { |relationship| relationship.fetch("entry_id") == entry_id }.map { |relationship| relationship.except("entry_id", "source_reference") }
+        lines << "Approved relationships: #{entry_relationships.to_json}" if entry_relationships.any?
         lines.join("\n")
       end.join("\n\n")
     end

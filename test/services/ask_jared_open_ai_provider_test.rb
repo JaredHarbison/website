@@ -1,5 +1,6 @@
 require "test_helper"
 require_relative "../../app/services/ask_jared/open_ai_provider"
+require_relative "../../app/services/ask_jared/synthesis_evidence_packet"
 
 class AskJaredOpenAiProviderTest < ActiveSupport::TestCase
   FakeHttp = Struct.new(:response) do
@@ -17,6 +18,40 @@ class AskJaredOpenAiProviderTest < ActiveSupport::TestCase
 
   def entry(id)
     KnowledgeEntry.new(id: id, title: "Project", body: "Approved evidence", short_body: nil)
+  end
+
+  def packet
+    entries = [ 50, 51 ].map do |id|
+      KnowledgeEntry.new(
+        id: id, title: "Project #{id}", body: "Fallback body", short_body: nil,
+        source_reference: "story:#{id}", entry_type: "project",
+        metadata: { "recruiter_evidence" => { "claims" => [ { "text" => "Claim for #{id}.", "kind" => "demonstrated", "provenance" => "story:#{id}" } ] } }
+      )
+    end
+    AskJared::SynthesisEvidencePacket.new(entries: entries, intent: "test")
+  end
+
+  test "bounded packet context preserves packet semantics and aliases" do
+    bounded = packet.bounded(1)
+
+    assert_instance_of AskJared::SynthesisEvidencePacket, bounded
+    assert_equal [ 50 ], bounded.entries.map(&:id)
+    assert_equal [ "c1" ], bounded.claim_aliases.keys
+    assert_equal "story:50#claim-0", bounded.resolve_claim_aliases!([ "c1" ]).first
+  end
+
+  test "provider formatting receives aliases without raw entry IDs" do
+    body = { choices: [ { message: { content: { status: "answer", answer: "Grounded.", evidence_ids: [], source_urls: [], claim_refs: [ "c1" ] }.to_json } } ] }.to_json
+    http = CapturingHttp.new(Net::HTTPSuccess.allocate.tap { |response| response.define_singleton_method(:body) { body } })
+
+    AskJared::OpenAiProvider.new(api_key: "test-key", http: http).call(question: "Question", context: packet)
+
+    evidence_context = http.request_body.fetch("messages").last.fetch("content")
+    assert_includes evidence_context, "c1: Claim for 50."
+    assert_includes evidence_context, "c2: Claim for 51."
+    refute_includes evidence_context, "[50]"
+    refute_includes evidence_context, "[51]"
+    refute_includes evidence_context, "entry_id"
   end
 
   test "sends bounded approved context and parses structured JSON" do
@@ -77,5 +112,22 @@ class AskJaredOpenAiProviderTest < ActiveSupport::TestCase
     content = http.request_body.fetch("messages").last.fetch("content")
     assert_includes content, "Rewrite only enough to remove the unsupported relationship"
     assert_includes content, "Unsupported."
+  end
+
+  test "repair preserves bounded packet semantics and alias-formatted context" do
+    body = { choices: [ { message: { content: { status: "answer", answer: "Separate facts.", evidence_ids: [], source_urls: [], claim_refs: [ "c1" ] }.to_json } } ] }.to_json
+    http = CapturingHttp.new(Net::HTTPSuccess.allocate.tap { |response| response.define_singleton_method(:body) { body } })
+
+    AskJared::OpenAiProvider.new(api_key: "test-key", http: http).repair(
+      question: "What happened?", context: packet,
+      response: { "status" => "answer", "answer" => "Unsupported.", "evidence_ids" => [], "source_urls" => [], "claim_refs" => [ "c1" ] },
+      violations: [ "causal language requires an approved causal relationship" ]
+    )
+
+    evidence_context = http.request_body.fetch("messages").last.fetch("content")
+    assert_includes evidence_context, "c1: Claim for 50."
+    assert_includes evidence_context, "c2: Claim for 51."
+    refute_includes evidence_context, "[50]"
+    refute_includes evidence_context, "[51]"
   end
 end
