@@ -4,10 +4,14 @@ module AskJared
     MIN_QUESTION_LENGTH = 3
     GARBAGE_PATTERN = /\A(.)\1{20,}\z/
 
-    def initialize(token_service: TokenService.new, retriever: ApprovedKnowledgeRetriever.new, provider: OpenAiProvider.new, engagement_service: EngagementService.new, usage_guard: UsageGuard.new)
+    RECOGNIZED_INTENTS = ApprovedKnowledgeRetriever::INTENT_SPECS.keys.freeze
+
+    def initialize(token_service: TokenService.new, retriever: ApprovedKnowledgeRetriever.new, provider: OpenAiProvider.new, skeleton_provider: nil, engagement_service: EngagementService.new, usage_guard: UsageGuard.new)
       @token_service = token_service
       @retriever = retriever
       @provider = provider
+      @skeleton_provider = skeleton_provider || TerraSkeletonProvider.new
+      @skeleton_enabled = provider.is_a?(OpenAiProvider) || skeleton_provider.present?
       @engagement_service = engagement_service
       @usage_guard = usage_guard
     end
@@ -30,8 +34,18 @@ module AskJared
       end
       entries = retrieve(question, limit: 12, intent: active_intent).reject { |entry| prior_primary.include?(entry.source_reference) } if entries.empty? && prior_primary.any? && !another_example?(question) && !continuation?(question)
       packet = SynthesisEvidencePacket.new(entries: entries, intent: active_intent, question: question.to_s.strip, max_claims: 3)
-      response = packet.empty? ? insufficient_response(another_example: another_example?(question)) : @provider.call(question: question.to_s.strip, context: packet)
-      response = validate_response(response, question: question.to_s.strip, packet: packet)
+      response = if packet.empty?
+        insufficient_response(another_example: another_example?(question))
+      elsif skeleton_path?(active_intent)
+        @skeleton_provider.call(question: question.to_s.strip, skeleton: RecruiterAnswerSkeleton.new(packet: packet, intent: active_intent, question: question.to_s.strip))
+      else
+        @provider.call(question: question.to_s.strip, context: packet)
+      end
+      response = if skeleton_path?(active_intent) && !packet.empty?
+        validate_skeleton_response(response, question: question.to_s.strip, packet: packet)
+      else
+        validate_response(response, question: question.to_s.strip, packet: packet)
+      end
       response.delete("claim_refs")
 
       unless admin_preview
@@ -73,12 +87,74 @@ module AskJared
       insufficient_response
     end
 
+    def validate_skeleton_response(response, question:, packet:)
+      skeleton = RecruiterAnswerSkeleton.new(packet: packet, intent: packet.intent, question: question)
+      normalized = response.is_a?(Hash) ? response : {}
+      status = normalized["status"]
+      segments = normalized["segments"]
+      raise EvidenceIntegrity::Violation, "skeleton response is malformed" unless StructuredResponse::STATUSES.include?(status) && segments.is_a?(Array)
+      return insufficient_response if status == "insufficient_information"
+
+      raise EvidenceIntegrity::Violation, "skeleton response must contain segments" if segments.empty?
+      segments.each do |segment|
+        raise EvidenceIntegrity::Violation, "skeleton segment is malformed" unless segment.is_a?(Hash) && segment["text"].is_a?(String) && segment["role_refs"].is_a?(Array) && segment["role_refs"].any?
+        raise EvidenceIntegrity::Violation, "skeleton segment exposes internal references" if segment["text"].match?(/\bc\d+\b|\br\d+\b|#claim-/i)
+        skeleton.resolve_role_refs!(segment["role_refs"])
+      end
+
+      role_refs = segments.flat_map { |segment| segment["role_refs"] }.uniq
+      answer = RecruiterAnswerSanitizer.clean(segments.map { |segment| segment["text"] }.join(" "))
+      raise EvidenceIntegrity::Violation, "skeleton realization is empty" if answer.blank?
+
+      {
+        "status" => "answer",
+        "answer" => answer,
+        "evidence_ids" => skeleton.evidence_ids_for(role_refs),
+        "source_urls" => packet.source_urls,
+        "claim_refs" => skeleton.claim_refs_for(role_refs)
+      }
+    rescue EvidenceIntegrity::Violation => violation
+      return insufficient_response unless @skeleton_provider.respond_to?(:repair)
+
+      begin
+        repaired = @skeleton_provider.repair(
+          question: question,
+          skeleton: RecruiterAnswerSkeleton.new(packet: packet, intent: packet.intent, question: question),
+          response: response,
+          violations: violation.violations
+        )
+        validate_skeleton_response_once(repaired, packet: packet, question: question)
+      rescue EvidenceIntegrity::Violation, ArgumentError, KeyError, TypeError, OpenAiProvider::ConfigurationError, OpenAiProvider::ProviderError
+        insufficient_response
+      end
+    end
+
+    def validate_skeleton_response_once(response, packet:, question:)
+      skeleton = RecruiterAnswerSkeleton.new(packet: packet, intent: packet.intent, question: question)
+      raise EvidenceIntegrity::Violation, "skeleton response is malformed" unless response["status"] == "answer" && response["segments"].is_a?(Array) && response["segments"].any?
+      response["segments"].each do |segment|
+        raise EvidenceIntegrity::Violation, "skeleton segment is malformed" unless segment["text"].is_a?(String) && segment["role_refs"].is_a?(Array) && segment["role_refs"].any?
+        raise EvidenceIntegrity::Violation, "skeleton segment exposes internal references" if segment["text"].match?(/\bc\d+\b|\br\d+\b|#claim-/i)
+        skeleton.resolve_role_refs!(segment["role_refs"])
+      end
+      refs = response["segments"].flat_map { |segment| segment["role_refs"] }.uniq
+      { "status" => "answer", "answer" => RecruiterAnswerSanitizer.clean(response["segments"].map { |segment| segment["text"] }.join(" ")), "evidence_ids" => skeleton.evidence_ids_for(refs), "source_urls" => packet.source_urls, "claim_refs" => skeleton.claim_refs_for(refs) }
+    end
+
     def normalize_response(response, packet:)
       response = StructuredResponse.validate!(response)
       response["answer"] = RecruiterAnswerSanitizer.clean(response["answer"])
       response["evidence_ids"] = response["evidence_ids"] & packet.evidence_ids
       response["source_urls"] = response["source_urls"] & packet.source_urls
       response
+    end
+
+    def recognized_intent?(intent)
+      RECOGNIZED_INTENTS.include?(intent.to_s)
+    end
+
+    def skeleton_path?(intent)
+      @skeleton_enabled && recognized_intent?(intent) && @skeleton_provider.respond_to?(:call)
     end
 
     def resolve_claim_refs(response, packet:)
