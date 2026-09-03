@@ -5,7 +5,7 @@ module AskJared
       "candidacy" => { roles: %w[direct_fact action], max: 2 },
       "rails" => { roles: %w[direct_fact action], max: 2 },
       "react" => { sources: %w[story:dogly-engineering-collaboration story:dogly-react-migration-disagreement], max: 2 },
-      "product" => { sources: %w[case-study:dogly-product-design story:dogly-agenda-product-direction story:dogly-pre-accelerator-prioritization], max: 2 },
+      "product" => { sources: %w[case-study:dogly-product-design story:dogly-agenda-product-direction story:dogly-pre-accelerator-prioritization story:dogly-react-migration-disagreement], max: 2 },
       "organization" => { roles: %w[direct_fact boundary], max: 3 },
       "collaboration" => { sources: %w[story:dogly-engineering-collaboration], max: 1 },
       "risk" => { roles: %w[boundary trajectory direct_fact], max: 3 },
