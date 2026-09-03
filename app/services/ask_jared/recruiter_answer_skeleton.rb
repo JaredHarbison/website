@@ -10,15 +10,15 @@ module AskJared
       "collaboration" => { sources: %w[story:dogly-engineering-collaboration], max: 1 },
       "risk" => { roles: %w[boundary trajectory direct_fact], max: 3 },
       "typescript" => { roles: %w[boundary trajectory], exclude_sources: %w[story:stripe-learning-ramp], max: 2 },
-      "learning" => { sources: %w[story:stripe-learning-ramp], max: 1 },
-      "failure" => { sources: %w[story:doglydaily-technical-debt-learning], max: 1 },
-      "feedback" => { sources: %w[story:jcrew-crisis-leadership-feedback], max: 1 },
-      "prioritization" => { sources: %w[story:dogly-pre-accelerator-prioritization], max: 1 },
+      "learning" => { sources: %w[story:stripe-learning-ramp], preferred_roles: %w[process], max: 1 },
+      "failure" => { sources: %w[story:doglydaily-technical-debt-learning], preferred_roles: %w[mistake], max: 1 },
+      "feedback" => { sources: %w[story:jcrew-crisis-leadership-feedback], preferred_roles: %w[feedback], max: 1 },
+      "prioritization" => { sources: %w[story:dogly-pre-accelerator-prioritization], preferred_roles: %w[context], max: 1 },
       "disagreement" => { sources: %w[story:dogly-react-migration-disagreement], max: 1 },
       "mentorship" => { sources: %w[story:anthropologie-succession-mentorship], max: 1 },
-      "ambiguity" => { sources: %w[story:doglydaily-three-send-ux], max: 1 },
-      "impact" => { sources: %w[story:jcrew-dress-swim-decision story:dogly-agenda-simplification career:jcrew-associate-store-manager-columbus-circle], roles: %w[action metric], max: 2 },
-      "stakeholder" => { sources: %w[story:jcrew-dress-swim-decision], max: 1 }
+      "ambiguity" => { sources: %w[story:doglydaily-three-send-ux], preferred_roles: %w[context action planned_state], max: 1 },
+      "impact" => { sources: %w[story:jcrew-dress-swim-decision story:dogly-agenda-simplification career:jcrew-associate-store-manager-columbus-circle], roles: %w[action metric], preferred_roles: %w[action metric], max: 2 },
+      "stakeholder" => { sources: %w[story:jcrew-dress-swim-decision], preferred_roles: %w[action], max: 1 }
     }.freeze
 
     attr_reader :intent, :question, :roles, :relationships
@@ -79,7 +79,12 @@ module AskJared
       candidates = candidates.select { |claim| policy[:roles].include?(claim.fetch("role")) } if policy[:roles]
       candidates = candidates.select { |claim| policy[:sources].include?(claim.fetch("source_reference")) } if policy[:sources]
       candidates = candidates.reject { |claim| policy[:exclude_sources].include?(claim.fetch("source_reference")) } if policy[:exclude_sources]
-      candidates = candidates.first(policy[:max])
+      role_order = Array(policy[:preferred_roles])
+      candidates = candidates.sort_by do |claim|
+        normalized = claim.fetch("ref").include?("#normalized-") ? 0 : 1
+        role_rank = role_order.index(claim.fetch("role")) || role_order.length
+        [ normalized, role_rank, @packet.claims.index(claim) ]
+      end.first(policy[:max])
       candidates.presence || (policy[:sources] ? [] : @packet.claims.first(policy[:max]))
     end
   end
