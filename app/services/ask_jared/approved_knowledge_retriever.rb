@@ -53,6 +53,8 @@ module AskJared
       utility = entry.metadata.dig("recruiter_evidence", "recruiter_utility")
       strength = details["strength"].to_s
       evidence_kind = details["evidence_kind"].to_s
+      claim_kinds = Array(entry.metadata.dig("recruiter_evidence", "claims")).filter_map { |claim| claim["kind"]&.to_s }
+      return false if claim_kinds.include?("boundary")
       return false unless evidence_kind.blank? || evidence_kind == "demonstrated"
 
       utility == "primary_recruiter_evidence" || %w[demonstrated strong primary].include?(strength)
