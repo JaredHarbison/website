@@ -40,7 +40,7 @@ module AskJared
       return true unless intent
 
       mapping = entry.metadata.dig("recruiter_evidence", "capability_map") || {}
-      return true if mapping.empty?
+      return false if mapping.empty?
       aliases = intent_capabilities.fetch(intent, [])
       match = mapping.find do |capability, details|
         capability_text = capability.to_s.downcase.tr("_", " ")
