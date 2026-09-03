@@ -53,14 +53,13 @@ module AskJared
       else
         validate_response(response, question: question.to_s.strip, packet: packet)
       end
-      response.delete("claim_refs")
-
       unless admin_preview
         @engagement_service.record!(raw_token: raw_token, event_type: "question_submitted", session_id: session_id, ip: ip, event_key: "#{request_id}:question")
-        primary_entry = entries.find { |entry| response["evidence_ids"].include?(entry.id.to_s) } || entries.first
+        primary_entry = primary_entry_for(entries, response: response, packet: packet)
         @engagement_service.record!(raw_token: raw_token, event_type: "answer_returned", session_id: session_id, ip: ip, event_key: "#{request_id}:answer", metadata: { "primary_evidence_reference" => primary_entry&.source_reference, "question_intent" => active_intent })
         @usage_guard.record!(token: token, session_digest: session_digest, request_id: request_id, status: "completed", estimated_cost_cents: entries.empty? ? 0 : 1)
       end
+      response.delete("claim_refs")
       response
     end
 
@@ -202,6 +201,15 @@ module AskJared
 
     def prior_question_intent(session_digest)
       EngagementEvent.where(session_digest: session_digest, event_type: "answer_returned").order(:occurred_at).pluck(:metadata).filter_map { |metadata| metadata["question_intent"] }.compact.last
+    end
+
+    def primary_entry_for(entries, response:, packet:)
+      if response["claim_refs"].is_a?(Array)
+        primary_claim = packet.claims.find { |claim| response["claim_refs"].include?(claim.fetch("ref")) }
+        return entries.find { |entry| entry.id.to_s == primary_claim["entry_id"] } if primary_claim
+      end
+
+      entries.find { |entry| response["evidence_ids"].include?(entry.id.to_s) } || entries.first
     end
 
     class NullProvider
