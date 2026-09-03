@@ -22,12 +22,12 @@ module AskJared
       @embedding_provider = embedding_provider
     end
 
-    def call(question, limit: DEFAULT_LIMIT)
-      return semantic_results(question, limit) if postgres_scope_with_embeddings?
+    def call(question, limit: DEFAULT_LIMIT, intent: nil)
+      return semantic_results(question, limit, intent: intent) if postgres_scope_with_embeddings?
 
-      lexical_results(question, limit)
+      lexical_results(question, limit, intent: intent)
     rescue OpenAiEmbeddingProvider::ConfigurationError, OpenAiEmbeddingProvider::ProviderError
-      lexical_results(question, limit)
+      lexical_results(question, limit, intent: intent)
     end
 
     def classified_intent(question)
@@ -62,7 +62,7 @@ module AskJared
 
     private
 
-    def semantic_results(question, limit)
+    def semantic_results(question, limit, intent: nil)
       vector = @embedding_provider.call(question)
       literal = "[#{vector.join(',')}]"
       distance_sql = ::KnowledgeEntry.sanitize_sql_array([ "embedding <=> ?::vector", literal ])
@@ -76,20 +76,18 @@ module AskJared
 
       ranked_entries = entries.sort_by do |entry|
         distance = distance_for(entry)
-        [ distance - compatibility_boost(question, entry), entry.id ]
+        [ distance - compatibility_boost(question, entry, intent: intent), entry.id ]
       end
 
       @last_trace = {
         mode: "semantic",
         considered: entries.map { |entry| trace_entry(entry, distance_for(entry)) },
-        ranked: ranked_entries.map { |entry| trace_entry(entry, adjusted_distance(entry, question)) }
+        ranked: ranked_entries.map { |entry| trace_entry(entry, adjusted_distance(entry, question, intent: intent)) }
       }
 
-      selected = broad_query?(question) ? diversified_results(ranked_entries.first([ BROAD_CANDIDATE_LIMIT, limit ].max), limit, question) : ranked_entries.first(limit)
+      selected = broad_query?(question) ? diversified_results(ranked_entries.first([ BROAD_CANDIDATE_LIMIT, limit ].max), limit, question, intent: intent) : ranked_entries.first(limit)
       @last_trace[:selected] = selected.map { |entry| entry.id }
-      selected
-
-      diversified_results(ranked_entries.first([ BROAD_CANDIDATE_LIMIT, limit ].max), limit, question)
+      diversified_results(ranked_entries.first([ BROAD_CANDIDATE_LIMIT, limit ].max), limit, question, intent: intent)
     end
 
     def broad_query?(question)
@@ -99,20 +97,20 @@ module AskJared
       BROAD_QUERY_PATTERNS.any? { |pattern| text.match?(pattern) }
     end
 
-    def diversified_results(candidates, limit, question)
+    def diversified_results(candidates, limit, question, intent: nil)
       selected = []
       remaining = candidates.dup
-      relevance_floor = candidates.first && adjusted_distance(candidates.first, question) + 0.35
+      relevance_floor = candidates.first && adjusted_distance(candidates.first, question, intent: intent) + 0.35
 
       while selected.length < limit && remaining.any?
         eligible = remaining.select do |entry|
-          adjusted_distance(entry, question) <= relevance_floor
+          adjusted_distance(entry, question, intent: intent) <= relevance_floor
         end
         break if eligible.empty?
 
         next_entry = eligible.min_by do |entry|
           [
-            adjusted_distance(entry, question) - diversity_bonus(entry, selected),
+            adjusted_distance(entry, question, intent: intent) - diversity_bonus(entry, selected),
             entry.id
           ]
         end
@@ -123,8 +121,8 @@ module AskJared
       selected
     end
 
-    def adjusted_distance(entry, question)
-      distance_for(entry) - compatibility_boost(question, entry)
+    def adjusted_distance(entry, question, intent: nil)
+      distance_for(entry) - compatibility_boost(question, entry, intent: intent)
     end
 
     def diversity_bonus(entry, selected)
@@ -142,7 +140,7 @@ module AskJared
       entry.metadata.dig("recruiter_evidence", "relationship").to_s.downcase.include?("independent project outside dogly")
     end
 
-    def compatibility_boost(question, entry)
+    def compatibility_boost(question, entry, intent: nil)
       text = question.to_s.downcase
       evidence = entry.metadata.fetch("recruiter_evidence", {})
       context = [ entry.title, entry.short_body, evidence["relationship"] ].compact.join(" ").downcase
@@ -185,11 +183,11 @@ module AskJared
         boost += 0.08 if entry.entry_type == "product_story"
       end
 
-      boost + category_boost(question, entry) + metadata_intent_boost(question, entry)
+      boost + category_boost(question, entry) + metadata_intent_boost(question, entry, intent: intent)
     end
 
-    def metadata_intent_boost(question, entry)
-      intent = intent_for(question)
+    def metadata_intent_boost(question, entry, intent: nil)
+      intent ||= intent_for(question)
       return 0.0 unless intent
 
       evidence = entry.metadata.fetch("recruiter_evidence", {})
@@ -274,15 +272,15 @@ module AskJared
       (title_terms & question_terms).length * 0.04
     end
 
-    def lexical_results(question, limit)
+    def lexical_results(question, limit, intent: nil)
       terms = question.to_s.downcase.scan(/[a-z0-9]{3,}/).uniq
       return [] if terms.empty?
 
       scored = @scope.to_a.reject { |entry| archive_only?(entry) }.filter_map do |entry|
         haystack = [ entry.title, entry.short_body, entry.body, metadata_text(entry.metadata) ].compact.join(" ").downcase
         score = terms.count { |term| haystack.include?(term) }
-        score += lexical_intent_bonus(question, entry)
-        score += metadata_intent_boost(question, entry)
+        score += lexical_intent_bonus(question, entry, intent: intent)
+        score += metadata_intent_boost(question, entry, intent: intent)
         [ entry, score ] if score.positive?
       end.sort_by { |entry, score| [ -score, entry.id ] }
       selected = scored.first(limit).map(&:first)
@@ -321,7 +319,7 @@ module AskJared
         product_learning: evidence["product_learning"], result: evidence["result"] }
     end
 
-    def lexical_intent_bonus(question, entry)
+    def lexical_intent_bonus(question, entry, intent: nil)
       text = question.to_s.downcase
       evidence = entry.metadata.fetch("recruiter_evidence", {})
       bonus = 0

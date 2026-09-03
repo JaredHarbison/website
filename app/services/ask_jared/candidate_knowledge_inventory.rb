@@ -145,6 +145,10 @@ module AskJared
             "collaborators" => "Dogly founders, long-time users, and Dogly experts"
           },
           "competencies" => "User research synthesis, product judgment, prioritization, tradeoff analysis, experimentation, customer understanding, engagement measurement",
+          "claims" => [
+            { "text" => "Jared redirected a proposed Community direction toward an evidence-backed daily plan based on user need, explicit tradeoffs, user comparison, and post-launch engagement signals.",
+              "kind" => "demonstrated", "provenance" => "story:dogly-agenda-product-direction" }
+          ],
           "product_learning" => "A focused, expert-backed action loop better matched the repeated user need than a generic community destination.",
           "result" => "Long-time users preferred Agenda in a Community-versus-Agenda comparison; tag follows increased and Daily Agenda emails showed stronger open-rate behavior than the legacy approach.",
           "limitations" => "The evidence does not provide the size of the preference study or numeric changes in follows or open rates.",

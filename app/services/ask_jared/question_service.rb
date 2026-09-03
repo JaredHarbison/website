@@ -24,14 +24,14 @@ module AskJared
       prior_primary = prior_primary_evidence(session_digest)
       active_intent = @retriever.respond_to?(:classified_intent) ? (@retriever.classified_intent(question) || prior_question_intent(session_digest)) : nil
       if continuation?(question) && prior_primary.last
-        entries = @retriever.call(question, limit: 12).select { |entry| entry.source_reference == prior_primary.last }
+        entries = retrieve(question, limit: 12, intent: active_intent).select { |entry| entry.source_reference == prior_primary.last }
       else
-        entries = @retriever.call(question).reject { |entry| another_example?(question) && prior_primary.include?(entry.source_reference) }
+        entries = retrieve(question, intent: active_intent).reject { |entry| another_example?(question) && prior_primary.include?(entry.source_reference) }
         if another_example?(question) && active_intent && @retriever.respond_to?(:qualified_for_intent?)
           entries = entries.select { |entry| @retriever.qualified_for_intent?(active_intent, entry) }
         end
       end
-      entries = @retriever.call(question, limit: 12).reject { |entry| prior_primary.include?(entry.source_reference) } if entries.empty? && prior_primary.any? && !another_example?(question) && !continuation?(question)
+      entries = retrieve(question, limit: 12, intent: active_intent).reject { |entry| prior_primary.include?(entry.source_reference) } if entries.empty? && prior_primary.any? && !another_example?(question) && !continuation?(question)
       evidence_ids = entries.map { |entry| entry.id.to_s }
       source_urls = entries.filter_map(&:public_url).select { |url| url.start_with?("https://") }.uniq
       response = entries.empty? ? insufficient_response(another_example: another_example?(question)) : @provider.call(question: question.to_s.strip, context: entries)
@@ -47,6 +47,13 @@ module AskJared
     end
 
     private
+
+    def retrieve(question, limit: nil, intent: nil)
+      options = {}
+      options[:limit] = limit if limit
+      options[:intent] = intent if intent && @retriever.respond_to?(:classified_intent)
+      @retriever.call(question, **options)
+    end
 
     def validate_response(response, question:, entries:, evidence_ids:, source_urls:)
       response = normalize_response(response, evidence_ids: evidence_ids, source_urls: source_urls)

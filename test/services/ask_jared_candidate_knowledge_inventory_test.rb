@@ -17,6 +17,8 @@ class AskJaredCandidateKnowledgeInventoryTest < ActiveSupport::TestCase
     assert_equal "leadership_story", entries.find { |entry| entry.source_reference == "career:jcrew-store-director-columbus-circle" }.entry_type
     assert_includes entries.find { |entry| entry.source_reference == "career:jcrew-store-director-columbus-circle" }.metadata.dig("recruiter_evidence", "competencies"), "Large-team leadership"
     assert_includes entries.find { |entry| entry.source_reference == "story:dogly-agenda-product-direction" }.body, "Community or message-board"
+    agenda = entries.find { |entry| entry.source_reference == "story:dogly-agenda-product-direction" }
+    assert_equal [ "demonstrated" ], agenda.metadata.dig("recruiter_evidence", "claims").map { |claim| claim["kind"] }
     assert_equal true, entries.find { |entry| entry.source_reference == "case-study:fridge-no-more-bulk-ordering" }.metadata.dig("approval_readiness", "ready_for_jared_approval")
     assert_equal true, metric.metadata.dig("approval_readiness", "ready_for_jared_approval")
   end

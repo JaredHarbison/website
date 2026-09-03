@@ -199,6 +199,52 @@ class AskJaredQuestionServiceTest < ActiveSupport::TestCase
     refute_includes provider.contexts.last.map(&:id), weak.id
   end
 
+  test "passes the inherited intent into retrieval before qualifying another-example candidates" do
+    first = KnowledgeEntry.create!(title: "Agenda product story", body: "Agenda", metadata: { "recruiter_evidence" => { "recruiter_utility" => "primary_recruiter_evidence", "capability_map" => { "product judgment" => { "strength" => "strong", "evidence_kind" => "demonstrated" } } } }, entry_type: "product_story", approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "context-first", source_fingerprint: "context-first")
+    weak = KnowledgeEntry.create!(title: "Operational example", body: "Operations", metadata: { "recruiter_evidence" => { "recruiter_utility" => "secondary_recruiter_evidence", "capability_map" => {} } }, entry_type: "project", approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "context-weak", source_fingerprint: "context-weak")
+    strong = KnowledgeEntry.create!(title: "Prioritization product story", body: "Prioritization", metadata: { "recruiter_evidence" => { "recruiter_utility" => "primary_recruiter_evidence", "capability_map" => { "product judgment" => { "strength" => "strong", "evidence_kind" => "demonstrated" } } } }, entry_type: "product_story", approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "context-strong", source_fingerprint: "context-strong")
+    retriever = Class.new do
+      attr_reader :calls
+
+      def initialize(first, weak, strong)
+        @first = first
+        @weak = weak
+        @strong = strong
+        @calls = []
+      end
+
+      def classified_intent(question)
+        question.match?(/another/i) ? nil : "product"
+      end
+
+      def call(question, limit: 6, intent: nil)
+        @calls << { question: question, intent: intent }
+        question.match?(/another/i) ? [ @weak, @strong ] : [ @first ]
+      end
+
+      def qualified_for_intent?(intent, entry)
+        intent == "product" && entry == @strong
+      end
+    end.new(first, weak, strong)
+    provider = Class.new do
+      attr_reader :contexts
+
+      def initialize = @contexts = []
+      def call(context:, **)
+        @contexts << context
+        { "status" => "answer", "answer" => "Grounded.", "evidence_ids" => [ context.first.id.to_s ], "source_urls" => [] }
+      end
+    end.new
+    service = AskJared::QuestionService.new(token_service: @token_service, retriever: retriever, provider: provider)
+
+    service.call(raw_token: @raw_token, question: "What demonstrates Jared's product judgment?", session_id: "context-session", request_id: "context-1")
+    service.call(raw_token: @raw_token, question: "Tell me about another example.", session_id: "context-session", request_id: "context-2")
+
+    assert_equal "product", retriever.calls.last[:intent]
+    assert_equal [ strong.id ], provider.contexts.last.map(&:id)
+    refute_includes provider.contexts.last.map(&:id), weak.id
+  end
+
   test "pins tell-me-more to the active primary evidence story" do
     first = KnowledgeEntry.create!(title: "First story", body: "First", entry_type: "project", approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "first", source_fingerprint: "first")
     second = KnowledgeEntry.create!(title: "Second story", body: "Second", entry_type: "project", approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "second", source_fingerprint: "second")
