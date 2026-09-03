@@ -31,7 +31,7 @@ module AskJared
           entries = entries.select { |entry| @retriever.qualified_for_intent?(active_intent, entry) }
         end
       end
-      entries = @retriever.call(question, limit: 12).reject { |entry| prior_primary.include?(entry.source_reference) } if entries.empty? && prior_primary.any? && !another_example?(question)
+      entries = @retriever.call(question, limit: 12).reject { |entry| prior_primary.include?(entry.source_reference) } if entries.empty? && prior_primary.any? && !another_example?(question) && !continuation?(question)
       evidence_ids = entries.map { |entry| entry.id.to_s }
       source_urls = entries.filter_map(&:public_url).select { |url| url.start_with?("https://") }.uniq
       response = entries.empty? ? insufficient_response(another_example: another_example?(question)) : @provider.call(question: question.to_s.strip, context: entries)
