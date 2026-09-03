@@ -1,5 +1,5 @@
 class EngagementEvent < ApplicationRecord
-  EVENT_TYPES = %w[token_resolved page_view human_interaction question_submitted answer_returned].freeze
+  EVENT_TYPES = %w[token_resolved page_view human_interaction question_submitted answer_returned issue_reported].freeze
 
   belongs_to :opportunity, optional: true
   belongs_to :ask_token, optional: true

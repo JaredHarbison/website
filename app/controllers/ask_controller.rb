@@ -10,7 +10,7 @@ class AskController < ApplicationController
       @ask_unavailable = true
       return render :show
     end
-    @token = token_service.resolve(params[:t]) unless @admin_preview
+    @token = token_service.resolve(prospect_raw_token) unless @admin_preview
     unless @admin_preview || token_service.recruiter_accessible?(@token)
       @ask_unavailable = true
       return render :show, status: :not_found
@@ -28,12 +28,16 @@ class AskController < ApplicationController
 
   def record_event(event_type)
     AskJared::EngagementService.new.record!(
-      raw_token: params[:t],
+      raw_token: prospect_raw_token,
       event_type: event_type,
       session_id: request.session.id.to_s.presence || request.request_id,
       ip: request.remote_ip,
       user_agent_class: request.user_agent.to_s.match?(/bot|crawler|spider/i) ? "scanner" : "browser",
       event_key: "#{request.request_id}:#{event_type}"
     )
+  end
+
+  def prospect_raw_token
+    params[:t].presence || session[:ask_jared_prospect_token]
   end
 end

@@ -77,8 +77,8 @@ class AskControllerTest < ActionDispatch::IntegrationTest
     assert_includes script, "response.json()"
     assert_includes script, "Finding evidence…"
     assert_includes script, "Ask another question"
-    assert_includes script, "replaceChildren(form)"
-    assert_includes script, "text.textContent = answer"
+    assert_includes script, "data-ask-history"
+    assert_includes script, "turns.length >= 4"
     refute_includes script, "innerHTML"
   end
 
@@ -90,5 +90,14 @@ class AskControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_equal "manual", opportunity.reload.tracker_source
     assert_equal "pre_application", opportunity.application_state
+  end
+
+  test "carries a valid prospect token from the homepage into Ask" do
+    get "/", params: { t: @raw_token }
+    assert_response :success
+
+    get "/ask"
+    assert_response :success
+    assert_select "input[name='t'][value=?]", @raw_token
   end
 end
