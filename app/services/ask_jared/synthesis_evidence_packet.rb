@@ -41,6 +41,17 @@ module AskJared
       claims.map { |claim| claim.fetch("ref") }
     end
 
+    def claim_aliases
+      claims.to_h { |claim| [ claim.fetch("alias"), claim.fetch("ref") ] }
+    end
+
+    def resolve_claim_aliases!(aliases)
+      unknown = Array(aliases).reject { |alias_name| claim_aliases.key?(alias_name) }
+      raise EvidenceIntegrity::Violation, "claim reference is outside the supplied packet" if unknown.any?
+
+      Array(aliases).map { |alias_name| claim_aliases.fetch(alias_name) }
+    end
+
     def formatted_context
       claims.group_by { |claim| claim.fetch("entry_id") }.map do |entry_id, entry_claims|
         entry = entries.find { |candidate| candidate.id.to_s == entry_id }
@@ -48,7 +59,9 @@ module AskJared
         lines << "Source: #{entry.source_reference}"
         lines << "Entry type: #{entry.entry_type}"
         lines << "Allowed claims:"
-        entry_claims.each { |claim| lines << "- #{claim.fetch("ref")}: #{claim.fetch("text")} (#{claim.fetch("kind")})" }
+        entry_claims.each do |claim|
+          lines << "- #{claim.fetch("alias")}: #{claim.fetch("text")} (#{claim.fetch("kind")}; provenance: #{claim.fetch("provenance")})"
+        end
         lines << "Approved relationships: #{relationships.select { |relationship| relationship.fetch("entry_id") == entry_id }.to_json}" if relationships.any? { |relationship| relationship.fetch("entry_id") == entry_id }
         lines.join("\n")
       end.join("\n\n")
@@ -57,13 +70,16 @@ module AskJared
     private
 
     def build_claims
+      alias_index = 0
       entries.flat_map do |entry|
         source_reference = entry.source_reference.to_s
         raw_claims = Array(entry.metadata.dig("recruiter_evidence", "claims"))
         raw_claims = [ { "text" => entry.short_body.presence || entry.body, "kind" => "demonstrated", "provenance" => source_reference } ] if raw_claims.empty?
         raw_claims.each_with_index.map do |claim, index|
+          alias_index += 1
           {
             "ref" => "#{source_reference}#claim-#{index}",
+            "alias" => "c#{alias_index}",
             "entry_id" => entry.id.to_s,
             "source_reference" => source_reference,
             "text" => claim.fetch("text").to_s,

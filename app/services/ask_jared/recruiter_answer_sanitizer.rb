@@ -14,6 +14,8 @@ module AskJared
         .gsub(/\(?\s*Evidence\s*\[[^\]]+\]\s*\)?/i, "")
         .gsub(/\[\s*Evidence\s*#?\s*[A-Za-z0-9_-]+\s*\]/i, "")
         .gsub(/\(?\s*Evidence\s*(?:ID\s*)?[:#]\s*[A-Za-z0-9_-]+\s*\)?/i, "")
+        .gsub(/\b[A-Za-z0-9_.:-]+#claim-\d+\b/, "")
+        .gsub(/\bc\d+\b/, "")
         .gsub(/^\s*\#{1,6}\s+/m, "")
         .gsub(/^\s*[-*+]\s+/m, "")
         .gsub(/\[([^\]]+)\]\((?:https?:\/\/)?[^)]+\)/, '\\1')

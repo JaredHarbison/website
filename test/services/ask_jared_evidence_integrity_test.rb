@@ -19,6 +19,23 @@ class AskJaredEvidenceIntegrityTest < ActiveSupport::TestCase
     )
   end
 
+  test "resolves packet-local aliases to exact internal claim references" do
+    current = packet(claims: [
+      { "text" => "First claim.", "kind" => "demonstrated", "provenance" => "story:test" },
+      { "text" => "Second claim.", "kind" => "demonstrated", "provenance" => "story:test" }
+    ])
+
+    assert_equal({ "c1" => "story:test#claim-0", "c2" => "story:test#claim-1" }, current.claim_aliases)
+    assert_equal [ "story:test#claim-0", "story:test#claim-1" ], current.resolve_claim_aliases!([ "c1", "c2" ])
+  end
+
+  test "rejects an unknown alias and an alias outside the supplied packet" do
+    current = packet(claims: [ { "text" => "Only claim.", "kind" => "demonstrated", "provenance" => "story:test" } ])
+
+    assert_raises(AskJared::EvidenceIntegrity::Violation) { current.resolve_claim_aliases!([ "c2" ]) }
+    assert_raises(AskJared::EvidenceIntegrity::Violation) { current.resolve_claim_aliases!([ "story:other#claim-0" ]) }
+  end
+
   test "rejects claim references and numeric facts outside the packet" do
     current = packet(claims: [ { "text" => "The task improved.", "kind" => "demonstrated", "provenance" => "story:test" } ])
 

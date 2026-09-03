@@ -98,6 +98,28 @@ class AskJaredQuestionServiceTest < ActiveSupport::TestCase
     refute_includes response["answer"], "**"
   end
 
+  test "resolves valid claim aliases and never delivers aliases or internal claim references" do
+    entry = KnowledgeEntry.create!(title: "Approved fact", body: "A recruiter-safe fact.", metadata: { "recruiter_evidence" => { "claims" => [ { "text" => "The fact is supported.", "kind" => "demonstrated" } ] } }, entry_type: "fact", approval_status: "approved", visibility: "recruiter_visible", source_type: "public_site", source_reference: "story:alias", source_fingerprint: "alias")
+    provider = FakeProvider.new({ "status" => "answer", "answer" => "The fact is supported. c1 story:alias#claim-0", "evidence_ids" => [ entry.id.to_s ], "source_urls" => [], "claim_refs" => [ "c1" ] })
+
+    response = AskJared::QuestionService.new(token_service: @token_service, provider: provider).call(raw_token: @raw_token, question: "What is supported?", session_id: "alias-session", request_id: "alias-request")
+
+    assert_equal "The fact is supported.", response["answer"]
+    refute response.key?("claim_refs")
+    refute_includes response["answer"], "c1"
+    refute_includes response["answer"], "story:alias#claim-0"
+  end
+
+  test "rejects entry IDs and aliases outside the supplied packet as claim references" do
+    entry = KnowledgeEntry.create!(title: "Approved fact", body: "A recruiter-safe fact.", entry_type: "fact", approval_status: "approved", visibility: "recruiter_visible", source_type: "public_site", source_reference: "story:only", source_fingerprint: "only")
+    provider = FakeProvider.new({ "status" => "answer", "answer" => "Supported.", "evidence_ids" => [ entry.id.to_s ], "source_urls" => [], "claim_refs" => [ entry.id.to_s ] })
+    service = AskJared::QuestionService.new(token_service: @token_service, provider: provider)
+
+    response = service.call(raw_token: @raw_token, question: "What is supported?", session_id: "bad-alias-session", request_id: "bad-alias-request")
+
+    assert_equal "insufficient_information", response["status"]
+  end
+
   test "removes unsupported predictive transfer claims while retaining factual evidence" do
     entry = KnowledgeEntry.create!(title: "Risk evidence", body: "A recruiter-safe fact.", metadata: { "recruiter_evidence" => { "claims" => [ { "text" => "Large-team experience is not established.", "kind" => "boundary" } ] } }, entry_type: "fact", approval_status: "approved", visibility: "recruiter_visible", source_type: "public_site", source_reference: "transfer-sanitized", source_fingerprint: "transfer-sanitized")
     provider = FakeProvider.new({ "status" => "answer", "answer" => "Large-team experience is not established, Additionally, This could impact his adaptability. His retail leadership is documented.", "evidence_ids" => [ entry.id.to_s ], "source_urls" => [] })
@@ -122,6 +144,35 @@ class AskJaredQuestionServiceTest < ActiveSupport::TestCase
     assert_equal "The evidence describes First and Second separately.", response["answer"]
     assert_equal 1, provider.calls
     assert_equal 1, provider.repair_calls
+  end
+
+  test "repair receives and returns the same packet alias map" do
+    entry = KnowledgeEntry.create!(title: "Approved fact", body: "The fact is supported.", entry_type: "fact", approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "story:repair-alias", source_fingerprint: "repair-alias")
+    provider = Class.new do
+      attr_reader :contexts, :repair_response
+
+      def initialize(entry)
+        @entry = entry
+        @contexts = []
+        @repair_response = { "status" => "answer", "answer" => "The fact is supported.", "evidence_ids" => [ entry.id.to_s ], "source_urls" => [], "claim_refs" => [ "c1" ] }
+      end
+
+      def call(**)
+        { "status" => "answer", "answer" => "The fact led to a result.", "evidence_ids" => [ @entry.id.to_s ], "source_urls" => [], "claim_refs" => [ "c1" ] }
+      end
+
+      def repair(context:, **)
+        @contexts << context.formatted_context
+        @repair_response
+      end
+    end.new(entry)
+    service = AskJared::QuestionService.new(token_service: @token_service, provider: provider)
+
+    response = service.call(raw_token: @raw_token, question: "What is supported?", session_id: "repair-alias-session", request_id: "repair-alias-request")
+
+    assert_equal "answer", response["status"]
+    assert_includes provider.contexts.first, "c1:"
+    refute_includes provider.contexts.first, "story:repair-alias#claim-0"
   end
 
   test "fails closed when a repair introduces evidence or fails validation" do

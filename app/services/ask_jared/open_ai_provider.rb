@@ -43,6 +43,8 @@ module AskJared
         Rewrite only enough to remove the unsupported relationship. Use simpler factual sentences
         or omit the unrelated outcome. Keep the original question, approved evidence packet, status,
         evidence_ids, source_urls, and claim_refs; do not add claims, evidence, causality, chronology, or conclusions.
+        Return claim_refs using only the cN aliases supplied in the approved claim packet; never return
+        entry IDs or internal claim references as claim_refs. The same aliases apply to this repair.
         Return the same strict JSON shape.
       PROMPT
       request(question: question, context: context.first(MAX_CONTEXT_ENTRIES), messages: [ { role: "user", content: repair_instructions } ], response: response)
@@ -106,8 +108,9 @@ module AskJared
         when approved evidence is too limited, status=out_of_scope for unrelated questions, and status=blocked
         when access or safety requires refusal. Return exactly status, answer, evidence_ids, and source_urls.
         Every factual proposition in the answer must be supported by one or more supplied claim
-        references. Return those references in claim_refs. Claim references are server-side and
-        must never appear in answer prose. Use only approved claims and relationships in the packet.
+        references. Return those references in claim_refs using only the supplied cN aliases.
+        Claim aliases and internal claim references are server-side and must never appear in answer
+        prose. Use only approved claims and relationships in the packet.
         Recommend role families only when the supplied evidence demonstrates the relevant work.
       PROMPT
     end

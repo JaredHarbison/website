@@ -54,16 +54,18 @@ module AskJared
 
     def validate_response(response, question:, packet:)
       response = normalize_response(response, packet: packet)
-      EvidenceIntegrity.validate_response!(answer: response["answer"], evidence_ids: response["evidence_ids"], claim_refs: response["claim_refs"], packet: packet)
-      response
+      resolved = resolve_claim_refs(response, packet: packet)
+      EvidenceIntegrity.validate_response!(answer: resolved["answer"], evidence_ids: resolved["evidence_ids"], claim_refs: resolved["claim_refs"], packet: packet)
+      resolved
     rescue AskJared::EvidenceIntegrity::Violation => violation
       return insufficient_response unless @provider.respond_to?(:repair)
 
       begin
         repaired = @provider.repair(question: question, context: packet, response: response, violations: violation.violations)
         repaired = normalize_response(repaired, packet: packet)
-        EvidenceIntegrity.validate_response!(answer: repaired["answer"], evidence_ids: repaired["evidence_ids"], claim_refs: repaired["claim_refs"], packet: packet)
-        repaired
+        resolved = resolve_claim_refs(repaired, packet: packet)
+        EvidenceIntegrity.validate_response!(answer: resolved["answer"], evidence_ids: resolved["evidence_ids"], claim_refs: resolved["claim_refs"], packet: packet)
+        resolved
       rescue AskJared::EvidenceIntegrity::Violation, ArgumentError, KeyError, TypeError, AskJared::OpenAiProvider::ConfigurationError, AskJared::OpenAiProvider::ProviderError
         insufficient_response
       end
@@ -77,6 +79,12 @@ module AskJared
       response["evidence_ids"] = response["evidence_ids"] & packet.evidence_ids
       response["source_urls"] = response["source_urls"] & packet.source_urls
       response
+    end
+
+    def resolve_claim_refs(response, packet:)
+      return response unless response.key?("claim_refs")
+
+      response.merge("claim_refs" => packet.resolve_claim_aliases!(response.fetch("claim_refs")))
     end
 
     def validate_question!(question)
