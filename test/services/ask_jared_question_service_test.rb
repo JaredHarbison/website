@@ -110,6 +110,17 @@ class AskJaredQuestionServiceTest < ActiveSupport::TestCase
     refute_includes response["answer"], "story:alias#claim-0"
   end
 
+  test "derives evidence ownership from valid aliases when the model returns source references" do
+    entry = KnowledgeEntry.create!(title: "Approved fact", body: "A recruiter-safe fact.", entry_type: "fact", approval_status: "approved", visibility: "recruiter_visible", source_type: "public_site", source_reference: "story:source-ref", source_fingerprint: "source-ref")
+    provider = FakeProvider.new({ "status" => "answer", "answer" => "The fact is supported.", "evidence_ids" => [ "story:source-ref" ], "source_urls" => [], "claim_refs" => [ "c1" ] })
+
+    response = AskJared::QuestionService.new(token_service: @token_service, provider: provider).call(raw_token: @raw_token, question: "What is supported?", session_id: "derived-evidence-session", request_id: "derived-evidence-request")
+
+    assert_equal "answer", response["status"]
+    assert_equal [ entry.id.to_s ], response["evidence_ids"]
+    refute response.key?("claim_refs")
+  end
+
   test "rejects entry IDs and aliases outside the supplied packet as claim references" do
     entry = KnowledgeEntry.create!(title: "Approved fact", body: "A recruiter-safe fact.", entry_type: "fact", approval_status: "approved", visibility: "recruiter_visible", source_type: "public_site", source_reference: "story:only", source_fingerprint: "only")
     provider = FakeProvider.new({ "status" => "answer", "answer" => "Supported.", "evidence_ids" => [ entry.id.to_s ], "source_urls" => [], "claim_refs" => [ entry.id.to_s ] })

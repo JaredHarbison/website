@@ -84,7 +84,9 @@ module AskJared
     def resolve_claim_refs(response, packet:)
       return response unless response.key?("claim_refs")
 
-      response.merge("claim_refs" => packet.resolve_claim_aliases!(response.fetch("claim_refs")))
+      claim_refs = packet.resolve_claim_aliases!(response.fetch("claim_refs"))
+      claim_entry_ids = packet.claims.select { |claim| claim_refs.include?(claim.fetch("ref")) }.map { |claim| claim.fetch("entry_id") }
+      response.merge("claim_refs" => claim_refs, "evidence_ids" => (response.fetch("evidence_ids") | claim_entry_ids))
     end
 
     def validate_question!(question)
