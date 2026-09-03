@@ -15,7 +15,7 @@
         <thead><tr>
           <th scope="col">Opportunity</th><th scope="col">Source</th><th scope="col">Application</th><th scope="col">Token</th>
           <th scope="col">Submitted</th><th scope="col">Last engagement</th><th scope="col">Sessions</th>
-          <th scope="col">Questions</th><th scope="col">Signals</th><th scope="col">Cost</th>
+          <th scope="col">Questions</th><th scope="col">Issues</th><th scope="col">Signals</th><th scope="col">Cost</th>
         </tr></thead>
         <tbody>
           <% @opportunities.each do |summary| %>
@@ -28,7 +28,7 @@
               <td><%= summary[:submitted_at] || "—" %></td>
               <td><%= summary[:last_meaningful_engagement_at] || "—" %></td>
               <td><%= summary[:meaningful_session_count] %></td>
-              <td><%= summary[:meaningful_question_count] %></td>
+              <td><%= summary[:meaningful_question_count] %></td><td><%= summary[:issue_report_count] %></td>
               <td><% if summary[:possible_internal_share] %><span class="status-badge status-badge--signal">Possible share · <%= summary[:internal_share_confidence] %></span><% else %><span class="admin-meta">None indicated</span><% end %><% if summary[:follow_up_candidate] %><span class="status-badge status-badge--follow-up">Follow up</span><% end %></td>
               <td><%= summary[:usage_cost_cents] %>¢</td>
             </tr>

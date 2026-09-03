@@ -1,6 +1,6 @@
 module AskJared
   class EngagementExport
-    EVENT_TYPES = %w[human_interaction question_submitted answer_returned].freeze
+    EVENT_TYPES = %w[page_view human_interaction question_submitted answer_returned issue_reported].freeze
 
     def initialize(scope: Opportunity.all)
       @scope = scope
@@ -15,10 +15,15 @@ module AskJared
     private
 
     def summarize(opportunity)
-      events = opportunity.engagement_events.where(meaningful: true, event_type: EVENT_TYPES)
+      events = opportunity.engagement_events.where(meaningful: true, event_type: EVENT_TYPES - [ "page_view" ])
+      page_views = opportunity.engagement_events.where(event_type: "page_view")
       sessions = events.where.not(session_digest: nil).distinct.count(:session_digest)
       networks = events.where.not(ip_digest: nil).distinct.count(:ip_digest)
       questions = events.where(event_type: "question_submitted").count
+      issues = events.where(event_type: "issue_reported").count
+      question_events = events.where(event_type: "question_submitted").order(:occurred_at)
+      latest_question = question_events.last&.metadata&.fetch("question", nil)
+      latest_answer = events.where(event_type: "answer_returned").order(:occurred_at).last&.metadata || {}
       first_at = events.minimum(:occurred_at)
       last_at = events.maximum(:occurred_at)
 
@@ -36,6 +41,10 @@ module AskJared
         last_meaningful_engagement_at: last_at,
         meaningful_session_count: sessions,
         meaningful_question_count: questions,
+        page_view_count: page_views.count,
+        most_recent_question: latest_question,
+        most_recent_answer_status: latest_answer["answer_status"],
+        issue_report_count: issues,
         possible_internal_share: sessions > 1 || networks > 1,
         internal_share_confidence: share_confidence(sessions, networks, questions),
         follow_up_candidate: follow_up_candidate?(opportunity, questions, last_at),

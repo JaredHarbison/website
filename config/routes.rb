@@ -15,6 +15,7 @@ Rails.application.routes.draw do
 
   get "ask" => "ask#show"
   post "api/ask/questions" => "api/ask/questions#create"
+  post "api/ask/issues" => "api/ask/issues#create"
   post "api/job_search/opportunities/submit" => "api/job_search/opportunities#submit"
   get "api/job_search/opportunities/engagements" => "api/job_search/engagements#index"
   post "api/job_search/token_pool/refill" => "api/job_search/token_pool#refill"

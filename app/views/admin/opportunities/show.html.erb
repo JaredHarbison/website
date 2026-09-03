@@ -30,6 +30,10 @@
         <dt>Last meaningful engagement</dt><dd><%= @summary[:last_meaningful_engagement_at] || "—" %></dd>
         <dt>Meaningful sessions</dt><dd><%= @summary[:meaningful_session_count] %></dd>
         <dt>Questions</dt><dd><%= @summary[:meaningful_question_count] %></dd>
+        <dt>Page views</dt><dd><%= @summary[:page_view_count] %></dd>
+        <dt>Most recent question</dt><dd><%= @summary[:most_recent_question].presence || "—" %></dd>
+        <dt>Most recent answer</dt><dd><%= @summary[:most_recent_answer_status].presence || "—" %></dd>
+        <dt>Issue reports</dt><dd><%= @summary[:issue_report_count] %></dd>
         <dt>Possible internal share</dt><dd><%= @summary[:possible_internal_share] ? "Possible · #{@summary[:internal_share_confidence]} confidence" : "None indicated" %></dd>
       </dl>
     </section>
@@ -42,4 +46,20 @@
       </dl>
     </section>
   </div>
+
+  <section class="admin-panel admin-activity-panel" aria-labelledby="activity-title">
+    <h2 id="activity-title">Activity timeline</h2>
+    <% if @events.any? %>
+      <ol class="admin-activity-list">
+        <% @events.each do |event| %>
+          <li><time class="admin-meta" datetime="<%= event.occurred_at.iso8601 %>"><%= event.occurred_at %></time><strong><%= event.event_type.humanize %></strong>
+            <% metadata = event.metadata || {} %>
+            <% if metadata["question"].present? %><p><strong>Question:</strong> <%= metadata["question"] %></p><% end %>
+            <% if metadata["answer"].present? %><p><strong>Answer:</strong> <%= metadata["answer"] %></p><% end %>
+            <% if event.event_type == "issue_reported" %><p><strong><%= metadata["issue_category"] %>:</strong> <%= metadata["feedback"] %></p><% end %>
+          </li>
+        <% end %>
+      </ol>
+    <% else %><p class="admin-meta">No activity recorded.</p><% end %>
+  </section>
 </main>

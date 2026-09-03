@@ -1,0 +1,11 @@
+Ask Jared issue report
+
+Company: <%= @opportunity&.company || "Unknown" %>
+Role: <%= @opportunity&.role_title || "Unknown" %>
+Category: <%= @event.metadata["issue_category"] %>
+Time: <%= @event.occurred_at %>
+Question: <%= @event.metadata["question"] %>
+Answer: <%= @event.metadata["answer"] %>
+Feedback: <%= @event.metadata["feedback"] %>
+Contact: <%= @contact.presence || "Not provided" %>
+Admin activity: <%= @admin_link %>

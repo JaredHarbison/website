@@ -55,9 +55,15 @@ module AskJared
         validate_response(response, question: question.to_s.strip, packet: packet)
       end
       unless admin_preview
-        @engagement_service.record!(raw_token: raw_token, event_type: "question_submitted", session_id: session_id, ip: ip, event_key: "#{request_id}:question")
+        @engagement_service.record!(raw_token: raw_token, event_type: "question_submitted", session_id: session_id, ip: ip, event_key: "#{request_id}:question", metadata: { "question" => question.to_s, "turn" => EngagementEvent.where(session_digest: session_digest, event_type: "question_submitted").count })
         primary_entry = primary_entry_for(entries, response: response, packet: packet)
-        @engagement_service.record!(raw_token: raw_token, event_type: "answer_returned", session_id: session_id, ip: ip, event_key: "#{request_id}:answer", metadata: { "primary_evidence_reference" => primary_entry&.source_reference, "question_intent" => active_intent })
+        @engagement_service.record!(raw_token: raw_token, event_type: "answer_returned", session_id: session_id, ip: ip, event_key: "#{request_id}:answer", metadata: {
+          "primary_evidence_reference" => primary_entry&.source_reference, "question_intent" => active_intent,
+          "question" => question.to_s, "answer" => response["answer"], "answer_status" => response["status"],
+          "evidence_ids" => response["evidence_ids"], "skeleton_roles" => response["claim_refs"],
+          "model" => skeleton_path?(active_intent) ? "gpt-5.6-terra" : ENV["ASK_JARED_MODEL"].to_s,
+          "turn" => EngagementEvent.where(session_digest: session_digest, event_type: "answer_returned").count + 1
+        })
         @usage_guard.record!(token: token, session_digest: session_digest, request_id: request_id, status: "completed", estimated_cost_cents: entries.empty? ? 0 : 1)
       end
       response.delete("claim_refs")
