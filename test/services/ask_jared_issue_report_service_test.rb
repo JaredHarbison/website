@@ -47,7 +47,7 @@ class AskJaredIssueReportServiceTest < ActiveSupport::TestCase
     event = EngagementEvent.create!(
       opportunity: Opportunity.first, ask_token: AskToken.first, event_type: "issue_reported",
       event_key: "mail-1", session_digest: "session", occurred_at: Time.current,
-      meaningful: true, metadata: { "issue_category" => "Incorrect fact", "question" => "Q", "answer" => "A", "feedback" => "F" }
+      meaningful: true, metadata: { "issue_category" => "Incorrect fact", "question" => "Q", "answer" => "A", "feedback" => "F", "answer_status" => "answer", "question_intent" => "react", "model" => "gpt-5.6-terra", "evidence_ids" => [ "story:dogly" ], "validation" => { "status" => "pass" } }
     )
     previous = ENV["JARED_ISSUE_EMAIL"]
     ENV["JARED_ISSUE_EMAIL"] = "jared@example.com"
@@ -55,8 +55,13 @@ class AskJaredIssueReportServiceTest < ActiveSupport::TestCase
     mail = AskJaredMailer.issue_report(event, Opportunity.first, "prospect@example.com")
 
     assert_equal [ "jared@example.com" ], mail.to
-    assert_includes mail.body.to_s, "Incorrect fact"
-    refute_includes mail.body.to_s, @raw_token
+    assert_includes mail.text_part.body.to_s, "Incorrect fact"
+    refute_includes mail.to_s, @raw_token
+    assert_includes mail.html_part.body.to_s, "View in Admin"
+    assert_includes mail.html_part.body.to_s, "Something seemed off"
+    assert_includes mail.html_part.body.to_s, "gpt-5.6-terra"
+    assert_includes mail.text_part.body.to_s, "Validation:"
+    assert_includes mail.text_part.body.to_s, "Evidence: story:dogly"
   ensure
     ENV["JARED_ISSUE_EMAIL"] = previous
   end
