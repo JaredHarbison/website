@@ -27,7 +27,7 @@ module AskJared
           "contact" => contact.to_s.first(200)
         }.merge(answer_context)
       )
-      AskJaredMailer.issue_report(event, token.opportunity, contact.to_s.first(200)).deliver_later if ENV["JARED_ISSUE_EMAIL"].present?
+      enqueue_notification(event, token.opportunity, contact.to_s.first(200)) if ENV["JARED_ISSUE_EMAIL"].present?
       event
     end
 
@@ -43,6 +43,12 @@ module AskJared
       return {} unless event
 
       event.metadata.slice("question_intent", "evidence_ids", "skeleton_roles", "model", "validation", "turn")
+    end
+
+    def enqueue_notification(event, opportunity, contact)
+      AskJaredMailer.issue_report(event, opportunity, contact).deliver_later
+    rescue StandardError => error
+      Rails.logger.error("Ask Jared issue notification failed for event #{event.id}: #{error.class}: #{error.message}")
     end
   end
 end

@@ -60,4 +60,25 @@ class AskJaredIssueReportServiceTest < ActiveSupport::TestCase
   ensure
     ENV["JARED_ISSUE_EMAIL"] = previous
   end
+
+  test "keeps the persisted report successful when notification enqueue fails" do
+    previous = ENV["JARED_ISSUE_EMAIL"]
+    ENV["JARED_ISSUE_EMAIL"] = "jared@example.com"
+    mailer = Object.new
+    def mailer.deliver_later
+      raise IOError, "mail transport unavailable"
+    end
+    original_issue_report = AskJaredMailer.method(:issue_report)
+    AskJaredMailer.define_singleton_method(:issue_report) { |_event, _opportunity, _contact| mailer }
+    event = AskJared::IssueReportService.new.call(
+      raw_token: @raw_token, session_id: "issue-session", question: "Q", answer: "A", answer_status: "answer",
+      category: "Technical issue", feedback: "Something went wrong.", contact: "", page: "/ask", ip: nil, user_agent: ""
+    )
+
+    assert event.persisted?
+    assert_equal "issue_reported", event.event_type
+  ensure
+    AskJaredMailer.define_singleton_method(:issue_report, original_issue_report) if original_issue_report
+    ENV["JARED_ISSUE_EMAIL"] = previous
+  end
 end
