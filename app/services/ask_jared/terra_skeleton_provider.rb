@@ -64,7 +64,10 @@ module AskJared
         technology domains. Bounded positioning is allowed only when explicitly supplied as
         a positioning or relationship role. Omit rather than infer. Each segment must identify
         every skeleton role it expresses in role_refs. Never put role IDs, claim aliases, or
-        internal references in segment text. Return status and segments only.
+        internal references in segment text. Use natural recruiter-facing language rather than
+        internal evidence-policy words such as boundary or not established. Lead with a useful
+        characterization when the intent asks what kind of engineer Jared is; preserve a material
+        gap only as a concise boundary after the supported strengths. Return status and segments only.
       PROMPT
     end
   end

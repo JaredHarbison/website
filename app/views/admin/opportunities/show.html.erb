@@ -1,65 +1,13 @@
-<% content_for :title, "Opportunity detail · Ask Jared admin" %>
-
+<% content_for :title, "Recruiter journey · Ask Jared admin" %>
 <main class="site-main admin-main" aria-labelledby="opportunity-title">
   <%= render "admin/navigation" %>
-  <p><%= link_to "← Recruiter intelligence", admin_opportunities_path, class: "admin-back-link" %></p>
-  <header class="admin-page-header">
-    <p class="eyebrow">Opportunity detail</p>
-    <h1 id="opportunity-title"><%= @summary[:company] %> · <%= @summary[:role_title] %></h1>
-    <p class="admin-meta">Tracker ID: <code><%= @summary[:external_id] %></code></p>
-  </header>
+  <p><%= link_to "← Recruiter Intelligence", admin_recruiter_intelligence_path, class: "admin-back-link" %></p>
+  <header class="admin-page-header"><p class="eyebrow">Recruiter Intelligence / Journey</p><h1 id="opportunity-title"><%= @summary[:company] %> · <%= @summary[:role_title] %></h1><p class="admin-lede"><%= @summary[:purpose].presence || "Prospect access and engagement journey" %></p></header>
+  <section class="admin-panel" aria-labelledby="access-summary-title"><h2 id="access-summary-title">Access and opportunity</h2><dl class="admin-detail-list"><dt>Source</dt><dd><%= @summary[:source].humanize %></dd><dt>Application</dt><dd><%= @summary[:application_state].humanize %></dd><dt>Access status</dt><dd><%= @summary[:token_state].to_s.humanize %></dd><dt>Identifier</dt><dd><%= @summary[:external_id] %></dd><dt>Possible sharing</dt><dd><%= @summary[:possible_internal_share] ? "Possible sharing · #{@summary[:internal_share_confidence]} confidence" : "No signal" %></dd></dl></section>
+  <section class="admin-panel" aria-labelledby="engagement-summary-title"><h2 id="engagement-summary-title">Meaningful engagement</h2><dl class="admin-detail-list"><dt>Sessions</dt><dd><%= @summary[:meaningful_session_count] %></dd><dt>Questions</dt><dd><%= @summary[:meaningful_question_count] %></dd><dt>Issues</dt><dd><%= @summary[:issue_report_count] %></dd><dt>Last active</dt><dd><%= @summary[:last_meaningful_engagement_at]&.in_time_zone&.strftime("%b %-d, %Y · %-I:%M %p") || "—" %></dd><dt>Most recent answer</dt><dd><%= truncate(@summary[:most_recent_answer].to_s, length: 240).presence || "—" %></dd></dl></section>
 
-  <div class="admin-detail-grid">
-    <section class="admin-panel" aria-labelledby="opportunity-status-title">
-      <h2 id="opportunity-status-title">Opportunity & status</h2>
-      <dl class="admin-detail-list">
-        <dt>Company</dt><dd><%= @summary[:company] %></dd>
-        <dt>Role</dt><dd><%= @summary[:role_title] %></dd>
-        <dt>Source</dt><dd><span class="status-badge status-badge--<%= @summary[:source] == "manual" ? "signal" : "none" %>"><%= @summary[:source].humanize %></span></dd>
-        <dt>Purpose</dt><dd><%= @summary[:purpose].presence || "—" %></dd>
-        <dt>Application</dt><dd><span class="status-badge status-badge--<%= @summary[:application_state] %>"><%= @summary[:application_state].presence || "Not submitted" %></span></dd>
-        <dt>Submitted</dt><dd><%= @summary[:submitted_at] || "—" %></dd>
-        <dt>Token</dt><dd><span class="status-badge status-badge--<%= @summary[:token_state] || "none" %>"><%= @summary[:token_state] || "Not assigned" %></span></dd>
-      </dl>
-    </section>
-
-    <section class="admin-panel" aria-labelledby="engagement-title">
-      <h2 id="engagement-title">Engagement</h2>
-      <dl class="admin-detail-list">
-        <dt>First meaningful engagement</dt><dd><%= @summary[:first_meaningful_engagement_at] || "—" %></dd>
-        <dt>Last meaningful engagement</dt><dd><%= @summary[:last_meaningful_engagement_at] || "—" %></dd>
-        <dt>Meaningful sessions</dt><dd><%= @summary[:meaningful_session_count] %></dd>
-        <dt>Questions</dt><dd><%= @summary[:meaningful_question_count] %></dd>
-        <dt>Page views</dt><dd><%= @summary[:page_view_count] %></dd>
-        <dt>Most recent question</dt><dd><%= @summary[:most_recent_question].presence || "—" %></dd>
-        <dt>Most recent answer</dt><dd><%= @summary[:most_recent_answer_status].presence || "—" %></dd>
-        <dt>Issue reports</dt><dd><%= @summary[:issue_report_count] %></dd>
-        <dt>Possible internal share</dt><dd><%= @summary[:possible_internal_share] ? "Possible · #{@summary[:internal_share_confidence]} confidence" : "None indicated" %></dd>
-      </dl>
-    </section>
-
-    <section class="admin-panel" aria-labelledby="usage-title">
-      <h2 id="usage-title">Usage & follow-up</h2>
-      <dl class="admin-detail-list">
-        <dt>Ask usage cost</dt><dd><%= @summary[:usage_cost_cents] %>¢</dd>
-        <dt>Follow-up candidate</dt><dd><%= @summary[:follow_up_candidate] ? "Yes" : "No" %></dd>
-      </dl>
-    </section>
-  </div>
-
-  <section class="admin-panel admin-activity-panel" aria-labelledby="activity-title">
-    <h2 id="activity-title">Activity timeline</h2>
-    <% if @events.any? %>
-      <ol class="admin-activity-list">
-        <% @events.each do |event| %>
-          <li><time class="admin-meta" datetime="<%= event.occurred_at.iso8601 %>"><%= event.occurred_at %></time><strong><%= event.event_type.humanize %></strong>
-            <% metadata = event.metadata || {} %>
-            <% if metadata["question"].present? %><p><strong>Question:</strong> <%= metadata["question"] %></p><% end %>
-            <% if metadata["answer"].present? %><p><strong>Answer:</strong> <%= metadata["answer"] %></p><% end %>
-            <% if event.event_type == "issue_reported" %><p><strong><%= metadata["issue_category"] %>:</strong> <%= metadata["feedback"] %></p><% end %>
-          </li>
-        <% end %>
-      </ol>
-    <% else %><p class="admin-meta">No activity recorded.</p><% end %>
+  <section class="admin-panel admin-session-list" aria-labelledby="sessions-title"><div class="admin-section-heading"><h2 id="sessions-title">Sessions and exchanges</h2><span class="admin-meta"><%= @sessions.length %> session<%= "s" unless @sessions.length == 1 %></span></div>
+    <% if @sessions.any? %><div class="admin-sessions"><% @sessions.each_with_index do |events, index| %><details class="admin-session" <%= "open" if index == @sessions.length - 1 %>><summary><span>Session <%= index + 1 %> · <%= events.first.occurred_at.in_time_zone.strftime("%b %-d, %-I:%M %p") %></span><span class="admin-meta"><%= events.count { |event| event.event_type == "page_view" } %> pages · <%= events.count { |event| event.event_type == "question_submitted" } %> questions</span></summary><div class="admin-session__body"><p class="admin-meta admin-journey"><%= events.select { |event| event.event_type == "page_view" }.filter_map { |event| event.metadata["page"] }.uniq.join(" → ").presence || "Ask Jared activity" %></p><% events.select { |event| %w[question_submitted answer_returned issue_reported].include?(event.event_type) }.group_by { |event| event.metadata["turn"].presence || event.occurred_at.to_i }.each do |turn, exchange| %><article class="admin-exchange"><p class="admin-meta"><%= turn.to_s.match?(/\A\d+\z/) ? "Question #{turn}" : "Feedback" %></p><% exchange.each do |event| %><% metadata = event.metadata %><% if event.event_type == "question_submitted" %><h3>Question</h3><p><%= metadata["question"] %></p><% elsif event.event_type == "answer_returned" %><h3>Answer <span class="status-badge status-badge--<%= metadata["answer_status"] %>"><%= metadata["answer_status"].to_s.humanize %></span></h3><p><%= metadata["answer"] %></p><details class="admin-diagnostics"><summary>Diagnostics</summary><dl class="admin-detail-list"><dt>Model</dt><dd><%= metadata["model"].presence || "Not recorded" %></dd><dt>Intent path</dt><dd><%= metadata["intent_path"].presence || "Not recorded" %></dd><dt>Intent</dt><dd><%= metadata["question_intent"].presence || "Not classified" %></dd><dt>Latency</dt><dd><%= metadata["latency_ms"].present? ? "#{metadata["latency_ms"]} ms" : "Not recorded" %></dd><dt>Evidence</dt><dd><%= Array(metadata["evidence_ids"]).map { |id| link_to "Knowledge ##{id}", admin_knowledge_entries_path(q: id) }.join(" · ").html_safe.presence || "None" %></dd><dt>Evidence count</dt><dd><%= metadata["evidence_count"].presence || Array(metadata["evidence_ids"]).length %></dd><dt>Validation</dt><dd><%= metadata["validation"].presence || "Not recorded" %></dd></dl></details><% elsif event.event_type == "issue_reported" %><h3>Feedback · <%= metadata["issue_category"] %></h3><p><%= metadata["feedback"] %></p><% end %><% end %></article><% end %></div></details><% end %></div><% else %><p class="admin-meta">No sessions recorded.</p><% end %>
   </section>
+  <details class="admin-review-details admin-raw-events"><summary>Debug: raw events</summary><ol class="admin-activity-list"><% @events.each do |event| %><li><time class="admin-meta" datetime="<%= event.occurred_at.iso8601 %>"><%= event.occurred_at.in_time_zone.strftime("%b %-d, %-I:%M %p") %></time><strong><%= event.event_type.humanize %></strong></li><% end %></ol></details>
 </main>

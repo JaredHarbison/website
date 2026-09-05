@@ -11,7 +11,7 @@
     <p><%= link_to "Return to portfolio", root_path, class: "button-link" %></p>
   <% else %>
   <p class="eyebrow"><%= @admin_preview ? "Owner preview" : "Recruiter access" %></p>
-  <section class="ask-card" data-ask-controller data-ask-endpoint="/api/ask/questions" aria-live="polite">
+  <section class="ask-card" data-ask-controller data-ask-endpoint="/api/ask/questions" data-resume-available="<%= ApprovedResume.delivery_ready? %>" aria-live="polite">
     <h1 id="ask-title">Ask About Jared</h1>
     <p class="lede">Ask an AI about my work, experience, and how I approach building products.</p>
     <details class="ask-disclosure">

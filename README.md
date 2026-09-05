@@ -115,9 +115,11 @@ layouts, copies production assets, and writes the result to `_site/`. Validation
 fails the build when a route does not render, an internal link or asset is
 missing, or legacy React output appears in the artifact.
 
-The Pages workflow continues to run tests, RuboCop, Brakeman, production asset
-compilation, static export, and validation. During the Heroku migration,
-production will run Rails normally while `_site/` remains a tested fallback.
+The Pages workflow runs tests, RuboCop, Brakeman, production asset compilation,
+static export, and validation. The same gated workflow deploys the exact pushed
+`main` commit to Heroku using the `HEROKU_API_KEY` secret and `HEROKU_APP_NAME`
+repository variable, then checks `/up`. Do not use a direct `git push heroku` for
+normal releases.
 See [the Heroku deployment runbook](docs/ask-jared-heroku-deployment.md).
 
 ## Quality checks

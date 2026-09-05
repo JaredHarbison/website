@@ -1,3 +1,5 @@
+require "digest"
+
 module Admin
   class KnowledgeEntriesController < BaseController
     before_action :set_knowledge_entry, only: :update
@@ -32,6 +34,28 @@ module Admin
       end
     end
 
+    def new
+      @knowledge_entry = KnowledgeEntry.new(approval_status: "candidate", visibility: "private", entry_type: "fact", source_type: "admin_manual")
+    end
+
+    def create
+      attributes = knowledge_entry_params
+      body = attributes[:body].to_s
+      source_reference = attributes[:source_reference].to_s.strip
+      entry = KnowledgeEntry.new(attributes.merge(
+        approval_status: "candidate", visibility: "private", source_type: "admin_manual",
+        source_reference: source_reference, source_fingerprint: Digest::SHA256.hexdigest([ source_reference, body ].join("\n")),
+        metadata: { "evidence_classification" => "admin_created_candidate", "recruiter_evidence" => { "claims" => [], "capability_map" => {}, "approved_relationships" => [] }, "human_review" => { "status" => "REQUIRES_JARED_FACTUAL_REVIEW" } }
+      ))
+      if entry.save
+        redirect_to admin_knowledge_entries_path, notice: "Candidate knowledge entry created privately. Add factual review before approval."
+      else
+        @knowledge_entry = entry
+        flash.now[:alert] = entry.errors.full_messages.to_sentence
+        render :new, status: :unprocessable_entity
+      end
+    end
+
     private
 
     def set_knowledge_entry
@@ -42,7 +66,7 @@ module Admin
 
     def knowledge_entry_params
       params.require(:knowledge_entry).permit(
-        :title, :body, :short_body, :source_url, :public_url, :approval_status, :visibility, :reviewer_note
+        :title, :body, :short_body, :source_url, :public_url, :approval_status, :visibility, :reviewer_note, :source_reference, :entry_type
       )
     end
   end

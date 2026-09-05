@@ -11,7 +11,16 @@
   --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
   --space-page: clamp(1.25rem, 4vw, 4rem);
-  --measure: 68ch;
+  --layout-prose: 68ch;
+  --layout-public: 64rem;
+  --layout-case-study: 72rem;
+  --layout-admin: 76rem;
+  --layout-locked: 58rem;
+  --layout-readable: 42rem;
+  --space-section: clamp(2rem, 5vw, 4rem);
+  --control-padding: 0.65rem 0.75rem;
+  --meta-size: 0.6875rem;
+  --measure: var(--layout-prose);
   --sidebar-width: 17rem;
 }
 
@@ -110,7 +119,12 @@ p {
 }
 
 .site-mark {
+  color: var(--color-link);
   text-decoration: none;
+}
+
+.site-mark[aria-current="page"] {
+  color: var(--color-heading);
 }
 
 .site-mark::before {
@@ -166,7 +180,7 @@ p {
 .explorer__section summary {
   align-items: start;
   border-left: 2px solid transparent;
-  color: var(--color-text);
+  color: var(--color-link);
   cursor: pointer;
   display: grid;
   font-size: 0.8125rem;
@@ -206,7 +220,7 @@ p {
 
 .explorer__link {
   border-left: 2px solid transparent;
-  color: var(--color-muted);
+  color: var(--color-link);
   display: block;
   font-size: 0.8125rem;
   line-height: 1.35;
@@ -217,7 +231,7 @@ p {
 
 .explorer__link:hover {
   background: color-mix(in srgb, var(--color-border), transparent 65%);
-  color: var(--color-text);
+  color: var(--color-accent);
 }
 
 .explorer__link[aria-current="page"] {
@@ -299,15 +313,15 @@ p {
 }
 
 .site-main > * {
-  max-width: var(--measure);
+  max-width: var(--layout-prose);
 }
 
 .listing-page > .entry-list {
-  max-width: 64rem;
+  max-width: var(--layout-public);
 }
 
 .site-main--locked > * {
-  max-width: 58rem;
+  max-width: var(--layout-locked);
 }
 
 .home-actions {
@@ -320,7 +334,7 @@ p {
   appearance: none;
   border: 1px solid var(--color-border);
   background: transparent;
-  color: var(--color-text);
+  color: var(--color-link);
   cursor: pointer;
   display: inline-block;
   font-family: var(--font-mono);
@@ -378,6 +392,18 @@ select:focus-visible {
   padding: 0.45rem 0.65rem;
 }
 
+.button-link--destructive {
+  border-color: color-mix(in srgb, var(--color-danger), transparent 35%);
+  color: var(--color-danger);
+}
+
+.button-link--destructive:hover,
+.button-link--destructive:focus-visible {
+  background: color-mix(in srgb, var(--color-danger), transparent 86%);
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}
+
 .button-link:disabled,
 .button-link[aria-disabled="true"] {
   cursor: not-allowed;
@@ -389,8 +415,8 @@ select:focus-visible {
   align-items: center;
   display: grid;
   gap: clamp(2rem, 5vw, 5rem);
-  grid-template-columns: minmax(0, var(--measure)) 12rem;
-  max-width: 64rem;
+  grid-template-columns: minmax(0, var(--layout-prose)) 12rem;
+  max-width: var(--layout-public);
 }
 
 .about-hero__copy > * + * {
@@ -438,7 +464,7 @@ select:focus-visible {
   display: grid;
   gap: 0.75rem 2rem;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  max-width: 64rem;
+  max-width: var(--layout-case-study);
   padding-block: 1rem;
 }
 
@@ -504,7 +530,7 @@ select:focus-visible {
 
 .content-page .case-study-hero {
   max-height: none;
-  max-width: 64rem;
+  max-width: var(--layout-case-study);
   object-fit: contain;
   width: 100%;
 }
@@ -557,7 +583,7 @@ select:focus-visible {
 
 .tag-link {
   border: 1px solid var(--color-border);
-  color: var(--color-muted);
+  color: var(--color-link);
   display: block;
   font-family: var(--font-mono);
   font-size: 0.6875rem;
@@ -570,8 +596,14 @@ select:focus-visible {
   color: var(--color-accent);
 }
 
+.tag-link:focus-visible,
+.tag-cloud__link:focus-visible,
+.explorer__section summary:focus-visible {
+  border-color: var(--color-accent);
+}
+
 .tag-cloud {
-  max-width: 64rem;
+  max-width: var(--layout-public);
 }
 
 .tag-cloud__link {
@@ -586,6 +618,10 @@ select:focus-visible {
   text-decoration: none;
 }
 
+.tag-cloud__link {
+  color: var(--color-link);
+}
+
 .tag-cloud__link:hover {
   background: color-mix(in srgb, var(--color-border), transparent 65%);
 }
@@ -596,7 +632,7 @@ select:focus-visible {
 }
 
 .tag-results {
-  max-width: 64rem;
+  max-width: var(--layout-public);
 }
 
 .tag-results + .tag-results {
@@ -680,7 +716,7 @@ select:focus-visible {
 
 .admin-main > *,
 .auth-main > * {
-  max-width: 72rem;
+  max-width: var(--layout-admin);
 }
 
 .admin-nav {
@@ -692,6 +728,28 @@ select:focus-visible {
   margin-bottom: clamp(2rem, 5vw, 3.5rem);
   padding-bottom: 0.5rem;
 }
+
+.admin-subnav {
+  align-items: center;
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin: -1.5rem 0 2rem;
+  padding-bottom: 0.5rem;
+}
+
+.admin-subnav__link {
+  color: var(--color-link);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  padding: 0.45rem 0.65rem;
+  text-decoration: none;
+}
+
+.admin-subnav__link:hover,
+.admin-subnav__link:focus-visible { color: var(--color-accent); }
+.admin-subnav__link.is-active { background: color-mix(in srgb, var(--color-heading), transparent 88%); color: var(--color-heading); }
 
 .admin-nav__link,
 .admin-filter-tabs a {
@@ -745,7 +803,7 @@ select:focus-visible {
 .auth-card__lede {
   color: var(--color-muted);
   font-size: 1rem;
-  max-width: 62ch;
+  max-width: var(--layout-prose);
 }
 
 .admin-section-heading {
@@ -999,6 +1057,10 @@ select:focus-visible {
   cursor: pointer;
   font-family: var(--font-mono);
   font-size: 0.75rem;
+}
+
+.admin-review-details[open] > summary {
+  color: var(--color-heading);
 }
 
 .admin-form {
@@ -1275,7 +1337,7 @@ select:focus-visible {
 .contact-recruiter-panel {
   border-top: 1px solid var(--color-border);
   margin-top: 3rem;
-  max-width: 58rem;
+  max-width: var(--layout-public);
   padding-top: 2rem;
 }
 
@@ -1335,6 +1397,47 @@ select:focus-visible {
   grid-template-columns: minmax(0, 1fr) auto;
 }
 
+.contact-page .contact-hero,
+.contact-page .contact-links {
+  max-width: var(--layout-prose);
+}
+
+.contact-page .contact-hero__invitation {
+  color: var(--color-text);
+  font-size: 1.1rem;
+}
+
+.contact-page h2 {
+  margin-top: 0;
+}
+
+.contact-action-grid {
+  display: grid;
+  gap: var(--space-section);
+  grid-template-columns: minmax(0, 1.35fr) minmax(16rem, 0.65fr);
+  margin-top: 1.5rem;
+}
+
+.contact-action {
+  border-top: 1px solid var(--color-border);
+  padding-top: 1rem;
+}
+
+.contact-action h3,
+.contact-links h2 {
+  color: var(--color-heading);
+}
+
+.contact-context {
+  color: var(--color-muted);
+}
+
+.contact-links {
+  border-top: 1px solid var(--color-border);
+  margin-top: var(--space-section);
+  padding-top: 2rem;
+}
+
 .admin-system-list {
   margin-top: 1.5rem;
 }
@@ -1353,7 +1456,7 @@ select:focus-visible {
   display: grid;
   gap: 0.65rem;
   margin-top: 2rem;
-  max-width: 42rem;
+  max-width: var(--layout-readable);
 }
 
 .ask-form label {
@@ -1415,7 +1518,7 @@ select:focus-visible {
   display: grid;
   gap: 0.75rem;
   margin-top: 2rem;
-  max-width: 42rem;
+  max-width: var(--layout-readable);
 }
 
 .ask-state__question {
@@ -1442,7 +1545,7 @@ select:focus-visible {
   padding-left: 1rem;
 }
 
-.ask-disclosure { margin: 1.25rem 0; max-width: 42rem; }
+.ask-disclosure { margin: 1.25rem 0; max-width: var(--layout-readable); }
 .ask-disclosure summary { color: var(--color-link); cursor: pointer; font-family: var(--font-mono); font-size: .6875rem; letter-spacing: .08em; text-transform: uppercase; }
 .ask-disclosure summary:hover { color: var(--color-accent); }
 .ask-disclosure[open] summary { color: var(--color-heading); }
@@ -1450,6 +1553,7 @@ select:focus-visible {
 .ask-state { border-top: 1px solid var(--color-border); padding-top: 1.25rem; }
 .ask-issue-link { background: none; border: 0; color: var(--color-link); cursor: pointer; font: inherit; justify-self: start; padding: 0; text-decoration: underline; }
 .ask-contact-cta { border-top: 1px solid var(--color-border); margin-top: 1.5rem; padding-top: 1.25rem; }
+.ask-limit-message { color: var(--color-muted); font-family: var(--font-mono); font-size: var(--meta-size); margin-top: 0.75rem; }
 .ask-issue-modal { background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-text); max-width: 34rem; padding: 1.5rem; width: calc(100% - 2rem); }
 .ask-issue-modal::backdrop { background: rgb(0 0 0 / 70%); }
 .ask-issue-form { display: grid; gap: .65rem; }
@@ -1463,6 +1567,131 @@ select:focus-visible {
 .admin-activity-list li { border-left: 2px solid var(--color-border); padding-left: 1rem; }
 .admin-activity-list strong { display: block; margin-top: .25rem; }
 .admin-activity-list p { line-height: 1.5; margin: .45rem 0 0; white-space: pre-wrap; }
+.admin-sessions { display: grid; gap: 0.75rem; }
+.admin-session { border-top: 1px solid var(--color-border); padding-top: 0.75rem; }
+.admin-session > summary { align-items: center; color: var(--color-link); cursor: pointer; display: flex; font-family: var(--font-mono); font-size: 0.8rem; gap: 1rem; justify-content: space-between; list-style: none; }
+.admin-session > summary::-webkit-details-marker { display: none; }
+.admin-session[open] > summary { color: var(--color-heading); }
+.admin-session__body { padding: 1rem 0 0 1rem; }
+.admin-journey { border-left: 2px solid var(--color-border); padding-left: 0.75rem; }
+.admin-exchange { border-left: 1px solid var(--color-border); margin-top: 1rem; padding-left: 1rem; }
+.admin-exchange h3 { color: var(--color-accent); font-family: var(--font-mono); font-size: var(--meta-size); letter-spacing: 0.08em; text-transform: uppercase; }
+.admin-diagnostics { border-top: 1px solid var(--color-border); margin-top: 1rem; padding-top: 0.65rem; }
+.admin-diagnostics summary { color: var(--color-link); cursor: pointer; font-family: var(--font-mono); font-size: var(--meta-size); }
+.admin-raw-events { margin-top: 2rem; }
+
+/* Shared interaction primitives: page styles should compose these rather than
+   restating control, disclosure, metadata, or chip semantics. */
+.action-chip,
+.tag-link {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-link);
+  display: inline-block;
+  font: inherit;
+  padding: 0.35rem 0.6rem;
+  text-decoration: none;
+}
+
+.action-chip:hover,
+.action-chip:focus-visible,
+.tag-link:hover,
+.tag-link:focus-visible {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.action-chip[aria-current="page"],
+.action-chip[aria-pressed="true"],
+.tag-link[aria-current="page"],
+.tag-link[aria-pressed="true"] {
+  border-color: var(--color-heading);
+  color: var(--color-heading);
+}
+
+.site-field input,
+.site-field textarea,
+.site-form--inline input,
+.admin-field input,
+.admin-field select,
+.admin-field textarea,
+.auth-field input,
+.ask-form textarea,
+.ask-issue-form input,
+.ask-issue-form select,
+.ask-issue-form textarea {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 0;
+  color: var(--color-text);
+  font: inherit;
+  padding: var(--control-padding);
+  width: 100%;
+}
+
+.site-field input:focus-visible,
+.site-field textarea:focus-visible,
+.site-form--inline input:focus-visible,
+.admin-field input:focus-visible,
+.admin-field select:focus-visible,
+.admin-field textarea:focus-visible,
+.auth-field input:focus-visible,
+.ask-form textarea:focus-visible,
+.ask-issue-form input:focus-visible,
+.ask-issue-form select:focus-visible,
+.ask-issue-form textarea:focus-visible {
+  border-color: var(--color-heading);
+  outline: 2px solid color-mix(in srgb, var(--color-heading), transparent 55%);
+  outline-offset: 2px;
+}
+
+.eyebrow,
+.meta-label,
+.admin-meta,
+.site-field label,
+.admin-field label,
+.auth-field label,
+.ask-form label,
+.ask-state__label,
+.ask-issue-form label {
+  font-family: var(--font-mono);
+  font-size: var(--meta-size);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ask-disclosure summary,
+.admin-review-details summary,
+.admin-session > summary,
+.admin-diagnostics summary {
+  color: var(--color-link);
+  cursor: pointer;
+}
+
+.ask-disclosure summary:hover,
+.ask-disclosure summary:focus-visible,
+.admin-review-details summary:hover,
+.admin-review-details summary:focus-visible,
+.admin-session > summary:hover,
+.admin-session > summary:focus-visible,
+.admin-diagnostics summary:hover,
+.admin-diagnostics summary:focus-visible {
+  color: var(--color-accent);
+}
+
+.ask-disclosure[open] summary,
+.admin-review-details[open] > summary,
+.admin-session[open] > summary,
+.admin-diagnostics[open] > summary {
+  color: var(--color-heading);
+}
+
+.ask-disclosure p,
+.admin-review-details > :not(summary),
+.admin-session__body,
+.admin-diagnostics > :not(summary) {
+  margin-left: 0.75rem;
+}
 
 @media (max-width: 44rem) {
   .admin-summary-grid,
@@ -1499,6 +1728,10 @@ select:focus-visible {
 
   .site-form__grid,
   .site-form--inline {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-action-grid {
     grid-template-columns: 1fr;
   }
 

@@ -5,7 +5,8 @@
   <header class="admin-page-header">
     <p class="eyebrow">Ask Jared / Evidence</p>
     <h1 id="knowledge-title">Knowledge entries</h1>
-    <p class="admin-lede">Entries originate from approved source material and repository/resume archaeology. Review confirms provenance, factual boundaries, visibility, and readiness; approval plus recruiter visibility and a current embedding make an entry retrievable.</p>
+    <p class="admin-lede">Entries move through a governed lifecycle: candidate → review → approval → recruiter visibility → embedding. Approval alone does not make an entry retrievable.</p>
+    <%= link_to "New knowledge entry", new_admin_knowledge_entry_path, class: "button-link button-link--secondary" %>
   </header>
 
   <%= form_with url: admin_knowledge_entries_path, method: :get, class: "admin-filter-form" do %><%= hidden_field_tag :status, @status if @status %><%= hidden_field_tag :visibility, @visibility if @visibility %><%= search_field_tag :q, @query, placeholder: "Search title, body, or source" %><%= submit_tag "Search", class: "button-link button-link--compact" %><% end %>
@@ -39,7 +40,7 @@
           <p class="admin-entry-card__summary"><%= entry.short_body.presence || truncate(entry.body, length: 280) %></p>
           <% capabilities = Array(entry.metadata.dig("recruiter_evidence", "competencies")).presence || entry.metadata.dig("recruiter_evidence", "capability_map")&.keys %>
           <p class="admin-meta">Updated <%= entry.updated_at.to_date %> · <%= capabilities.present? ? "#{capabilities.length} capabilities" : "Capabilities not recorded" %> · <%= entry.embedding.present? ? "Embedded" : "Not embedded" %></p>
-          <details class="admin-review-details"><summary>Provenance and recruiter readiness</summary><dl class="admin-detail-list"><dt>Origin</dt><dd><%= entry.source_type.humanize %></dd><dt>Source reference</dt><dd><%= entry.source_reference %></dd><dt>Visibility</dt><dd><%= entry.visibility.humanize %></dd><dt>Reviewed</dt><dd><%= entry.reviewed_by.presence || "Not reviewed" %> · <%= entry.approved_at || "Not approved" %></dd><dt>Capabilities</dt><dd><%= Array(entry.metadata["recruiter_evidence"]&.fetch("competencies", nil)).join(", ").presence || "Not recorded" %></dd></dl></details>
+          <details class="admin-review-details"><summary>Provenance and recruiter readiness</summary><dl class="admin-detail-list"><dt>Origin</dt><dd><%= entry.source_type.humanize %></dd><dt>Source reference</dt><dd><%= entry.source_reference %></dd><dt>Visibility</dt><dd><%= entry.visibility.humanize %></dd><dt>Reviewed</dt><dd><%= entry.reviewed_by.presence || "Not reviewed" %> · <%= entry.approved_at || "Not approved" %></dd><dt>Capabilities</dt><dd><%= capabilities&.join(", ").presence || "Not recorded" %></dd></dl></details>
           <% review_flags = Array(entry.metadata["review_flags"]).compact_blank %>
           <% publication_holds = Array(entry.metadata["publication_holds"]).compact_blank %>
           <% proposed_excerpts = Array(entry.metadata["proposed_recruiter_excerpts"]).compact_blank %>
@@ -51,7 +52,7 @@
           <% approval_readiness = entry.metadata["approval_readiness"] || {} %>
           <% if review_flags.any? || publication_holds.any? || proposed_excerpts.any? || ownership_review.present? || missing_methodology.any? || missing_fields.any? || human_review.present? || approval_readiness.present? %>
             <div class="admin-review-evidence">
-              <% if approval_readiness["ready_for_jared_approval"].present? %><p><strong>Approval readiness:</strong> <%= approval_readiness["ready_for_jared_approval"] ? "Ready for Jared's approval review" : "Additional review required" %> — <%= approval_readiness["reason"] %></p><% end %>
+              <% if approval_readiness["ready_for_jared_approval"].present? %><p><strong><%= entry.approval_status == "approved" ? "Historical review metadata" : "Approval readiness" %>:</strong> <%= approval_readiness["ready_for_jared_approval"] ? (entry.approval_status == "approved" ? "Previously marked ready for Jared's approval review" : "Ready for Jared's approval review") : "Additional review required" %> — <%= approval_readiness["reason"] %></p><% end %>
               <% if human_review["status"].present? %><p><strong>Human context:</strong> <%= human_review["status"] %></p><% end %>
               <% human_questions.each do |question| %>
                 <p><strong>Jared review question:</strong> <%= question["question"] %></p>

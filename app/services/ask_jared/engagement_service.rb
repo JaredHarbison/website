@@ -36,6 +36,25 @@ module AskJared
       end
     end
 
+    def record_for_token!(token:, event_type:, session_id:, metadata: {}, event_key: nil)
+      raise ArgumentError, "session_id is required" if session_id.blank?
+      raise ArgumentError, "token is required" unless token
+
+      key = event_key.presence || default_event_key(token, event_type, session_id)
+      EngagementEvent.create_or_find_by!(event_key: key) do |event|
+        event.opportunity = token.opportunity
+        event.ask_token = token
+        event.event_type = event_type
+        event.session_digest = digest(session_id)
+        event.metadata = metadata.stringify_keys.slice(
+          "email", "verification_id", "delivery_status", "page", "source"
+        )
+        event.occurred_at = Time.current
+        event.meaningful = MEANINGFUL_EVENTS.include?(event_type)
+        event.activity_class = token.opportunity&.tracker_source == "manual" ? "manual_share" : "unclassified"
+      end
+    end
+
     def session_digest(session_id)
       digest(session_id)
     end

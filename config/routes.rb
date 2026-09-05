@@ -7,9 +7,12 @@ Rails.application.routes.draw do
 
   namespace :admin do
     root "dashboard#index"
+    get "recruiter-intelligence" => "opportunities#index", as: :recruiter_intelligence
+    get "access-links" => "opportunities#access_links", as: :access_links
+    get "create-access" => "opportunities#new", as: :create_access
     post "share_links" => "share_links#create", as: :share_links
     delete "share_links/:id" => "share_links#revoke", as: :revoke_share_link
-    resources :knowledge_entries, only: %i[index update]
+    resources :knowledge_entries, only: %i[index new create update]
     resources :opportunities, only: %i[index show]
     resources :issues, only: %i[index show update]
     get "system" => "system#index", as: :system

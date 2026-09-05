@@ -13,6 +13,7 @@ class PagesController < ApplicationController
   def contact
     @page = page_repository.find!("contact")
     @prospect_access = prospect_opportunity
+    @resume_available = ApprovedResume.delivery_ready?
   end
 
   private

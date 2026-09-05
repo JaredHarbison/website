@@ -8,6 +8,8 @@
     <p class="admin-lede">Prospect access records connect a company/role context to a tokenized portfolio visit. Activity is privacy-conscious: possible sharing is probabilistic, never an identity or viewer count.</p>
   </header>
 
+  <nav class="admin-subnav" aria-label="Recruiter Intelligence sections"><%= link_to "Activity / Prospects", admin_recruiter_intelligence_path, class: "admin-subnav__link is-active" %><%= link_to "Access Links", admin_access_links_path, class: "admin-subnav__link" %><%= link_to "Create Access", admin_create_access_path, class: "admin-subnav__link" %></nav>
+
   <nav class="admin-filter-tabs" aria-label="Prospect intelligence filters">
     <%= link_to "All", admin_opportunities_path, class: (@filter.blank? ? "is-active" : "") %>
     <%= link_to "Engaged", admin_opportunities_path(filter: "engaged"), class: (@filter == "engaged" ? "is-active" : "") %>
@@ -18,11 +20,6 @@
     <%= link_to "Internal / QA", admin_opportunities_path(activity_class: "internal_qa"), class: (params[:activity_class] == "internal_qa" ? "is-active" : "") %>
   </nav>
 
-  <section class="admin-panel admin-share-panel" aria-labelledby="share-title">
-    <div class="admin-section-heading"><div><h2 id="share-title">Create prospect access</h2><p class="admin-meta">Create a time-limited direct-share link. The bearer value is shown once.</p></div><%= link_to "Owner preview", ask_path, class: "button-link" %></div>
-    <%= form_with url: admin_share_links_path, method: :post do %><div class="admin-form__grid admin-share-form-grid"><div class="admin-field"><%= label_tag :label, "Access label" %><%= text_field_tag :label, nil, required: true, placeholder: "Portfolio review" %></div><div class="admin-field"><%= label_tag :company, "Company (optional)" %><%= text_field_tag :company %></div><div class="admin-field admin-field--wide"><%= label_tag :purpose, "Purpose" %><%= text_area_tag :purpose, nil, rows: 2, required: true %></div><div class="admin-field"><%= label_tag :expires_on, "Expires on (optional)" %><%= date_field_tag :expires_on %></div></div><%= submit_tag "Create direct-share link", class: "button-link button-link--primary" %><% end %>
-    <% if flash[:direct_share_link] %><div class="admin-generated-link" role="status"><p class="admin-meta">Copy this link now. The bearer value is not recoverable from Rails if lost.</p><code><%= flash[:direct_share_link] %></code></div><% end %>
-  </section>
 
   <% if @opportunities.any? %>
     <div class="admin-table-wrap">

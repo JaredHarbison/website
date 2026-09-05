@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_09_05_000002) do
+ActiveRecord::Schema[8.0].define(version: 2026_09_05_000003) do
   create_table "admin_users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -51,7 +51,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_09_05_000002) do
     t.string "request_id", null: false
     t.string "session_digest", null: false
     t.string "status", null: false
-    t.integer "estimated_cost_cents", default: 0, null: false
+    t.integer "estimated_cost_cents"
     t.integer "input_tokens"
     t.integer "output_tokens"
     t.datetime "occurred_at", null: false

@@ -30,14 +30,27 @@ class ContactAccessControllerTest < ActionDispatch::IntegrationTest
     assert_nil event.metadata["token_digest"]
   end
 
-  test "resume request requires active token and records a verification request" do
+  test "resume request is unavailable until an approved delivery capability exists" do
     get root_path, params: { t: @raw_token }
     post resume_verification_path, params: { email: "recruiter@example.com" }
 
     assert_redirected_to contact_path
-    verification = ResumeVerification.order(:created_at).last
-    assert verification.active?
-    assert_equal 1, EngagementEvent.where(event_type: "resume_verification_requested").count
+    assert_includes flash[:resume_error], "not available"
+    assert_nil ResumeVerification.order(:created_at).last
+    assert_equal 0, EngagementEvent.where(event_type: "resume_verification_requested").count
+  end
+
+  test "an old verification link fails safely without the original browser session" do
+    token = AskToken.joins(:opportunity).first
+    raw = "verification-token"
+    digest = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new("SHA256"), Rails.application.secret_key_base, raw)
+    verification = ResumeVerification.create!(opportunity: token.opportunity, ask_token: token, token_digest: digest, email: "recruiter@example.com", session_digest: "old-session", expires_at: 10.minutes.from_now)
+
+    get resume_verification_confirmation_path(raw)
+
+    assert_redirected_to contact_path
+    assert_equal Time.current.to_i, verification.reload.verified_at.to_i
+    assert_equal 1, EngagementEvent.where(event_type: "resume_email_verified").count
   end
 
   test "the fifth Ask question is blocked for one prospect browser session" do

@@ -27,11 +27,18 @@ module AskJared
       @usage_guard.check!(token: token, session_digest: session_digest) unless admin_preview
 
       prior_primary = prior_primary_evidence(session_digest)
+      prior_context = prior_answer_context(session_digest)
       prior_intent = prior_question_intent(session_digest)
       classified_intent = @retriever.respond_to?(:classified_intent) ? @retriever.classified_intent(question) : nil
       active_intent = continuation?(question) ? (prior_intent || classified_intent) : (classified_intent || prior_intent)
-      if continuation?(question) && prior_primary.last
-        entries = retrieve(question, limit: 12, intent: active_intent).select { |entry| entry.source_reference == prior_primary.last }
+      if continuation?(question) && prior_context.any?
+        referent_ids = referent_entry_ids(question, prior_context)
+        entries = retrieve(question, limit: 12, intent: active_intent).select { |entry| referent_ids.include?(entry.id) || referent_ids.include?(entry.source_reference) }
+        if entries.empty? && referent_ids.any?
+          numeric_ids = referent_ids.select { |referent| referent.to_s.match?(/\A\d+\z/) }
+          entries = ::KnowledgeEntry.recruiter_retrievable.where(id: numeric_ids).to_a
+          entries = ::KnowledgeEntry.recruiter_retrievable.where(source_reference: referent_ids).to_a if entries.empty?
+        end
       else
         entries = retrieve(question, intent: active_intent).reject { |entry| another_example?(question) && prior_primary.include?(entry.source_reference) }
         entries = entries.first(1) if another_example?(question) && skeleton_path?(active_intent)
@@ -66,7 +73,7 @@ module AskJared
           "intent_path" => classified_intent.present? ? "recognized" : "fallback", "evidence_count" => response["evidence_ids"].to_a.length,
           "turn" => EngagementEvent.where(session_digest: session_digest, event_type: "answer_returned").count + 1
         })
-        @usage_guard.record!(token: token, session_digest: session_digest, request_id: request_id, status: response["status"] == "answer" ? "completed" : "rejected", estimated_cost_cents: entries.empty? ? 0 : 1)
+        @usage_guard.record!(token: token, session_digest: session_digest, request_id: request_id, status: response["status"] == "answer" ? "completed" : "rejected", estimated_cost_cents: nil)
       end
       response.delete("claim_refs")
       response
@@ -118,7 +125,8 @@ module AskJared
       end
 
       role_refs = segments.flat_map { |segment| segment["role_refs"] }.uniq
-      answer = RecruiterAnswerSanitizer.clean(segments.map { |segment| segment["text"] }.join(" "))
+      separator = multiple_examples?(question) ? "\n\n" : " "
+      answer = RecruiterAnswerSanitizer.clean(segments.map { |segment| segment["text"] }.join(separator))
       raise EvidenceIntegrity::Violation, "skeleton realization is empty" if answer.blank?
 
       {
@@ -189,9 +197,9 @@ module AskJared
 
     def insufficient_response(another_example: false)
       answer = if another_example
-        "The strongest remaining evidence is closely related to the example already discussed rather than a genuinely distinct strong case."
+        "I couldn’t find a genuinely distinct example in the information I can share here."
       else
-        "I don't have enough approved information to answer that confidently."
+        "I don’t have enough information to answer that confidently."
       end
       { "status" => "insufficient_information", "answer" => answer, "evidence_ids" => [], "source_urls" => [] }
     end
@@ -210,6 +218,22 @@ module AskJared
 
     def prior_question_intent(session_digest)
       EngagementEvent.where(session_digest: session_digest, event_type: "answer_returned").order(:occurred_at).pluck(:metadata).filter_map { |metadata| metadata["question_intent"] }.compact.last
+    end
+
+    def prior_answer_context(session_digest)
+      EngagementEvent.where(session_digest: session_digest, event_type: "answer_returned").order(:occurred_at).last(1).filter_map do |event|
+        event.metadata["evidence_ids"] || event.metadata["primary_evidence_reference"]
+      end.flatten.compact
+    end
+
+    def referent_entry_ids(question, context)
+      return [ context.first ] if question.match?(/\bfirst\b/i)
+      return [ context.second || context.first ] if question.match?(/\bsecond\b/i)
+      context
+    end
+
+    def multiple_examples?(question)
+      question.match?(/\b(?:some|examples|multiple|several|various)\b/i)
     end
 
     def primary_entry_for(entries, response:, packet:)

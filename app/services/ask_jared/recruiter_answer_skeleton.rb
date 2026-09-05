@@ -1,7 +1,7 @@
 module AskJared
   class RecruiterAnswerSkeleton
     ROLE_POLICIES = {
-      "characterization" => { roles: %w[direct_fact], max: 1 },
+      "characterization" => { roles: %w[direct_fact action], sources: %w[case-study:dogly-product-design case-study:dogly-partner-applications story:dogly-react-migration-disagreement story:dogly-engineering-collaboration], max: 3 },
       "candidacy" => { roles: %w[direct_fact action], max: 2 },
       "rails" => { roles: %w[direct_fact action], max: 2 },
       "react" => { sources: %w[story:dogly-engineering-collaboration story:dogly-react-migration-disagreement], max: 2 },

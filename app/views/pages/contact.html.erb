@@ -1,30 +1,35 @@
-<main class="site-main content-page" aria-labelledby="page-title">
-  <p class="eyebrow">Contact</p>
-  <h1 id="page-title">Let’s Talk</h1>
-  <% if flash[:notice] %><p class="site-notice" role="status"><%= flash[:notice] %></p><% end %>
-  <% if flash[:alert] %><p class="site-notice site-notice--error" role="alert"><%= flash[:alert] %></p><% end %>
-  <%= MarkdownRenderer.render(@page.body) %>
+<main class="site-main content-page contact-page" aria-labelledby="page-title">
+  <header class="contact-hero">
+    <p class="eyebrow">Contact</p>
+    <h1 id="page-title">Let’s Talk</h1>
+    <p class="lede">I’m open to senior software engineering and product engineering roles, particularly on teams where I can work across product thinking, architecture, implementation, and delivery.</p>
+    <p class="contact-hero__invitation">If you’re considering me for a role, want to talk through my work, or just have a question, I’d be glad to hear from you.</p>
+  </header>
   <% if @prospect_access %>
     <section class="contact-recruiter-panel" aria-labelledby="recruiter-contact-title">
       <p class="eyebrow">Recruiter access</p>
       <h2 id="recruiter-contact-title">Continue the conversation</h2>
-      <p>Send Jared a message or request the approved generic résumé. Your access context is already attached; you do not need to re-enter the company or role.</p>
-      <%= form_with url: contact_message_path, method: :post, scope: nil, class: "site-form" do |form| %>
-        <div class="site-form__grid">
-          <div class="site-field"><%= form.label :name, "Name" %><%= form.text_field :name, required: true, autocomplete: "name" %></div>
-          <div class="site-field"><%= form.label :email, "Email / reply address" %><%= form.email_field :email, required: true, autocomplete: "email" %></div>
-          <div class="site-field site-field--wide"><%= form.label :message, "Message" %><%= form.text_area :message, rows: 6, required: true %></div>
-        </div>
-        <%= form.submit "Send Jared a message", class: "button-link button-link--primary" %>
-      <% end %>
-      <div class="contact-resume-action">
-        <h3>Email me Jared’s résumé</h3>
-        <p class="admin-meta">We’ll verify that you control the address before sending it.</p>
-        <%= form_with url: resume_verification_path, method: :post, scope: nil, class: "site-form site-form--inline" do |form| %>
-          <%= form.email_field :email, required: true, autocomplete: "email", placeholder: "you@example.com", aria: { label: "Résumé delivery email" } %>
-          <%= form.submit "Request résumé", class: "button-link" %>
+      <p class="contact-context">This visit is connected to <strong><%= @prospect_access.opportunity.company %></strong><% if @prospect_access.opportunity.role_title.present? %> · <%= @prospect_access.opportunity.role_title %><% end %>.</p>
+      <div class="contact-action-grid">
+        <section class="contact-action" id="contact-message" aria-labelledby="contact-message-title">
+          <h3 id="contact-message-title">Send Jared a message</h3>
+          <% if flash[:contact_notice] %><p class="site-notice" role="status"><%= flash[:contact_notice] %></p><% end %>
+          <% if flash[:contact_error] %><p class="site-notice site-notice--error" role="alert"><%= flash[:contact_error] %></p><% end %>
+          <%= form_with url: contact_message_path, method: :post, scope: nil, class: "site-form" do |form| %>
+            <div class="site-form__grid"><div class="site-field"><%= form.label :name, "Name" %><%= form.text_field :name, required: true, autocomplete: "name" %></div><div class="site-field"><%= form.label :email, "Email" %><%= form.email_field :email, required: true, autocomplete: "email" %></div><div class="site-field site-field--wide"><%= form.label :message, "Message" %><%= form.text_area :message, rows: 6, required: true %></div></div>
+            <%= form.submit "Send Jared a message", class: "button-link button-link--primary" %>
+          <% end %>
+        </section>
+        <% if @resume_available %>
+          <section class="contact-action" id="resume-request" aria-labelledby="resume-title">
+            <h3 id="resume-title">Email me Jared’s résumé</h3><p class="admin-meta">We’ll verify that you control the address before sending it.</p>
+            <% if flash[:resume_notice] %><p class="site-notice" role="status"><%= flash[:resume_notice] %></p><% end %>
+            <% if flash[:resume_error] %><p class="site-notice site-notice--error" role="alert"><%= flash[:resume_error] %></p><% end %>
+            <%= form_with url: resume_verification_path, method: :post, scope: nil, class: "site-form site-form--inline" do |form| %><%= form.email_field :email, required: true, autocomplete: "email", placeholder: "you@example.com", aria: { label: "Résumé delivery email" } %><%= form.submit "Request résumé", class: "button-link button-link--secondary" %><% end %>
+          </section>
         <% end %>
       </div>
     </section>
   <% end %>
+  <section class="contact-links" aria-labelledby="contact-links-title"><p class="eyebrow">Other ways to connect</p><h2 id="contact-links-title">Find me elsewhere</h2><%= MarkdownRenderer.render(@page.body) %></section>
 </main>

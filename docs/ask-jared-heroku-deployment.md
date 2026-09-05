@@ -19,6 +19,15 @@ credentials, or sync credentials in GitHub Actions or the repository.
 
 ## Deploy
 
+Normal releases are GitHub-source-of-truth releases. Push the reviewed commit to
+`main`; `.github/workflows/pages.yml` runs the validation gate, deploys that exact
+commit to Heroku, and checks `/up`. Configure `HEROKU_API_KEY` as a GitHub Actions
+secret and `HEROKU_APP_NAME` as a repository variable. Do not place Rails secrets,
+OpenAI credentials, database credentials, or SMTP credentials in GitHub.
+
+The direct Heroku Git commands below are bootstrap/recovery procedures only, not
+the normal release path.
+
 From an authorized checkout, ChatGPT Work/Jared should:
 
 ```sh

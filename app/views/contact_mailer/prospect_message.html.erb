@@ -1,0 +1,5 @@
+<% content_for :title, "Portfolio message" %>
+<p style="margin:0 0 8px; color:#e5b566; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; letter-spacing:1px; text-transform:uppercase;">New message</p>
+<h2 style="margin:0 0 18px; color:#86d99a; font-size:20px;">Someone followed up from the portfolio.</h2>
+<p style="margin:0 0 18px; color:#d9e0dc; font-size:16px; line-height:1.6;"><%= h @event.metadata["message"] %></p>
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-top:1px solid #26302c;"><tr><td style="padding:12px 12px 0 0; color:#75bfff; font-size:12px;">From</td><td style="padding:12px 0 0; color:#d9e0dc;"><%= h @event.metadata["name"] %> &lt;<%= h @event.metadata["email"] %>&gt;</td></tr><tr><td style="padding:8px 12px 0 0; color:#75bfff; font-size:12px;">Context</td><td style="padding:8px 0 0; color:#d9e0dc;"><%= h @opportunity&.company %> · <%= h @opportunity&.role_title %></td></tr></table>

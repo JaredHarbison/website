@@ -47,6 +47,7 @@ module AskJared
     ].freeze
 
     INTENT_SOURCE_BOOSTS = {
+      "characterization" => { "case-study:dogly-product-design" => 4.0, "story:dogly-engineering-collaboration" => 3.0, "story:dogly-react-migration-disagreement" => 2.0 },
       "react" => { "story:dogly-engineering-collaboration" => 4.0, "story:dogly-react-migration-disagreement" => 3.0 },
       "mentorship" => { "story:anthropologie-succession-mentorship" => 5.0 },
       "ambiguity" => { "story:doglydaily-three-send-ux" => 5.0 },

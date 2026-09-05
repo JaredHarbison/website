@@ -49,6 +49,7 @@ module AskJared
         page_view_count: page_views.count,
         most_recent_question: latest_question,
         most_recent_answer_status: latest_answer["answer_status"],
+        most_recent_answer: latest_answer["answer"],
         issue_report_count: issues,
         possible_internal_share: sessions > 1 || networks > 1,
         internal_share_confidence: share_confidence(sessions, networks, questions),

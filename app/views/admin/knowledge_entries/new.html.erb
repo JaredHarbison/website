@@ -1,0 +1,8 @@
+<% content_for :title, "New knowledge entry · Ask Jared admin" %>
+<main class="site-main admin-main" aria-labelledby="new-knowledge-title">
+  <%= render "admin/navigation" %>
+  <p><%= link_to "← Knowledge", admin_knowledge_entries_path, class: "admin-back-link" %></p>
+  <header class="admin-page-header"><p class="eyebrow">Knowledge / Candidate</p><h1 id="new-knowledge-title">New knowledge entry</h1><p class="admin-lede">This creates a private candidate with empty claims and capability mappings. Jared must add or confirm factual evidence before approval or recruiter visibility.</p></header>
+  <% if flash[:alert] %><p class="admin-flash admin-flash--alert" role="alert"><%= flash[:alert] %></p><% end %>
+  <section class="admin-panel"><%= form_with model: @knowledge_entry, url: admin_knowledge_entries_path, method: :post, class: "admin-form" do |form| %><div class="admin-form__grid"><div class="admin-field admin-field--wide"><%= form.label :title %><%= form.text_field :title, required: true %></div><div class="admin-field"><%= form.label :entry_type %><%= form.select :entry_type, KnowledgeEntry::ENTRY_TYPES, required: true %></div><div class="admin-field"><%= form.label :source_reference, "Source / provenance reference" %><%= form.text_field :source_reference, required: true, placeholder: "jared-confirmed:topic-name" %></div><div class="admin-field admin-field--wide"><%= form.label :body %><%= form.text_area :body, rows: 10, required: true %></div><div class="admin-field admin-field--wide"><%= form.label :short_body, "Short summary" %><%= form.text_area :short_body, rows: 3 %></div></div><%= form.submit "Create private candidate", class: "button-link button-link--primary" %><% end %></section>
+</main>

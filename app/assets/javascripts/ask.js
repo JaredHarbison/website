@@ -21,7 +21,7 @@
     function restoreForm() {
       if (turns.length >= 4) return;
       form.hidden = false; question.disabled = false; submit.disabled = false;
-      submit.textContent = turns.length ? "Ask another question" : "Ask About Jared"; question.value = ""; question.focus();
+      submit.textContent = turns.length ? "Ask another question" : "Ask About Jared"; question.value = ""; question.placeholder = turns.length ? "Ask a follow-up…" : "What kind of engineer is Jared?"; question.focus();
     }
 
     function showIssue(turn) {
@@ -45,7 +45,8 @@
         var cta = document.createElement("p"); cta.className = "ask-contact-cta";
         cta.append("Got more questions? ");
         var link = document.createElement("a"); link.href = "/contact"; link.textContent = "Ask Jared."; cta.append(link);
-        var resume = document.createElement("span"); resume.textContent = " You can also request Jared's résumé there."; cta.append(resume); history.append(cta);
+        if (container.dataset.resumeAvailable === "true") { var resume = document.createElement("span"); resume.textContent = " You can also request Jared's résumé there."; cta.append(resume); } history.append(cta);
+        var limit = document.createElement("p"); limit.className = "ask-limit-message"; limit.textContent = "This conversation has reached its four-question limit."; history.append(limit);
         form.hidden = true;
       } else restoreForm();
       state.scrollIntoView({ behavior: "smooth", block: "start" });

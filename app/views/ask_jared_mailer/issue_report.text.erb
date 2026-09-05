@@ -10,6 +10,7 @@ Feedback: <%= @event.metadata["feedback"] %>
 Contact: <%= @contact.presence || "Not provided" %>
 Session: <%= @event.session_digest.to_s.first(12) %>…
 Answer status: <%= @event.metadata["answer_status"].presence || "Unknown" %>
+Latency: <%= @event.metadata["latency_ms"].presence || "Not recorded" %>
 Intent: <%= @event.metadata["question_intent"].presence || "Unknown" %>
 Model: <%= @event.metadata["model"].presence || "Unknown" %>
 Evidence: <%= Array(@event.metadata["evidence_ids"]).join(", ").presence || "Not available" %>
