@@ -112,4 +112,4 @@ jobs:
       - name: Verify deployed release health
         env:
           HEROKU_APP_NAME: ${{ vars.HEROKU_APP_NAME }}
-        run: curl --fail --silent --show-error --retry 12 --retry-delay 5 "https://${HEROKU_APP_NAME}.herokuapp.com/up"
+        run: curl --fail --silent --show-error --retry 30 --retry-delay 5 --retry-all-errors "https://${HEROKU_APP_NAME}.herokuapp.com/up"
