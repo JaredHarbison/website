@@ -78,6 +78,8 @@ class AskJaredCandidateKnowledgeInventoryTest < ActiveSupport::TestCase
     entry = AskJared::CandidateKnowledgeInventory.new.sync!.find { |item| item.source_reference == "case-study:federation-briefing" }
     repository = entry.metadata["external_repository"]
 
+    skip "The optional Federation Briefing checkout is not present in CI" unless repository["accessible_locally"]
+
     assert repository["accessible_locally"]
     assert_equal "0325b36", repository["checkout_commit"][0, 7]
     assert_equal "https://github.com/JaredHarbison/the-federation-briefing", repository["repository_url"]
