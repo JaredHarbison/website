@@ -4,7 +4,7 @@ module AskJared
   class UsageGuard
     LimitExceeded = Class.new(StandardError)
     MAX_QUESTIONS_PER_TOKEN_PER_DAY = 20
-    MAX_QUESTIONS_PER_SESSION_PER_HOUR = 5
+    MAX_QUESTIONS_PER_SESSION_PER_HOUR = 4
     DEFAULT_DAILY_COST_CENTS = 500
 
     def initialize(now: Time.current, daily_cost_cents: ENV.fetch("ASK_JARED_DAILY_COST_CENTS", DEFAULT_DAILY_COST_CENTS).to_i)

@@ -44,7 +44,8 @@
       if (turns.length >= 4) {
         var cta = document.createElement("p"); cta.className = "ask-contact-cta";
         cta.append("Got more questions? ");
-        var link = document.createElement("a"); link.href = "/contact"; link.textContent = "Ask Jared."; cta.append(link); history.append(cta);
+        var link = document.createElement("a"); link.href = "/contact"; link.textContent = "Ask Jared."; cta.append(link);
+        var resume = document.createElement("span"); resume.textContent = " You can also request Jared's résumé there."; cta.append(resume); history.append(cta);
         form.hidden = true;
       } else restoreForm();
       state.scrollIntoView({ behavior: "smooth", block: "start" });

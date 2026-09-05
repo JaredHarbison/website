@@ -22,7 +22,7 @@ module ApplicationHelper
     link_to label, path, **options
   end
 
-  def admin_pagination(page:, has_previous:, has_next:, params: {})
-    render "admin/pagination", page: page, has_previous: has_previous, has_next: has_next, query: params
+  def admin_pagination(page:, has_previous:, has_next:, total_pages: nil, params: {})
+    render "admin/pagination", page: page, has_previous: has_previous, has_next: has_next, total_pages: total_pages, query: params
   end
 end

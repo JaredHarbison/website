@@ -26,6 +26,9 @@ Rails.application.routes.draw do
 
   get "about" => "pages#about"
   get "contact" => "pages#contact"
+  post "contact/message" => "contact_messages#create", as: :contact_message
+  post "contact/resume/verification" => "resume_verifications#create", as: :resume_verification
+  get "contact/resume/verification/:token" => "resume_verifications#show", as: :resume_verification_confirmation
 
   resources :case_studies, only: %i[index show], path: "case-studies", param: :slug
   resources :writings, only: %i[index show], path: "writing", param: :slug

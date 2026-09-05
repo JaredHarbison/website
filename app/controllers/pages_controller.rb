@@ -12,9 +12,19 @@ class PagesController < ApplicationController
 
   def contact
     @page = page_repository.find!("contact")
+    @prospect_access = prospect_opportunity
   end
 
   private
+
+  def prospect_opportunity
+    return unless prospect_token.present?
+
+    token = AskJared::TokenService.new.resolve(prospect_token)
+    token if token && AskJared::TokenService.new.recruiter_accessible?(token)
+  rescue ActiveRecord::RecordNotFound
+    nil
+  end
 
   def page_repository
     ContentRepository.new(collection: "pages", model: ContentEntry)

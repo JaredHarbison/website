@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_09_03_000012) do
+ActiveRecord::Schema[8.0].define(version: 2026_09_05_000002) do
   create_table "admin_users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -77,6 +77,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_09_03_000012) do
     t.boolean "meaningful", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "activity_class", default: "unclassified", null: false
+    t.index ["activity_class"], name: "index_engagement_events_on_activity_class"
     t.index ["ask_token_id"], name: "index_engagement_events_on_ask_token_id"
     t.index ["event_key"], name: "index_engagement_events_on_event_key", unique: true
     t.index ["event_type", "meaningful"], name: "index_engagement_events_on_event_type_and_meaningful"
@@ -125,9 +127,28 @@ ActiveRecord::Schema[8.0].define(version: 2026_09_03_000012) do
     t.index ["external_id"], name: "index_opportunities_on_external_id", unique: true
   end
 
+  create_table "resume_verifications", force: :cascade do |t|
+    t.integer "opportunity_id"
+    t.integer "ask_token_id"
+    t.string "token_digest", null: false
+    t.string "email", null: false
+    t.string "session_digest", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "verified_at"
+    t.datetime "delivered_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ask_token_id", "created_at"], name: "index_resume_verifications_on_ask_token_id_and_created_at"
+    t.index ["ask_token_id"], name: "index_resume_verifications_on_ask_token_id"
+    t.index ["opportunity_id"], name: "index_resume_verifications_on_opportunity_id"
+    t.index ["token_digest"], name: "index_resume_verifications_on_token_digest", unique: true
+  end
+
   add_foreign_key "ask_tokens", "opportunities"
   add_foreign_key "ask_usage_events", "ask_tokens"
   add_foreign_key "ask_usage_events", "opportunities"
   add_foreign_key "engagement_events", "ask_tokens"
   add_foreign_key "engagement_events", "opportunities"
+  add_foreign_key "resume_verifications", "ask_tokens"
+  add_foreign_key "resume_verifications", "opportunities"
 end

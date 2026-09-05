@@ -10,5 +10,3 @@ You can find me here:
 
 - [LinkedIn](https://www.linkedin.com/in/jaredharbison)
 - [GitHub](https://github.com/jaredharbison)
-
-I may add a direct email or contact form later. For now, keeping contact to established profiles avoids spam surface area and keeps the site simple.

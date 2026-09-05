@@ -1,5 +1,30 @@
 <main class="site-main content-page" aria-labelledby="page-title">
   <p class="eyebrow">Contact</p>
   <h1 id="page-title">Let’s Talk</h1>
+  <% if flash[:notice] %><p class="site-notice" role="status"><%= flash[:notice] %></p><% end %>
+  <% if flash[:alert] %><p class="site-notice site-notice--error" role="alert"><%= flash[:alert] %></p><% end %>
   <%= MarkdownRenderer.render(@page.body) %>
+  <% if @prospect_access %>
+    <section class="contact-recruiter-panel" aria-labelledby="recruiter-contact-title">
+      <p class="eyebrow">Recruiter access</p>
+      <h2 id="recruiter-contact-title">Continue the conversation</h2>
+      <p>Send Jared a message or request the approved generic résumé. Your access context is already attached; you do not need to re-enter the company or role.</p>
+      <%= form_with url: contact_message_path, method: :post, scope: nil, class: "site-form" do |form| %>
+        <div class="site-form__grid">
+          <div class="site-field"><%= form.label :name, "Name" %><%= form.text_field :name, required: true, autocomplete: "name" %></div>
+          <div class="site-field"><%= form.label :email, "Email / reply address" %><%= form.email_field :email, required: true, autocomplete: "email" %></div>
+          <div class="site-field site-field--wide"><%= form.label :message, "Message" %><%= form.text_area :message, rows: 6, required: true %></div>
+        </div>
+        <%= form.submit "Send Jared a message", class: "button-link button-link--primary" %>
+      <% end %>
+      <div class="contact-resume-action">
+        <h3>Email me Jared’s résumé</h3>
+        <p class="admin-meta">We’ll verify that you control the address before sending it.</p>
+        <%= form_with url: resume_verification_path, method: :post, scope: nil, class: "site-form site-form--inline" do |form| %>
+          <%= form.email_field :email, required: true, autocomplete: "email", placeholder: "you@example.com", aria: { label: "Résumé delivery email" } %>
+          <%= form.submit "Request résumé", class: "button-link" %>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
 </main>

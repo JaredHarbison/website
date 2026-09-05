@@ -2,7 +2,7 @@ require "openssl"
 
 module AskJared
   class EngagementService
-    MEANINGFUL_EVENTS = %w[human_interaction question_submitted answer_returned issue_reported].freeze
+    MEANINGFUL_EVENTS = %w[human_interaction question_submitted answer_returned issue_reported contact_message_submitted resume_verification_requested resume_email_verified resume_requested resume_delivery_succeeded resume_delivery_failed].freeze
 
     def initialize(secret: Rails.application.secret_key_base)
       @secret = secret
@@ -23,10 +23,13 @@ module AskJared
         event.session_digest = digest(session_id)
         event.ip_digest = digest(ip) if ip.present?
         event.user_agent_class = user_agent_class.to_s.first(80)
-        event.metadata = metadata.slice(
+        event.activity_class = metadata[:activity_class].presence || metadata["activity_class"].presence || (token.opportunity&.tracker_source == "manual" ? "manual_share" : "unclassified")
+        event.metadata = metadata.stringify_keys.slice(
           "source", "question_category", "primary_evidence_reference", "question_intent", "question", "answer",
           "answer_status", "evidence_ids", "skeleton_roles", "model", "validation", "issue_category", "feedback",
-          "page", "turn", "browser", "device", "server_error", "contact"
+          "page", "turn", "browser", "device", "server_error", "contact", "name", "email", "message",
+          "company", "role", "verification_id", "delivery_status", "latency_ms", "input_tokens", "output_tokens",
+          "estimated_cost_cents", "intent_path", "evidence_count", "answer_status"
         )
         event.occurred_at = Time.current
         event.meaningful = MEANINGFUL_EVENTS.include?(event_type)

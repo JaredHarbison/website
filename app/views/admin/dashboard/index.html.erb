@@ -5,93 +5,41 @@
   <header class="admin-page-header">
     <p class="eyebrow">Ask Jared / Admin</p>
     <h1 id="admin-title">Overview</h1>
-    <p class="admin-lede">Operational overview for prospect access, recruiter activity, approved knowledge, and feedback.</p>
+    <p class="admin-lede">A compact operating view of Prospect access: health, meaningful prospect use, what needs attention, and what happened recently.</p>
   </header>
 
-  <section aria-labelledby="system-snapshot-title">
-    <div class="admin-section-heading"><h2 id="system-snapshot-title">System snapshot</h2><%= link_to "Open system status", admin_system_path, class: "admin-text-link" %></div>
+  <section aria-labelledby="health-title">
+    <div class="admin-section-heading"><h2 id="health-title">At a glance</h2><%= link_to "Open System", admin_system_path, class: "admin-text-link" %></div>
     <div class="admin-summary-grid">
-      <%= link_to admin_opportunities_path, class: "admin-summary-card" do %><span class="admin-summary-card__label">Prospect access</span><strong class="admin-summary-card__value"><%= @prospect_access_count %></strong><span class="admin-summary-card__action">View access →</span><% end %>
-      <%= link_to admin_opportunities_path, class: "admin-summary-card" do %><span class="admin-summary-card__label">Active links</span><strong class="admin-summary-card__value"><%= @active_access_count %></strong><span class="admin-summary-card__action">View activity →</span><% end %>
-      <%= link_to admin_knowledge_entries_path(status: "approved", visibility: "recruiter_visible"), class: "admin-summary-card" do %><span class="admin-summary-card__label">Recruiter-visible knowledge</span><strong class="admin-summary-card__value"><%= @recruiter_visible_count %></strong><span class="admin-summary-card__action">Inspect knowledge →</span><% end %>
-      <%= link_to admin_issues_path(status: "new"), class: "admin-summary-card" do %><span class="admin-summary-card__label">Open issues</span><strong class="admin-summary-card__value"><%= @open_issue_count %></strong><span class="admin-summary-card__action">Review feedback →</span><% end %>
+      <%= link_to admin_opportunities_path(filter: "engaged"), class: "admin-summary-card" do %><span class="admin-summary-card__label">Engaged prospects</span><strong class="admin-summary-card__value"><%= @engaged_prospects %></strong><span class="admin-summary-card__action">View journeys →</span><% end %>
+      <%= link_to admin_opportunities_path, class: "admin-summary-card" do %><span class="admin-summary-card__label">Meaningful sessions</span><strong class="admin-summary-card__value"><%= @meaningful_sessions %></strong><span class="admin-summary-card__action">View Prospects →</span><% end %>
+      <%= link_to admin_opportunities_path, class: "admin-summary-card" do %><span class="admin-summary-card__label">Questions asked</span><strong class="admin-summary-card__value"><%= @question_count %></strong><span class="admin-summary-card__action">Inspect activity →</span><% end %>
+      <%= link_to admin_issues_path(status: "new"), class: "admin-summary-card" do %><span class="admin-summary-card__label">Outstanding issues</span><strong class="admin-summary-card__value"><%= @open_issue_count %></strong><span class="admin-summary-card__action">Review inbox →</span><% end %>
     </div>
   </section>
 
-  <section class="admin-panel admin-share-panel" aria-labelledby="share-title">
-    <div class="admin-section-heading">
-      <div><h2 id="share-title">Prospect access</h2><p class="admin-meta">An access record connects a company/role context to a tokenized portfolio visit. Preview as owner or create a time-limited direct-share link.</p></div>
-      <%= link_to "Open owner preview", ask_path, class: "button-link" %>
-    </div>
-    <%= form_with url: admin_share_links_path, method: :post do %>
-      <div class="admin-form__grid admin-share-form-grid">
-        <div class="admin-field"><%= label_tag :label, "Label" %><%= text_field_tag :label, nil, required: true, placeholder: "Portfolio review" %></div>
-        <div class="admin-field"><%= label_tag :company, "Company (optional)" %><%= text_field_tag :company, nil, placeholder: "Optional context" %></div>
-        <div class="admin-field admin-field--wide"><%= label_tag :purpose, "Purpose" %><%= text_area_tag :purpose, nil, rows: 2, required: true, placeholder: "General engineering introduction" %></div>
-        <div class="admin-field"><%= label_tag :expires_on, "Expires on (optional)" %><%= date_field_tag :expires_on %></div>
-      </div>
-      <%= submit_tag "Create direct-share link", class: "button-link button-link--primary" %>
-    <% end %>
-    <% if @direct_share_link %><div class="admin-generated-link" role="status"><p class="admin-meta">Copy this link now. The bearer value is not recoverable from Rails if lost.</p><code><%= @direct_share_link %></code></div><% end %>
-    <% if @manual_opportunities.any? %>
-      <ul class="admin-manual-links">
-        <% @manual_opportunities.each do |opportunity| %>
-          <li><span><strong><%= opportunity.role_title %></strong><span class="admin-meta"><%= opportunity.purpose %> · <%= opportunity.ask_token&.status %></span></span><%= button_to "Revoke", admin_revoke_share_link_path(opportunity), method: :delete, class: "button-link" if opportunity.ask_token&.status.in?(%w[claimed submitted]) %></li>
-        <% end %>
-      </ul>
-    <% end %>
-  </section>
+  <% if @direct_share_link %><section class="admin-panel admin-generated-link" aria-live="polite"><p class="admin-meta">New access link — copy it now; the bearer value is not recoverable later.</p><code><%= @direct_share_link %></code><p><%= link_to "Manage Prospects", admin_opportunities_path, class: "admin-text-link" %></p></section><% end %>
 
   <section class="admin-panel" aria-labelledby="attention-title">
     <div class="admin-section-heading"><h2 id="attention-title">Needs attention</h2><span class="admin-meta"><%= @mail_configured ? "Issue email configured" : "Issue email not configured" %></span></div>
     <ul class="admin-recent-list">
-      <li><span><strong><%= @missing_embeddings_count %></strong> recruiter-visible entries missing embeddings</span><%= link_to "Check system", admin_system_path, class: "admin-text-link" %></li>
-      <li><span><strong><%= @issue_count %></strong> total reported issues</span><%= link_to "Review feedback", admin_issues_path, class: "admin-text-link" %></li>
-      <% unless @mail_configured %><li><span>Server-side issue email is not configured.</span><%= link_to "View status", admin_system_path, class: "admin-text-link" %></li><% end %>
+      <li><span><strong><%= @missing_embeddings_count %></strong> recruiter-visible entries missing embeddings</span><%= link_to "Check Knowledge", admin_knowledge_entries_path, class: "admin-text-link" %></li>
+      <li><span><strong><%= @open_issue_count %></strong> issues remain unresolved</span><%= link_to "Open Issues", admin_issues_path(status: "new"), class: "admin-text-link" %></li>
+      <% unless @resume_status[:available] %><li><span>Approved generic résumé is unavailable; delivery is intentionally disabled.</span><%= link_to "View System", admin_system_path, class: "admin-text-link" %></li><% end %>
     </ul>
   </section>
 
   <section class="admin-panel" aria-labelledby="activity-snapshot-title">
-    <div class="admin-section-heading"><h2 id="activity-snapshot-title">Recent activity</h2><%= link_to "Open recruiter intelligence", admin_opportunities_path, class: "admin-text-link" %></div>
-    <% if @recent_activity.any? %><ul class="admin-recent-list"><% @recent_activity.each do |event| %><li><span><strong><%= event.event_type.humanize %></strong><span class="admin-meta"><%= event.opportunity&.company %> · <%= event.metadata["question"].presence || event.metadata["page"].presence || "Activity" %></span></span><time class="admin-meta"><%= event.occurred_at %></time></li><% end %></ul><% else %><div class="admin-empty-state"><h3>No prospect activity yet</h3><p>Tokenized page views, Ask turns, and issue reports will appear here.</p></div><% end %>
-  </section>
-
-  <section aria-labelledby="review-status-title">
-    <div class="admin-section-heading">
-      <h2 id="review-status-title">Knowledge review</h2>
-      <span class="admin-meta">Current entries</span>
-    </div>
-    <div class="admin-summary-grid">
-      <% KnowledgeEntry::APPROVAL_STATUSES.each do |status| %>
-        <%= link_to admin_knowledge_entries_path(status: status), class: "admin-summary-card" do %>
-          <span class="admin-summary-card__label"><%= status.humanize %></span>
-          <strong class="admin-summary-card__value"><%= @knowledge_counts.fetch(status, 0) %></strong>
-          <span class="admin-summary-card__action">Review entries →</span>
-        <% end %>
-      <% end %>
-    </div>
-  </section>
-
-  <section class="admin-panel" aria-labelledby="recent-title">
-    <div class="admin-section-heading">
-      <h2 id="recent-title">Recently updated</h2>
-      <%= link_to "View all entries", admin_knowledge_entries_path, class: "admin-text-link" %>
-    </div>
-    <% if @recent_entries.any? %>
+    <div class="admin-section-heading"><h2 id="activity-snapshot-title">Recent meaningful activity</h2><%= link_to "Open Prospects", admin_opportunities_path, class: "admin-text-link" %></div>
+    <% if @recent_activity.any? %>
       <ul class="admin-recent-list">
-        <% @recent_entries.each do |entry| %>
-          <li>
-            <%= link_to entry.title, admin_knowledge_entries_path(status: entry.approval_status), class: "admin-recent-list__title" %>
-            <span class="status-badge status-badge--<%= entry.approval_status %>"><%= entry.approval_status.humanize %></span>
-            <time class="admin-meta" datetime="<%= entry.updated_at.iso8601 %>"><%= entry.updated_at.to_date %></time>
-          </li>
-        <% end %>
+        <% @recent_activity.each do |event| %><li><span><strong><%= event.event_type.humanize %></strong><span class="admin-meta"><%= event.opportunity&.company || "Unclassified access" %> · <%= event.metadata["question"].presence || event.metadata["message"].presence || event.metadata["page"].presence || "Activity" %></span></span><time class="admin-meta" datetime="<%= event.occurred_at.iso8601 %>"><%= event.occurred_at.in_time_zone.strftime("%b %-d, %-I:%M %p") %></time></li><% end %>
       </ul>
-    <% else %>
-      <div class="admin-empty-state">
-        <h3>No knowledge entries yet</h3>
-        <p>Imported and discovered evidence will appear here for review.</p>
-      </div>
-    <% end %>
+    <% else %><div class="admin-empty-state"><h3>No meaningful prospect activity yet</h3><p>Questions, feedback, messages, and résumé requests will appear here.</p></div><% end %>
+  </section>
+
+  <section class="admin-panel" aria-labelledby="knowledge-health-title">
+    <div class="admin-section-heading"><h2 id="knowledge-health-title">Knowledge health</h2><%= link_to "Open Knowledge", admin_knowledge_entries_path, class: "admin-text-link" %></div>
+    <p><strong><%= @recruiter_visible_count %></strong> recruiter-visible entries · <strong><%= @missing_embeddings_count %></strong> awaiting embeddings.</p>
   </section>
 </main>

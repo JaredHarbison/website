@@ -1,6 +1,6 @@
 <nav class="admin-nav" aria-label="Admin navigation">
   <%= link_to "Overview", admin_root_path, class: (current_page?(admin_root_path) ? "admin-nav__link is-active" : "admin-nav__link") %>
-  <%= link_to "Prospect access & intelligence", admin_opportunities_path, class: (controller_name == "opportunities" ? "admin-nav__link is-active" : "admin-nav__link") %>
+  <%= link_to "Prospects", admin_opportunities_path, class: (controller_name == "opportunities" ? "admin-nav__link is-active" : "admin-nav__link") %>
   <%= link_to "Knowledge", admin_knowledge_entries_path, class: (controller_name == "knowledge_entries" ? "admin-nav__link is-active" : "admin-nav__link") %>
   <%= link_to "Feedback / issues", admin_issues_path, class: (controller_name == "issues" ? "admin-nav__link is-active" : "admin-nav__link") %>
   <%= link_to "System", admin_system_path, class: (controller_name == "system" ? "admin-nav__link is-active" : "admin-nav__link") %>

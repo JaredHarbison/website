@@ -1,0 +1,6 @@
+New portfolio message
+
+From: <%= @event.metadata["name"] %> <<%= @event.metadata["email"] %>>
+Company / role: <%= @opportunity&.company %> · <%= @opportunity&.role_title %>
+
+<%= @event.metadata["message"] %>

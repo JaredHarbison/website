@@ -9,6 +9,7 @@ module Admin
       scoped = scoped.select { |event| @status.blank? || (event.metadata["issue_status"].presence || "new") == @status }
       scoped = scoped.select { |event| @category.blank? || event.metadata["issue_category"] == @category }
       @issue_count = scoped.length
+      @total_pages = [ 1, (@issue_count / 20.0).ceil ].max
       @page = [ params.fetch(:page, 1).to_i, 1 ].max
       @issues = paginate(scoped)
       @categories = EngagementEvent.where(event_type: "issue_reported").pluck(:metadata).filter_map { |metadata| metadata["issue_category"] }.uniq.sort

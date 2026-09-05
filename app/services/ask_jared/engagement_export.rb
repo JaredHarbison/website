@@ -2,8 +2,9 @@ module AskJared
   class EngagementExport
     EVENT_TYPES = %w[page_view human_interaction question_submitted answer_returned issue_reported].freeze
 
-    def initialize(scope: Opportunity.all)
+    def initialize(scope: Opportunity.all, include_internal: false)
       @scope = scope
+      @include_internal = include_internal
     end
 
     def call(since: nil)
@@ -17,6 +18,10 @@ module AskJared
     def summarize(opportunity)
       events = opportunity.engagement_events.where(meaningful: true, event_type: EVENT_TYPES - [ "page_view" ])
       page_views = opportunity.engagement_events.where(event_type: "page_view")
+      unless @include_internal
+        events = events.where.not(activity_class: "internal_qa")
+        page_views = page_views.where.not(activity_class: "internal_qa")
+      end
       sessions = events.where.not(session_digest: nil).distinct.count(:session_digest)
       networks = events.where.not(ip_digest: nil).distinct.count(:ip_digest)
       questions = events.where(event_type: "question_submitted").count
@@ -48,7 +53,8 @@ module AskJared
         possible_internal_share: sessions > 1 || networks > 1,
         internal_share_confidence: share_confidence(sessions, networks, questions),
         follow_up_candidate: follow_up_candidate?(opportunity, questions, last_at),
-        usage_cost_cents: opportunity.ask_usage_events.sum(:estimated_cost_cents)
+        usage_cost_cents: opportunity.ask_usage_events.sum(:estimated_cost_cents),
+        activity_classes: opportunity.engagement_events.distinct.pluck(:activity_class)
       }
     end
 

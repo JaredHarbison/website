@@ -17,6 +17,7 @@ module AskJared
     end
 
     def call(raw_token:, question:, session_id:, ip: nil, request_id:, admin_preview: false)
+      started_at = Process.clock_gettime(Process::CLOCK_MONOTONIC)
       token = @token_service.resolve(raw_token)
       unless admin_preview
         raise ActiveRecord::RecordNotFound, "Ask token is invalid or unavailable" unless @token_service.recruiter_accessible?(token)
@@ -61,10 +62,11 @@ module AskJared
           "primary_evidence_reference" => primary_entry&.source_reference, "question_intent" => active_intent,
           "question" => question.to_s, "answer" => response["answer"], "answer_status" => response["status"],
           "evidence_ids" => response["evidence_ids"], "skeleton_roles" => response["claim_refs"],
-          "model" => skeleton_path?(active_intent) ? "gpt-5.6-terra" : ENV["ASK_JARED_MODEL"].to_s,
+          "model" => model_for(skeleton_path?(active_intent)), "latency_ms" => ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - started_at) * 1000).round,
+          "intent_path" => classified_intent.present? ? "recognized" : "fallback", "evidence_count" => response["evidence_ids"].to_a.length,
           "turn" => EngagementEvent.where(session_digest: session_digest, event_type: "answer_returned").count + 1
         })
-        @usage_guard.record!(token: token, session_digest: session_digest, request_id: request_id, status: "completed", estimated_cost_cents: entries.empty? ? 0 : 1)
+        @usage_guard.record!(token: token, session_digest: session_digest, request_id: request_id, status: response["status"] == "answer" ? "completed" : "rejected", estimated_cost_cents: entries.empty? ? 0 : 1)
       end
       response.delete("claim_refs")
       response
@@ -217,6 +219,11 @@ module AskJared
       end
 
       entries.find { |entry| response["evidence_ids"].include?(entry.id.to_s) } || entries.first
+    end
+
+    def model_for(skeleton)
+      return "gpt-5.6-terra" if skeleton
+      ENV.fetch("ASK_JARED_MODEL", OpenAiProvider::DEFAULT_MODEL)
     end
 
     class NullProvider

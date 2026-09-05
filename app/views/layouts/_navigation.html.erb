@@ -48,5 +48,8 @@
     </li>
 
     <li><%= navigation_link_to "Contact", contact_path, class: "explorer__link explorer__link--root" %></li>
+    <% if current_admin_user.present? %>
+      <li class="explorer__admin-separator"><%= navigation_link_to "Admin", admin_root_path, class: "explorer__link explorer__link--root explorer__link--admin" %></li>
+    <% end %>
   </ul>
 </nav>

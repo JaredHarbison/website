@@ -10,16 +10,17 @@
 
   <%= form_with url: admin_knowledge_entries_path, method: :get, class: "admin-filter-form" do %><%= hidden_field_tag :status, @status if @status %><%= hidden_field_tag :visibility, @visibility if @visibility %><%= search_field_tag :q, @query, placeholder: "Search title, body, or source" %><%= submit_tag "Search", class: "button-link button-link--compact" %><% end %>
 
-  <nav class="admin-filter-tabs" aria-label="Knowledge entry filters">
-    <%= link_to "Needs review", admin_knowledge_entries_path(status: "needs_review"), class: (params[:status] == "needs_review" ? "is-active" : "") %>
+  <div class="admin-filter-group"><span class="admin-meta">View</span><nav class="admin-filter-tabs" aria-label="Knowledge views">
+    <%= link_to "All", admin_knowledge_entries_path, class: (params[:status].blank? && params[:visibility].blank? ? "is-active" : "") %>
+    <%= link_to "Needs attention", admin_knowledge_entries_path(status: "needs_review"), class: (params[:status] == "needs_review" ? "is-active" : "") %>
     <%= link_to "Recruiter visible", admin_knowledge_entries_path(status: "approved", visibility: "recruiter_visible"), class: (params[:status] == "approved" && params[:visibility] == "recruiter_visible" ? "is-active" : "") %>
     <%= link_to "Private / internal", admin_knowledge_entries_path(visibility: "private"), class: (params[:visibility] == "private" ? "is-active" : "") %>
-    <%= link_to "Rejected / archive", admin_knowledge_entries_path(status: "rejected"), class: (params[:status] == "rejected" ? "is-active" : "") %>
-    <%= link_to "All", admin_knowledge_entries_path, class: (params[:status].blank? && params[:visibility].blank? ? "is-active" : "") %>
-    <% KnowledgeEntry::APPROVAL_STATUSES.each do |status| %>
-      <%= link_to status.humanize, admin_knowledge_entries_path(status: status), class: (params[:status] == status ? "is-active" : "") %>
-    <% end %>
-  </nav>
+    <%= link_to "Archived", admin_knowledge_entries_path(status: "rejected"), class: (params[:status] == "rejected" ? "is-active" : "") %>
+  </nav></div>
+  <div class="admin-filter-group"><span class="admin-meta">Status</span><nav class="admin-filter-tabs" aria-label="Knowledge statuses">
+    <%= link_to "All", admin_knowledge_entries_path, class: (params[:status].blank? ? "is-active" : "") %>
+    <% KnowledgeEntry::APPROVAL_STATUSES.each do |status| %><%= link_to status.humanize, admin_knowledge_entries_path(status: status), class: (params[:status] == status ? "is-active" : "") %><% end %>
+  </nav></div>
 
   <% if flash[:notice] %><p class="admin-flash admin-flash--notice" role="status"><%= flash[:notice] %></p><% end %>
   <% if flash[:alert] %><p class="admin-flash admin-flash--alert" role="alert"><%= flash[:alert] %></p><% end %>
@@ -36,7 +37,8 @@
             <span class="status-badge status-badge--<%= entry.approval_status %>"><%= entry.approval_status.humanize %></span>
           </div>
           <p class="admin-entry-card__summary"><%= entry.short_body.presence || truncate(entry.body, length: 280) %></p>
-          <p class="admin-meta">Updated <%= entry.updated_at.to_date %> · Source: <%= entry.source_reference.presence || "Not specified" %></p>
+          <% capabilities = Array(entry.metadata.dig("recruiter_evidence", "competencies")).presence || entry.metadata.dig("recruiter_evidence", "capability_map")&.keys %>
+          <p class="admin-meta">Updated <%= entry.updated_at.to_date %> · <%= capabilities.present? ? "#{capabilities.length} capabilities" : "Capabilities not recorded" %> · <%= entry.embedding.present? ? "Embedded" : "Not embedded" %></p>
           <details class="admin-review-details"><summary>Provenance and recruiter readiness</summary><dl class="admin-detail-list"><dt>Origin</dt><dd><%= entry.source_type.humanize %></dd><dt>Source reference</dt><dd><%= entry.source_reference %></dd><dt>Visibility</dt><dd><%= entry.visibility.humanize %></dd><dt>Reviewed</dt><dd><%= entry.reviewed_by.presence || "Not reviewed" %> · <%= entry.approved_at || "Not approved" %></dd><dt>Capabilities</dt><dd><%= Array(entry.metadata["recruiter_evidence"]&.fetch("competencies", nil)).join(", ").presence || "Not recorded" %></dd></dl></details>
           <% review_flags = Array(entry.metadata["review_flags"]).compact_blank %>
           <% publication_holds = Array(entry.metadata["publication_holds"]).compact_blank %>
@@ -70,7 +72,7 @@
             </div>
           <% end %>
           <details class="admin-review-details">
-            <summary>Edit review</summary>
+            <summary>View / edit review</summary>
             <%= form_with model: entry, url: admin_knowledge_entry_path(entry), method: :patch, class: "admin-form" do |form| %>
               <div class="admin-form__grid">
                 <div class="admin-field admin-field--wide"><%= form.label :title %><%= form.text_field :title %></div>
@@ -94,5 +96,5 @@
       <p>Try another review status, or return to the overview for the current inventory.</p>
     </div>
   <% end %>
-  <%= admin_pagination(page: @page, has_previous: @page > 1, has_next: @page * 15 < @knowledge_count, params: params.permit(:status, :visibility, :q, :page).to_h.symbolize_keys) %>
+  <%= admin_pagination(page: @page, has_previous: @page > 1, has_next: @page < @total_pages, total_pages: @total_pages, params: params.permit(:status, :visibility, :q, :page).to_h.symbolize_keys) %>
 </main>
