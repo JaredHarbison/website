@@ -4,7 +4,7 @@ module Admin
       _opportunity, _token, raw_token = AskJared::ManualShareService.new.create!(
         label: params[:label], purpose: params[:purpose], company: params[:company], expires_at: expiration_time
       )
-      link = "#{request.base_url}/ask?t=#{ERB::Util.url_encode(raw_token)}"
+      link = "#{request.base_url}/?t=#{ERB::Util.url_encode(raw_token)}"
       flash[:direct_share_link] = link
       redirect_to admin_root_path, notice: "Direct share link created."
     end

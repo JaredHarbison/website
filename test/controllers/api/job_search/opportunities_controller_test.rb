@@ -28,6 +28,7 @@ class Api::JobSearch::OpportunitiesControllerTest < ActionDispatch::IntegrationT
 
     assert_response :success
     assert_equal "submitted", response.parsed_body.fetch("status")
+    assert_includes response.parsed_body.fetch("ask_link"), "/?t="
     assert_includes response.parsed_body.fetch("ask_link"), "t=#{ERB::Util.url_encode(@raw_token)}"
     assert_equal "submitted", @token.reload.status
   end

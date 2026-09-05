@@ -34,7 +34,7 @@ module Api
       def ask_link_for(raw_token)
         return if raw_token.blank?
 
-        "#{request.base_url}/ask?t=#{ERB::Util.url_encode(raw_token)}"
+        "#{request.base_url}/?t=#{ERB::Util.url_encode(raw_token)}"
       end
 
       def bad_request(error)
