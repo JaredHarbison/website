@@ -12,7 +12,7 @@
           width: 480 %>
   </div>
   <div class="home-actions" aria-label="About Jared actions">
-    <%= link_to "Ask About Jared", ask_path(t: prospect_token), class: "button-link" %>
+    <%= link_to "Ask About Jared", ask_path(t: prospect_token), class: "button-link button-link--primary" %>
   </div>
   <%= MarkdownRenderer.render(@page.body) %>
 </main>

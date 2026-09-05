@@ -34,6 +34,18 @@ class AskJaredIssueReportServiceTest < ActiveSupport::TestCase
     assert_equal "prospect@example.com", event.metadata["contact"]
   end
 
+  test "links a new report to the exact answer event rather than matching current prose" do
+    session_id = "exact-issue-session"
+    first = AskJared::EngagementService.new.record!(raw_token: @raw_token, event_type: "answer_returned", session_id: session_id, event_key: "answer-exact-1", metadata: { "question" => "Same question", "answer" => "Same answer", "model" => "historical-model", "latency_ms" => 123 })
+    AskJared::EngagementService.new.record!(raw_token: @raw_token, event_type: "answer_returned", session_id: session_id, event_key: "answer-exact-2", metadata: { "question" => "Same question", "answer" => "Same answer", "model" => "new-model", "latency_ms" => 999 })
+
+    issue = AskJared::IssueReportService.new.call(raw_token: @raw_token, session_id: session_id, answer_event_id: first.id, category: "Confusing answer", feedback: "Clarify this.", contact: "", page: "/ask", ip: nil, user_agent: "")
+
+    assert_equal first.id, issue.metadata["answer_event_id"]
+    assert_equal "historical-model", issue.metadata["model"]
+    assert_equal 123, issue.metadata["latency_ms"]
+  end
+
   test "rejects an invalid category and blank feedback" do
     assert_raises(ArgumentError) do
       AskJared::IssueReportService.new.call(

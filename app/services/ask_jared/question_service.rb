@@ -56,6 +56,7 @@ module AskJared
         question: question.to_s.strip,
         max_claims: skeleton_path?(active_intent) ? nil : 3
       )
+      telemetry = {}
       response = if packet.empty?
         insufficient_response(another_example: another_example?(question))
       elsif skeleton_path?(active_intent)
@@ -63,6 +64,7 @@ module AskJared
       else
         @provider.call(question: question.to_s.strip, context: packet)
       end
+      telemetry = response.delete("__telemetry") || {} if response.is_a?(Hash)
       response = if skeleton_path?(active_intent) && !packet.empty?
         validate_skeleton_response(response, question: question.to_s.strip, packet: packet)
       else
@@ -71,16 +73,18 @@ module AskJared
       unless admin_preview
         @engagement_service.record!(raw_token: raw_token, event_type: "question_submitted", session_id: session_id, ip: ip, event_key: "#{request_id}:question", metadata: { "question" => question.to_s, "turn" => EngagementEvent.where(session_digest: session_digest, event_type: "question_submitted").count + 1 })
         primary_entry = primary_entry_for(entries, response: response, packet: packet)
-        @engagement_service.record!(raw_token: raw_token, event_type: "answer_returned", session_id: session_id, ip: ip, event_key: "#{request_id}:answer", metadata: {
+        answer_event = @engagement_service.record!(raw_token: raw_token, event_type: "answer_returned", session_id: session_id, ip: ip, event_key: "#{request_id}:answer", metadata: {
           "primary_evidence_reference" => primary_entry&.source_reference, "question_intent" => active_intent,
           "question" => question.to_s, "answer" => response["answer"], "answer_status" => response["status"],
           "evidence_ids" => response["evidence_ids"], "skeleton_roles" => response["claim_refs"],
           "model" => model_for(skeleton_path?(active_intent)), "latency_ms" => ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - started_at) * 1000).round,
           "intent_path" => classified_intent.present? ? "recognized" : "fallback", "evidence_count" => response["evidence_ids"].to_a.length,
           "turn" => EngagementEvent.where(session_digest: session_digest, event_type: "answer_returned").count + 1,
-          "validation" => "passed"
+          "validation" => "passed", "input_tokens" => telemetry["input_tokens"], "output_tokens" => telemetry["output_tokens"],
+          "estimated_cost_cents" => telemetry["estimated_cost_cents"], "pricing_version" => telemetry["pricing_version"]
         })
-        @usage_guard.record!(token: token, session_digest: session_digest, request_id: request_id, status: response["status"] == "answer" ? "completed" : "rejected", estimated_cost_cents: nil)
+        response["answer_event_id"] = answer_event.id
+        @usage_guard.record!(token: token, session_digest: session_digest, request_id: request_id, status: response["status"] == "answer" ? "completed" : "rejected", estimated_cost_cents: telemetry["estimated_cost_cents"], input_tokens: telemetry["input_tokens"], output_tokens: telemetry["output_tokens"])
       end
       response.delete("claim_refs")
       response

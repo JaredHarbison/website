@@ -34,4 +34,13 @@ class Admin::OpportunitiesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "h1", "Acme · Engineer"
   end
+
+  test "access-link search exposes a clearable query form" do
+    sign_in @admin
+
+    get "/admin/access-links", params: { q: "Acme" }
+
+    assert_response :success
+    assert_select "form[data-access-links-search] input[data-access-links-query][value=?]", "Acme"
+  end
 end

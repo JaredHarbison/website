@@ -1,11 +1,13 @@
 require "json"
 require "net/http"
 require "uri"
+require "yaml"
 
 module AskJared
   class OpenAiProvider
     ENDPOINT = URI("https://api.openai.com/v1/chat/completions")
     DEFAULT_MODEL = "gpt-4o-mini"
+    PRICING = YAML.safe_load(File.read(Rails.root.join("config/ask_jared_pricing.yml")), permitted_classes: [ Date ], symbolize_names: true).freeze
     MAX_CONTEXT_ENTRIES = 6
     RESPONSE_SCHEMA = {
       type: "json_schema",
@@ -62,8 +64,11 @@ module AskJared
       )
       raise ProviderError, "OpenAI request failed" unless response.is_a?(Net::HTTPSuccess)
 
-      content = JSON.parse(response.body).dig("choices", 0, "message", "content")
-      StructuredResponse.validate!(JSON.parse(content))
+      body = JSON.parse(response.body)
+      content = body.dig("choices", 0, "message", "content")
+      validated = StructuredResponse.validate!(JSON.parse(content))
+      validated["__telemetry"] = telemetry(body)
+      validated
     rescue JSON::ParserError, KeyError, TypeError
       raise ProviderError, "OpenAI returned malformed structured output"
     end
@@ -84,6 +89,20 @@ module AskJared
           { role: "user", content: user_content }
         ]
       }
+    end
+
+    def telemetry(body)
+      usage = body["usage"]
+      return {} unless usage.is_a?(Hash) && usage["prompt_tokens"] && usage["completion_tokens"]
+
+      input_tokens = usage["prompt_tokens"].to_i
+      output_tokens = usage["completion_tokens"].to_i
+      pricing = PRICING[@model.to_sym]
+      cost_cents = if pricing
+        ((input_tokens * pricing[:input_per_million_cents] + output_tokens * pricing[:output_per_million_cents]) / 1_000_000.0).round
+      end
+      { "input_tokens" => input_tokens, "output_tokens" => output_tokens,
+        "estimated_cost_cents" => cost_cents, "pricing_version" => pricing&.fetch(:version) }
     end
 
     def system_prompt

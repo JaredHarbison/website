@@ -80,6 +80,18 @@ class AskJaredOpenAiProviderTest < ActiveSupport::TestCase
     assert_equal "answer", result["status"]
   end
 
+  test "preserves provider usage telemetry for the answer event" do
+    body = { choices: [ { message: { content: { status: "answer", answer: "Grounded.", evidence_ids: [], source_urls: [] }.to_json } } ], usage: { prompt_tokens: 12, completion_tokens: 8 } }.to_json
+    http = CapturingHttp.new(Net::HTTPSuccess.allocate.tap { |response| response.define_singleton_method(:body) { body } })
+
+    result = AskJared::OpenAiProvider.new(api_key: "test-key", http: http).call(question: "Question", context: [ entry(1) ])
+
+    assert_equal 12, result.fetch("__telemetry").fetch("input_tokens")
+    assert_equal 8, result.fetch("__telemetry").fetch("output_tokens")
+    assert_equal 0, result.fetch("__telemetry").fetch("estimated_cost_cents")
+    assert_equal "2026-09-05", result.fetch("__telemetry").fetch("pricing_version")
+  end
+
   test "fails closed when no API key is configured" do
     provider = AskJared::OpenAiProvider.new(api_key: nil)
 

@@ -26,13 +26,13 @@
 
     function showIssue(turn) {
       if (!modal) return;
-      modal.dataset.question = turn.question; modal.dataset.answer = turn.answer; modal.dataset.status = turn.status;
+      modal.dataset.answerEventId = turn.answerEventId; modal.dataset.question = turn.question; modal.dataset.answer = turn.answer; modal.dataset.status = turn.status;
       modal.showModal();
       modal.querySelector("[name='feedback']").focus();
     }
 
     function appendTurn(submittedQuestion, payload) {
-      var turn = { question: submittedQuestion, answer: payload.answer, status: payload.status };
+      var turn = { answerEventId: payload.answer_event_id, question: submittedQuestion, answer: payload.answer, status: payload.status };
       turns.push(turn);
       var state = document.createElement("article"); state.className = "ask-state ask-state--answer";
       var asked = document.createElement("p"); asked.className = "ask-state__question"; asked.textContent = submittedQuestion;
@@ -74,7 +74,7 @@
       modal.querySelector("[data-ask-issue-cancel]").addEventListener("click", function () { modal.close(); });
       modal.querySelector("[data-ask-issue-form]").addEventListener("submit", function (event) {
         event.preventDefault(); var issueForm = event.currentTarget; var status = issueForm.querySelector("[data-ask-issue-status]");
-        var data = new FormData(issueForm); data.append("t", form.querySelector("[name='t']")?.value || ""); data.append("question", modal.dataset.question); data.append("answer", modal.dataset.answer); data.append("answer_status", modal.dataset.status);
+        var data = new FormData(issueForm); data.append("t", form.querySelector("[name='t']")?.value || ""); data.append("answer_event_id", modal.dataset.answerEventId || "");
         var issueButton = issueForm.querySelector("[data-ask-issue-submit]"); issueButton.disabled = true; status.textContent = "Sending…";
         fetch("/api/ask/issues", { method: "POST", body: data, credentials: "same-origin", headers: { Accept: "application/json" } }).then(function (response) { return response.json().then(function (payload) { if (!response.ok || payload.status !== "ok") throw new Error(payload.message || "Feedback could not be sent."); status.textContent = "Thank you — feedback received."; issueButton.disabled = false; setTimeout(function () { modal.close(); }, 700); }); }).catch(function (error) { status.textContent = error.message; issueButton.disabled = false; });
       });

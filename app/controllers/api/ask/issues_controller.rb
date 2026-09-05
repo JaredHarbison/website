@@ -6,7 +6,7 @@ module Api
       def create
         event = AskJared::IssueReportService.new.call(
           raw_token: request.headers["X-Ask-Token"].presence || params[:t],
-          session_id: ask_session_id, question: params[:question], answer: params[:answer],
+          session_id: ask_session_id, answer_event_id: params[:answer_event_id], question: params[:question], answer: params[:answer],
           answer_status: params[:answer_status], category: params[:category], feedback: params[:feedback],
           contact: params[:contact], page: request.path, ip: request.remote_ip, user_agent: request.user_agent
         )

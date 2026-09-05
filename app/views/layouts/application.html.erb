@@ -30,6 +30,7 @@
     <%= stylesheet_link_tag :app %>
     <%= javascript_include_tag(Rails.env.production? ? asset_path("ask.js") : "/assets/ask.js", defer: true) if controller_name == "ask" %>
     <%= javascript_include_tag(Rails.env.production? ? asset_path("contact.js") : "/assets/contact.js", defer: true) if controller_name == "pages" && action_name == "contact" %>
+    <%= javascript_include_tag(Rails.env.production? ? asset_path("access_links.js") : "/assets/access_links.js", defer: true) if controller_name == "opportunities" && action_name == "access_links" %>
   </head>
 
   <body>

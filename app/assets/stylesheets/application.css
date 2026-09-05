@@ -130,8 +130,12 @@ p {
 }
 
 .site-mark::before {
-  color: var(--color-heading);
   content: "> ";
+}
+
+.site-mark:hover,
+.site-mark:focus-visible {
+  color: var(--color-accent);
 }
 
 .menu-button {
@@ -194,6 +198,11 @@ p {
 
 .explorer__section summary:hover {
   background: color-mix(in srgb, var(--color-border), transparent 65%);
+  color: var(--color-accent);
+}
+
+.explorer__section summary:focus-visible {
+  color: var(--color-accent);
 }
 
 .explorer__section summary::-webkit-details-marker {
@@ -201,7 +210,7 @@ p {
 }
 
 .explorer__chevron {
-  color: var(--color-muted);
+  color: inherit;
   height: 1.1rem;
   position: relative;
   width: 1rem;
@@ -240,10 +249,6 @@ p {
   background: color-mix(in srgb, var(--color-heading), transparent 88%);
   border-left-color: var(--color-heading);
   color: var(--color-heading);
-}
-
-.explorer__link--root {
-  color: var(--color-text);
 }
 
 .explorer__tree > li > .explorer__link--root {
@@ -358,7 +363,8 @@ p {
   font-weight: 600;
 }
 
-.button-link--primary:hover {
+.button-link--primary:hover,
+.button-link--primary:focus-visible {
   background: var(--color-accent);
   border-color: var(--color-accent);
   color: var(--color-bg);
@@ -375,13 +381,26 @@ select:focus-visible {
 }
 
 .button-link--secondary {
+  background: transparent;
   border-color: var(--color-link);
   color: var(--color-link);
 }
 
 .button-link--secondary:hover,
 .button-link--secondary:focus-visible {
+  background: color-mix(in srgb, var(--color-accent), transparent 86%);
   border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.admin-entry-card.admin-card-link {
+  color: inherit;
+  display: block;
+  text-decoration: none;
+}
+
+.admin-entry-card.admin-card-link:hover h2,
+.admin-entry-card.admin-card-link:focus-visible h2 {
   color: var(--color-accent);
 }
 

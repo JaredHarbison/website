@@ -49,9 +49,17 @@ module AskJared
       response = @http.post(ENDPOINT, JSON.generate(body), { "Authorization" => "Bearer #{@api_key}", "Content-Type" => "application/json" })
       raise OpenAiProvider::ProviderError, "OpenAI request failed" unless response.is_a?(Net::HTTPSuccess)
 
-      JSON.parse(response.body).dig("choices", 0, "message", "content").then { |content| JSON.parse(content) }
+      parsed = JSON.parse(response.body)
+      JSON.parse(parsed.dig("choices", 0, "message", "content")).merge("__telemetry" => telemetry(parsed))
     rescue JSON::ParserError, KeyError, TypeError
       raise OpenAiProvider::ProviderError, "OpenAI returned malformed structured output"
+    end
+
+    def telemetry(body)
+      usage = body["usage"]
+      return {} unless usage.is_a?(Hash) && usage["prompt_tokens"] && usage["completion_tokens"]
+      { "input_tokens" => usage["prompt_tokens"].to_i, "output_tokens" => usage["completion_tokens"].to_i,
+        "estimated_cost_cents" => nil, "pricing_version" => nil }
     end
 
     def system_prompt
