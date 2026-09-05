@@ -16,7 +16,7 @@ class ContactMessagesController < ApplicationController
       }
     )
     ContactMailer.prospect_message(event, token.opportunity).deliver_later if ENV["JARED_ISSUE_EMAIL"].present?
-    redirect_to contact_path, flash: { contact_notice: "Your message is on its way to Jared." }
+    redirect_to contact_path(anchor: "contact-message"), flash: { contact_notice: "Your message is on its way to Jared." }
   rescue ActiveRecord::RecordNotFound, ActionController::BadRequest => error
     redirect_to contact_path, flash: { contact_error: error.message }
   end

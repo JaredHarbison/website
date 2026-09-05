@@ -22,7 +22,7 @@ class ContactAccessControllerTest < ActionDispatch::IntegrationTest
     get root_path, params: { t: @raw_token }
     post contact_message_path, params: { name: "Recruiter", email: "recruiter@example.com", message: "Let's talk." }
 
-    assert_redirected_to contact_path
+    assert_redirected_to contact_path(anchor: "contact-message")
     event = EngagementEvent.find_by!(event_type: "contact_message_submitted")
     assert_equal "recruiter@example.com", event.metadata["email"]
     assert_equal "Let's talk.", event.metadata["message"]

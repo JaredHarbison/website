@@ -11,12 +11,14 @@
     <p><%= link_to "Return to portfolio", root_path, class: "button-link" %></p>
   <% else %>
   <p class="eyebrow"><%= @admin_preview ? "Owner preview" : "Recruiter access" %></p>
-  <section class="ask-card" data-ask-controller data-ask-endpoint="/api/ask/questions" data-resume-available="<%= ApprovedResume.delivery_ready? %>" aria-live="polite">
+  <header class="page-header">
     <h1 id="ask-title">Ask About Jared</h1>
-    <p class="lede">Ask an AI about my work, experience, and how I approach building products.</p>
+    <p class="lede">Ask about my work, experience, product thinking, or how I approach building products.</p>
+  </header>
+  <section class="ask-card" data-ask-controller data-ask-endpoint="/api/ask/questions" data-resume-available="<%= ApprovedResume.delivery_ready? %>" aria-live="polite">
     <details class="ask-disclosure">
       <summary>About Ask Jared</summary>
-      <p>Ask Jared is an evolving side project built as a lightweight pre-screen for recruiters and hiring teams. It draws from an approved career knowledge base, but it isn't a substitute for a conversation. If something seems off, please tell me — the feedback genuinely helps me improve it.</p>
+      <p>Ask Jared is an evolving side project for recruiters and hiring teams who want a quick, useful starting point. It can help with questions about my engineering experience, product decisions, collaboration, and how I approach building and shipping software. Answers are grounded in a deliberately approved career knowledge base and stay within what that evidence supports. It is meant to supplement, not replace, a conversation with me; if something seems unclear or off, feedback is genuinely welcome.</p>
     </details>
     <p><%= @admin_preview ? "Preview this experience using your owner session. This preview does not create prospect activity records." : "Ask about my experience, work, product thinking, or how I approach engineering. Follow-up questions work too." %></p>
 

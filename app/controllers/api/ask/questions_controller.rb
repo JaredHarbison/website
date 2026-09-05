@@ -8,6 +8,7 @@ module Api
       rescue_from ActiveRecord::RecordNotFound, ArgumentError, with: :bad_request
       rescue_from AskJared::OpenAiProvider::ConfigurationError, AskJared::OpenAiProvider::ProviderError, with: :provider_unavailable
       rescue_from AskJared::UsageGuard::LimitExceeded, with: :rate_limited
+      rescue_from AskJared::QuestionService::ConversationLimitExceeded, with: :conversation_limit
 
       def create
         admin_preview = current_admin_user.present? && params[:admin_preview].to_s == "1"
@@ -58,6 +59,10 @@ module Api
       end
 
       def rate_limited(error)
+        render json: { status: "blocked", answer: error.message, evidence_ids: [], source_urls: [] }, status: :too_many_requests
+      end
+
+      def conversation_limit(error)
         render json: { status: "blocked", answer: error.message, evidence_ids: [], source_urls: [] }, status: :too_many_requests
       end
     end

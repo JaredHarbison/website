@@ -1,0 +1,67 @@
+name: Verify and deploy Rails production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ruby/setup-ruby@d45b1a4e94b71acab930e56e79c6aa188764e7f9 # v1
+        with:
+          bundler-cache: true
+      - name: Rails tests
+        env:
+          CI: true
+        run: bin/rails test
+      - name: Ruby style
+        env:
+          RUBOCOP_CACHE_ROOT: tmp/rubocop-cache
+        run: bin/rubocop --cache true
+      - name: Security scan
+        run: bundle exec brakeman --no-pager --quiet --confidence-level 2
+      - name: Compile production assets
+        env:
+          RAILS_ENV: production
+          SECRET_KEY_BASE_DUMMY: 1
+        run: bin/rails assets:precompile
+
+  deploy:
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Deploy exact commit to Heroku
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          HEROKU_APP_NAME: ${{ vars.HEROKU_APP_NAME }}
+        run: |
+          test -n "$HEROKU_API_KEY"
+          test -n "$HEROKU_APP_NAME"
+          git push "https://heroku:${HEROKU_API_KEY}@git.heroku.com/${HEROKU_APP_NAME}.git" "HEAD:main"
+      - name: Verify production health
+        env:
+          HEROKU_APP_URL: ${{ vars.HEROKU_APP_URL }}
+        run: |
+          test -n "$HEROKU_APP_URL"
+          curl --fail --silent --show-error --retry 30 --retry-delay 5 --retry-all-errors "${HEROKU_APP_URL%/}/up"

@@ -34,7 +34,7 @@
           <% @opportunities.each do |summary| %>
             <% opportunity = Opportunity.find_by(external_id: summary[:external_id]) %>
             <tr>
-              <th scope="row"><%= link_to "#{summary[:company]} · #{summary[:role_title]}", admin_opportunity_path(opportunity), class: "admin-table__primary" %><span class="admin-meta"><%= summary[:external_id] %></span></th>
+              <th scope="row"><%= link_to "#{summary[:company]} · #{summary[:role_title]}", admin_opportunity_path(opportunity), class: "admin-table__primary admin-stretched-link" %><span class="admin-meta"><%= summary[:external_id] %></span></th>
               <td><span class="status-badge status-badge--<%= summary[:source] == "manual" ? "signal" : "none" %>"><%= summary[:source].humanize %></span></td>
               <td><span class="status-badge status-badge--<%= summary[:application_state] %>"><%= summary[:application_state].presence || "Not submitted" %></span></td>
               <td><span class="status-badge status-badge--<%= summary[:token_state] || "none" %>"><%= summary[:token_state] || "Not assigned" %></span></td>
@@ -43,7 +43,7 @@
               <td><%= summary[:meaningful_session_count] %></td>
               <td><%= summary[:meaningful_question_count] %></td><td><%= summary[:issue_report_count] %></td>
               <td><% if summary[:possible_internal_share] %><span class="status-badge status-badge--signal">Possible share · <%= summary[:internal_share_confidence] %></span><% else %><span class="admin-meta">None indicated</span><% end %><% if summary[:follow_up_candidate] %><span class="status-badge status-badge--follow-up">Follow up</span><% end %></td>
-              <td><%= summary[:usage_cost_cents] %>¢</td>
+              <td><%= number_to_currency(summary[:usage_cost_cents].to_i / 100.0) %></td>
             </tr>
           <% end %>
         </tbody>

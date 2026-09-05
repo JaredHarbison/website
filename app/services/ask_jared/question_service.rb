@@ -1,5 +1,7 @@
 module AskJared
   class QuestionService
+    MAX_CONVERSATION_QUESTIONS = 4
+    ConversationLimitExceeded = Class.new(StandardError)
     MAX_QUESTION_LENGTH = 600
     MIN_QUESTION_LENGTH = 3
     GARBAGE_PATTERN = /\A(.)\1{20,}\z/
@@ -24,6 +26,10 @@ module AskJared
       end
       validate_question!(question)
       session_digest = @usage_guard.digest_session(session_id)
+      unless admin_preview
+        question_count = EngagementEvent.where(session_digest: session_digest, event_type: "question_submitted").count
+        raise ConversationLimitExceeded, "This conversation has reached its four-question limit" if question_count >= MAX_CONVERSATION_QUESTIONS
+      end
       @usage_guard.check!(token: token, session_digest: session_digest) unless admin_preview
 
       prior_primary = prior_primary_evidence(session_digest)
@@ -63,7 +69,7 @@ module AskJared
         validate_response(response, question: question.to_s.strip, packet: packet)
       end
       unless admin_preview
-        @engagement_service.record!(raw_token: raw_token, event_type: "question_submitted", session_id: session_id, ip: ip, event_key: "#{request_id}:question", metadata: { "question" => question.to_s, "turn" => EngagementEvent.where(session_digest: session_digest, event_type: "question_submitted").count })
+        @engagement_service.record!(raw_token: raw_token, event_type: "question_submitted", session_id: session_id, ip: ip, event_key: "#{request_id}:question", metadata: { "question" => question.to_s, "turn" => EngagementEvent.where(session_digest: session_digest, event_type: "question_submitted").count + 1 })
         primary_entry = primary_entry_for(entries, response: response, packet: packet)
         @engagement_service.record!(raw_token: raw_token, event_type: "answer_returned", session_id: session_id, ip: ip, event_key: "#{request_id}:answer", metadata: {
           "primary_evidence_reference" => primary_entry&.source_reference, "question_intent" => active_intent,
@@ -71,7 +77,8 @@ module AskJared
           "evidence_ids" => response["evidence_ids"], "skeleton_roles" => response["claim_refs"],
           "model" => model_for(skeleton_path?(active_intent)), "latency_ms" => ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - started_at) * 1000).round,
           "intent_path" => classified_intent.present? ? "recognized" : "fallback", "evidence_count" => response["evidence_ids"].to_a.length,
-          "turn" => EngagementEvent.where(session_digest: session_digest, event_type: "answer_returned").count + 1
+          "turn" => EngagementEvent.where(session_digest: session_digest, event_type: "answer_returned").count + 1,
+          "validation" => "passed"
         })
         @usage_guard.record!(token: token, session_digest: session_digest, request_id: request_id, status: response["status"] == "answer" ? "completed" : "rejected", estimated_cost_cents: nil)
       end

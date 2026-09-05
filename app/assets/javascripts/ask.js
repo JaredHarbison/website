@@ -36,7 +36,7 @@
       turns.push(turn);
       var state = document.createElement("article"); state.className = "ask-state ask-state--answer";
       var asked = document.createElement("p"); asked.className = "ask-state__question"; asked.textContent = submittedQuestion;
-      var label = document.createElement("p"); label.className = "ask-state__label"; label.textContent = payload.status === "answer" ? "Answer" : "No approved answer";
+      var label = document.createElement("p"); label.className = "ask-state__label"; label.textContent = payload.status === "answer" ? "Answer" : "Response";
       var text = document.createElement("p"); text.className = "ask-state__text"; text.textContent = payload.answer;
       state.append(asked, label, text);
       if (payload.status === "answer") addButton(state, "Something seem off?", "ask-issue-link", function () { showIssue(turn); });
@@ -46,7 +46,7 @@
         cta.append("Got more questions? ");
         var link = document.createElement("a"); link.href = "/contact"; link.textContent = "Ask Jared."; cta.append(link);
         if (container.dataset.resumeAvailable === "true") { var resume = document.createElement("span"); resume.textContent = " You can also request Jared's résumé there."; cta.append(resume); } history.append(cta);
-        var limit = document.createElement("p"); limit.className = "ask-limit-message"; limit.textContent = "This conversation has reached its four-question limit."; history.append(limit);
+        var limit = document.createElement("p"); limit.className = "ask-limit-message"; limit.setAttribute("role", "status"); limit.textContent = "This conversation has reached its four-question limit. Continue the conversation with Jared."; history.append(limit);
         form.hidden = true;
       } else restoreForm();
       state.scrollIntoView({ behavior: "smooth", block: "start" });

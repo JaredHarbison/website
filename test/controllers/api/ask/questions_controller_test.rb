@@ -89,4 +89,17 @@ class ApiAskQuestionsControllerTest < ActionDispatch::IntegrationTest
   ensure
     ActionController::Base.allow_forgery_protection = previous
   end
+
+  test "enforces the four-question conversation cap server-side" do
+    4.times do |index|
+      post "/api/ask/questions", params: { question: "Question #{index + 1}" }, headers: { "X-Ask-Token" => @raw_token }
+      assert_response :success
+    end
+
+    post "/api/ask/questions", params: { question: "Question five" }, headers: { "X-Ask-Token" => @raw_token }
+
+    assert_response :too_many_requests
+    assert_equal "blocked", response.parsed_body["status"]
+    assert_equal 4, EngagementEvent.where(event_type: "question_submitted").count
+  end
 end

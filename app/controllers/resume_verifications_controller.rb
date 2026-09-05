@@ -32,6 +32,10 @@ class ResumeVerificationsController < ApplicationController
     end
     verification.update!(verified_at: Time.current)
     token = verification.ask_token
+    unless token && AskJared::TokenService.new.recruiter_accessible?(token)
+      redirect_to contact_path, flash: { resume_error: "That verification link is no longer valid." }
+      return
+    end
     record(token, "resume_email_verified", verification_id: verification.id, email: verification.email)
     if ApprovedResume.delivery_ready?
       ResumeMailer.resume(verification).deliver_later

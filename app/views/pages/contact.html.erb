@@ -11,11 +11,11 @@
       <h2 id="recruiter-contact-title">Continue the conversation</h2>
       <p class="contact-context">This visit is connected to <strong><%= @prospect_access.opportunity.company %></strong><% if @prospect_access.opportunity.role_title.present? %> · <%= @prospect_access.opportunity.role_title %><% end %>.</p>
       <div class="contact-action-grid">
-        <section class="contact-action" id="contact-message" aria-labelledby="contact-message-title">
+        <section class="contact-action" id="contact-message" aria-labelledby="contact-message-title" tabindex="-1">
           <h3 id="contact-message-title">Send Jared a message</h3>
           <% if flash[:contact_notice] %><p class="site-notice" role="status"><%= flash[:contact_notice] %></p><% end %>
           <% if flash[:contact_error] %><p class="site-notice site-notice--error" role="alert"><%= flash[:contact_error] %></p><% end %>
-          <%= form_with url: contact_message_path, method: :post, scope: nil, class: "site-form" do |form| %>
+          <%= form_with url: contact_message_path, method: :post, scope: nil, class: "site-form", data: { contact_form: true } do |form| %>
             <div class="site-form__grid"><div class="site-field"><%= form.label :name, "Name" %><%= form.text_field :name, required: true, autocomplete: "name" %></div><div class="site-field"><%= form.label :email, "Email" %><%= form.email_field :email, required: true, autocomplete: "email" %></div><div class="site-field site-field--wide"><%= form.label :message, "Message" %><%= form.text_area :message, rows: 6, required: true %></div></div>
             <%= form.submit "Send Jared a message", class: "button-link button-link--primary" %>
           <% end %>

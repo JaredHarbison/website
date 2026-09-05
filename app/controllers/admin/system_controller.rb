@@ -15,6 +15,7 @@ module Admin
       @recent_failures = AskUsageEvent.where(status: "provider_error").where("occurred_at >= ?", 30.days.ago).count
       @recent_answers = answer_events.count
       @model_counts = answer_events.pluck(:metadata).group_by { |metadata| metadata["model"].presence || "Not recorded" }.transform_values(&:count)
+      @legacy_answer_count = answer_events.count { |metadata| metadata["answer_status"].blank? }
       @observability = { "7 days" => observability_period(7.days.ago), "30 days" => observability_period(30.days.ago), "Lifetime" => observability_period(nil) }
       @resume_status = ApprovedResume.status
     end
