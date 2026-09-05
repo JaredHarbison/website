@@ -58,7 +58,9 @@ jobs:
         run: |
           test -n "$HEROKU_API_KEY"
           test -n "$HEROKU_APP_NAME"
-          git push "https://heroku:${HEROKU_API_KEY}@git.heroku.com/${HEROKU_APP_NAME}.git" "HEAD:main"
+          # Heroku is a deployment mirror. Align its ref to the exact verified
+          # GitHub commit even when a prior release used a rewritten lineage.
+          git push --force "https://heroku:${HEROKU_API_KEY}@git.heroku.com/${HEROKU_APP_NAME}.git" "HEAD:main"
       - name: Verify production health
         env:
           HEROKU_APP_URL: ${{ vars.HEROKU_APP_URL }}
