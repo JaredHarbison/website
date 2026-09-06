@@ -40,7 +40,7 @@ module AskJared
       classified_intent = @retriever.respond_to?(:classified_intent) ? @retriever.classified_intent(question) : nil
       active_intent = continuation?(question) ? (prior_intent || classified_intent) : (classified_intent || prior_intent)
       qa_preview = token&.opportunity&.tracker_source == "internal_qa"
-      plan, architecture_used = planning(question: question, intent: active_intent, prior_evidence: prior_context, requested: architecture, admin_preview: admin_preview || qa_preview)
+      plan, architecture_used = planning(question: question, intent: active_intent, prior_evidence: prior_context["evidence_ids"], requested: architecture, admin_preview: admin_preview || qa_preview)
       if continuation?(question) && prior_context.any?
         referent_ids = referent_entry_ids(question, prior_context)
         entries = retrieve_with_plan(question, intent: active_intent, plan: plan).select { |entry| referent_ids.include?(entry.id) || referent_ids.include?(entry.source_reference) }
@@ -97,6 +97,7 @@ module AskJared
           "intent_path" => classified_intent.present? ? "recognized" : "fallback", "evidence_count" => response["evidence_ids"].to_a.length,
           "architecture" => architecture_used, "planner_version" => plan&.version, "planner_model" => "deterministic",
           "context_keys" => plan&.context_keys, "plan_summary" => plan&.summary,
+          "example_evidence_ids" => example_evidence_groups(response: response, packet: packet),
           "turn" => EngagementEvent.where(session_digest: session_digest, event_type: "answer_returned").count + 1,
           "validation" => "passed", "input_tokens" => telemetry["input_tokens"], "output_tokens" => telemetry["output_tokens"],
           "estimated_cost_cents" => telemetry["estimated_cost_cents"], "pricing_version" => telemetry["pricing_version"]
@@ -262,7 +263,7 @@ module AskJared
     end
 
     def continuation?(question)
-      question.to_s.match?(/\btell me more\b|\bwhat happened afterward\b|\bwhat did (?:he|jared) learn\b|\bwhat is the risk there\b/i)
+      question.to_s.match?(/\btell me more\b|\bwhat happened afterward\b|\bwhat did (?:he|jared) learn\b|\bwhat is the risk there\b|\bwhat did .* convince\b|\bwhy did he do that\b/i)
     end
 
     def prior_primary_evidence(session_digest)
@@ -275,14 +276,29 @@ module AskJared
 
     def prior_answer_context(session_digest)
       EngagementEvent.where(session_digest: session_digest, event_type: "answer_returned").order(:occurred_at).last(1).filter_map do |event|
-        event.metadata["evidence_ids"] || event.metadata["primary_evidence_reference"]
-      end.flatten.compact
+        { "evidence_ids" => Array(event.metadata["evidence_ids"] || event.metadata["primary_evidence_reference"]).compact,
+          "example_evidence_ids" => Array(event.metadata["example_evidence_ids"]).presence }
+      end.first || {}
     end
 
     def referent_entry_ids(question, context)
-      return [ context.first ] if question.match?(/\bfirst\b/i)
-      return [ context.second || context.first ] if question.match?(/\bsecond\b/i)
-      context
+      groups = Array(context["example_evidence_ids"]).presence || Array(context["evidence_ids"]).map { |id| [ id ] }
+      return Array(groups.first).compact if question.match?(/\bfirst\b/i)
+      return Array(groups.second || groups.first).compact if question.match?(/\bsecond\b/i)
+      Array(groups.flatten).compact
+    end
+
+    def example_evidence_groups(response:, packet:)
+      ids = Array(response["evidence_ids"]).map(&:to_s)
+      return [] if ids.empty?
+
+      refs = Array(response["claim_refs"])
+      ordered = refs.filter_map do |ref|
+        claim = packet.claims.find { |candidate| candidate["ref"] == ref }
+        claim && claim["entry_id"].to_s
+      end
+      ordered = ids if ordered.empty?
+      ordered.uniq.map { |id| [ id ] }
     end
 
     def multiple_examples?(question)

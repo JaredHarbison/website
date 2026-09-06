@@ -12,6 +12,14 @@ module AskJared
     CAUSAL_LANGUAGE = /\b(caused|causes|led to|resulted in|produced|because of|drove)\b/i
     INFERENTIAL_LANGUAGE = /\b(ensure[sd]?|enabl(?:e|ed|es|ing)|enhanc(?:e|ed|es|ing)|position(?:ed|s|ing)?|demonstrat(?:e|ed|es|ing)|show(?:s|ed|ing)?|indicat(?:e|ed|es|ing))\b/i
     DOMAIN_TERMS = %w[typescript react rails stripe].freeze
+    UNSUPPORTED_RELATIONAL_CLAIMS = [
+      [ /\b(?:not|without|lacking)\s+(?:being\s+)?the formal decision[- ]maker\b/i, ->(claims) { claims.any? { |claim| claim["text"].match?(/formal decision[- ]maker|formal authority|decision authority/i) } }, "formal authority claim is not supported" ],
+      [ /\b(?:convinced|persuaded)\b/i, ->(claims) { claims.any? { |claim| claim["text"].match?(/convinced|persuaded/i) } }, "persuasion claim is not supported" ],
+      [ /\bowned\s+(?:the\s+)?(?:whole|entire|full)\s+(?:product|platform|application)\b/i, ->(claims) { claims.any? { |claim| claim["text"].match?(/owned|ownership/i) && claim["text"].match?(/whole|entire|platform|application|product/i) } }, "platform-wide ownership claim is not supported" ],
+      [ /\bmanaged\s+(?:engineers|developers|an engineering team|a team of engineers)\b/i, ->(claims) { claims.any? { |claim| claim["text"].match?(/managed|management/i) && claim["text"].match?(/engineer|developer|engineering team/i) } }, "engineering management claim is not supported" ],
+      [ /\bprofessional\s+typescript\s+(?:experience|expertise|proficiency)\b|\b(?:typescript|ts)\s+(?:expert|proficient)\b/i, ->(claims) { claims.any? { |claim| claim["text"].match?(/typescript/i) && claim["text"].match?(/professional|experience|expert|proficien/i) && !claim["text"].match?(/not established|newer|learning|current/i) } }, "TypeScript depth claim is not supported" ],
+      [ /\b(?:shipped|released|deployed)\b/i, ->(claims) { claims.any? { |claim| claim["text"].match?(/shipped|released|deployed/i) && claim["kind"] != "planned" } }, "shipped-status claim is not supported" ]
+    ].freeze
 
     def self.validate_response!(answer:, evidence_ids:, packet: nil, entries: nil, claim_refs: nil)
       entries ||= packet
@@ -27,6 +35,7 @@ module AskJared
 
       referenced_claims = claims.select { |claim| claim_refs&.include?(claim["ref"]) }
       allowed_text = referenced_claims.map { |claim| claim["text"] }.join(" ")
+      validate_material_propositions!(answer, referenced_claims)
       relationships = if packet.respond_to?(:relationships)
         packet.relationships
       else
@@ -38,6 +47,12 @@ module AskJared
 
       validate_sentences!(answer, referenced_claims, allowed_text, relationships: relationships) if claim_refs
       true
+    end
+
+    def self.validate_material_propositions!(answer, claims)
+      UNSUPPORTED_RELATIONAL_CLAIMS.each do |pattern, support, message|
+        raise Violation, message if answer.match?(pattern) && !support.call(claims)
+      end
     end
 
     def self.validate_sentences!(answer, claims, allowed_text, relationships:)

@@ -138,7 +138,7 @@ class AskJaredQuestionServiceTest < ActiveSupport::TestCase
 
     response = service.call(raw_token: @raw_token, question: "What is the biggest hiring risk?", session_id: "session-1", request_id: "request-transfer-sanitize")
 
-    assert_equal "Large-team experience is not established. His retail leadership is documented.", response["answer"]
+    assert_equal "Large-team experience is newer territory. His retail leadership is documented.", response["answer"]
   end
 
   test "repairs unsupported causal wording once using the same evidence packet" do
@@ -357,5 +357,32 @@ class AskJaredQuestionServiceTest < ActiveSupport::TestCase
 
     assert_equal [ second.id ], provider.contexts[-2].map(&:id)
     assert_equal [ third.id ], provider.contexts.last.map(&:id)
+  end
+
+  test "resolves first-example follow-ups from the prior answer's ordered evidence groups" do
+    first = KnowledgeEntry.create!(title: "First product story", body: "First product decision", entry_type: "product_story", approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "first-product", source_fingerprint: "first-product")
+    unrelated = KnowledgeEntry.create!(title: "Unrelated mentorship story", body: "Unrelated mentorship", entry_type: "leadership_story", approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "unrelated", source_fingerprint: "unrelated")
+    retriever = Class.new do
+      attr_reader :calls
+      def initialize(entries) = (@entries, @calls = entries, [])
+      def call(question, **)
+        @calls << question
+        @entries
+      end
+    end.new([ first, unrelated ])
+    provider = Class.new do
+      attr_reader :contexts
+      def initialize = @contexts = []
+      def call(question:, context:, **)
+        @contexts << context
+        { "status" => "answer", "answer" => "Grounded.", "evidence_ids" => [ context.first.id.to_s ], "source_urls" => [] }
+      end
+    end.new
+    service = AskJared::QuestionService.new(token_service: @token_service, retriever: retriever, provider: provider)
+
+    service.call(raw_token: @raw_token, question: "What are some product examples?", session_id: "ordered-follow-up", request_id: "ordered-1")
+    service.call(raw_token: @raw_token, question: "Tell me more about the first example. What did Jared have to convince people of?", session_id: "ordered-follow-up", request_id: "ordered-2")
+
+    assert_equal [ first.id ], provider.contexts.last.map(&:id)
   end
 end

@@ -72,6 +72,24 @@ class AskJaredEvidenceIntegrityTest < ActiveSupport::TestCase
     end
   end
 
+  test "rejects unsupported authority, persuasion, ownership, management, TypeScript, and shipped claims" do
+    cases = {
+      "Jared was not the formal decision-maker." => "formal authority claim is not supported",
+      "Jared convinced leadership to choose X." => "persuasion claim is not supported",
+      "Jared owned the whole platform." => "platform-wide ownership claim is not supported",
+      "Jared managed engineers." => "engineering management claim is not supported",
+      "Jared has professional TypeScript experience." => "TypeScript depth claim is not supported",
+      "The prototype shipped." => "shipped-status claim is not supported"
+    }
+    current = packet(claims: [ { "text" => "Jared recommended X. The prototype was planned.", "kind" => "planned", "provenance" => "story:test" } ])
+
+    cases.each_key do |answer|
+      assert_raises(AskJared::EvidenceIntegrity::Violation, answer) do
+        AskJared::EvidenceIntegrity.validate_response!(answer: answer, evidence_ids: [ "1" ], claim_refs: [ "story:test#claim-0" ], packet: current)
+      end
+    end
+  end
+
   test "rejects the six known cross-claim and unsupported interpretations" do
     current = packet(claims: [
       { "text" => "A technical disagreement made opportunity cost visible.", "kind" => "demonstrated", "provenance" => "story:react" },

@@ -30,7 +30,7 @@ module AskJared
           "page", "turn", "browser", "device", "server_error", "contact", "name", "email", "message",
           "company", "role", "verification_id", "delivery_status", "latency_ms", "input_tokens", "output_tokens",
           "estimated_cost_cents", "pricing_version", "intent_path", "evidence_count", "answer_status", "answer_event_id", "issue_answer_event_id",
-          "architecture", "planner_version", "planner_model", "context_keys", "plan_summary"
+          "architecture", "planner_version", "planner_model", "context_keys", "plan_summary", "example_evidence_ids"
         )
         event.occurred_at = Time.current
         event.meaningful = MEANINGFUL_EVENTS.include?(event_type)

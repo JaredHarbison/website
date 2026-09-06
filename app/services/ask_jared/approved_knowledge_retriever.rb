@@ -43,7 +43,8 @@ module AskJared
       [ "learning", /\blearn(?:ing|ed)|unfamiliar technology|technical ramp/i ],
       [ "product", /\bproduct judgment|product thinking|product direction|product decision|user problem|\bux\b/i ],
       [ "characterization", /\bwhat kind of engineer|engineering profile|engineer is Jared/i ],
-      [ "candidacy", /\bwhy (?:should|would) .*interview|why hire|case for Jared|recommend Jared/i ]
+      [ "candidacy", /\bwhy (?:should|would) .*interview|why hire|case for Jared|recommend Jared/i ],
+      [ "characterization", /\bstrongest qualities|biggest strengths|what stands out|especially good at/i ]
     ].freeze
 
     INTENT_SOURCE_BOOSTS = {
