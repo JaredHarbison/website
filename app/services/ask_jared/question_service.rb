@@ -19,7 +19,7 @@ module AskJared
       @planner = planner
     end
 
-    def call(raw_token:, question:, session_id:, ip: nil, request_id:, admin_preview: false, architecture: nil)
+    def call(raw_token:, question:, session_id:, ip: nil, request_id:, admin_preview: false, architecture: nil, evaluation: false)
       started_at = Process.clock_gettime(Process::CLOCK_MONOTONIC)
       token = @token_service.resolve(raw_token)
       unless admin_preview
@@ -103,6 +103,10 @@ module AskJared
         @usage_guard.record!(token: token, session_digest: session_digest, request_id: request_id, status: response["status"] == "answer" ? "completed" : "rejected", estimated_cost_cents: telemetry["estimated_cost_cents"], input_tokens: telemetry["input_tokens"], output_tokens: telemetry["output_tokens"])
       end
       response.delete("claim_refs")
+      response["evaluation"] = { "architecture" => architecture_used, "planner_version" => plan&.version,
+                                  "model" => model_for(skeleton_path?(active_intent)), "validation" => "passed",
+                                  "input_tokens" => telemetry["input_tokens"], "output_tokens" => telemetry["output_tokens"],
+                                  "estimated_cost_cents" => telemetry["estimated_cost_cents"], "pricing_version" => telemetry["pricing_version"] } if admin_preview && evaluation
       response
     end
 

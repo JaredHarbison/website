@@ -11,7 +11,7 @@ def run_case(question, architecture, index)
   started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
   result = AskJared::QuestionService.new.call(
     raw_token: nil, question: question, session_id: "phase1-#{architecture}-#{index}", request_id: "phase1-#{architecture}-#{index}-#{SecureRandom.hex(4)}",
-    admin_preview: true, architecture: architecture
+    admin_preview: true, architecture: architecture, evaluation: true
   )
   result.merge("latency_ms" => ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - started) * 1000).round)
 rescue StandardError => error
@@ -39,14 +39,17 @@ end
 
 def run_case_with_token(service, raw_token, question, architecture, index)
   started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-  service.call(raw_token: raw_token, question: question, session_id: "phase1-sequence-#{architecture}", request_id: "phase1-sequence-#{architecture}-#{index}").merge("latency_ms" => ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - started) * 1000).round)
+  service.call(raw_token: raw_token, question: question, session_id: "phase1-sequence-#{architecture}", request_id: "phase1-sequence-#{architecture}-#{index}", evaluation: true).merge("latency_ms" => ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - started) * 1000).round)
 rescue StandardError => error
   { "status" => "runner_error", "answer" => error.message, "evidence_ids" => [], "source_urls" => [], "latency_ms" => nil }
 end
 
 def markdown_answer(result)
   answer = result["answer"].to_s.gsub("\n", " ")
-  "#{result["status"]}: #{answer} (evidence=#{Array(result["evidence_ids"]).join(", ").presence || "none"}; latency=#{result["latency_ms"] || "n/a"}ms)"
+  evaluation = result["evaluation"] || {}
+  tokens = [ evaluation["input_tokens"], evaluation["output_tokens"] ].all?(&:present?) ? ", tokens=#{evaluation["input_tokens"]}/#{evaluation["output_tokens"]}" : ""
+  cost = evaluation["estimated_cost_cents"].present? ? ", cost=#{evaluation["estimated_cost_cents"]}c" : ""
+  "#{result["status"]}: #{answer} (evidence=#{Array(result["evidence_ids"]).join(", ").presence || "none"}; latency=#{result["latency_ms"] || "n/a"}ms#{tokens}#{cost})"
 end
 
 rows = battery.map.with_index do |item, index|
@@ -81,7 +84,7 @@ File.write(output_dir.join(evaluation_filename), <<~MARKDOWN)
 
   ## Scoring key
 
-  Each substantive answer is intended for 0–2 human scoring on grounding, directness, candidate understanding, emphasis/prioritization, recruiter language, boundary quality, and readability. `N/A` is allowed. Because this environment has no provider key, the current capture records service status rather than inventing substantive scores.
+  Each substantive answer is intended for 0–2 human scoring on grounding, directness, candidate understanding, emphasis/prioritization, recruiter language, boundary quality, and readability. `N/A` is allowed. #{ENV["OPENAI_API_KEY"].present? ? "Provider-backed outputs were captured; conservative human scoring is required." : "Because this environment has no provider key, the current capture records service status rather than inventing substantive scores."}
 
   ## Before / after
 
