@@ -155,4 +155,25 @@ class AskJaredCandidateContextTest < ActiveSupport::TestCase
     refute_includes plan.context_keys, "draft.identity"
     assert_equal AskJared::CandidateContext::VERSION_V2, plan.version
   end
+
+  test "broad characterization planning produces multiple candidate dimensions" do
+    %w[
+      positioning.engineering_identity positioning.product_engineering
+      positioning.rails_foundation positioning.autonomous_operator
+    ].each_with_index do |key, index|
+      guidance = {
+        "positioning.engineering_identity" => "product-oriented full-stack engineering identity",
+        "positioning.product_engineering" => "product judgment and tradeoff decisions",
+        "positioning.rails_foundation" => "Rails/backend technical foundation",
+        "positioning.autonomous_operator" => "autonomous responsibility through ambiguity"
+      }.fetch(key)
+      CandidateContextRecord.create!(stable_key: key, corpus_version: "candidate-context-v2", category: "positioning", approval_status: "approved", privacy_classification: "private", guidance: guidance, intent_tags: [ "characterization" ], affects: [ "interpretation", "retrieval" ], priority: 100 - index)
+    end
+
+    context = AskJared::CandidateContext.new(version: AskJared::CandidateContext::VERSION_V2)
+    plan = AskJared::CandidateContextPlanner.new(context: context).call(question: "What kind of engineer is Jared?", intent: "characterization")
+
+    assert_operator plan.dimensions.length, :>=, 2
+    assert_includes plan.answer_shape, "2-4 dimensions"
+  end
 end

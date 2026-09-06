@@ -22,7 +22,8 @@ module AskJared
       "ambiguity" => { terms: [ "ambiguity", "ambiguous objectives" ], kinds: %w[demonstrated] },
       "impact" => { terms: [ "measurable impact", "measurable outcomes", "measurable business outcomes" ], kinds: %w[demonstrated] },
       "production" => { terms: [ "production reliability", "security", "incident response" ], kinds: %w[demonstrated] },
-      "stakeholder" => { terms: [ "stakeholder alignment", "executive communication", "communication", "influence without authority" ], kinds: %w[demonstrated] }
+      "stakeholder" => { terms: [ "stakeholder alignment", "executive communication", "communication", "influence without authority" ], kinds: %w[demonstrated] },
+      "influence_without_authority" => { terms: [ "influence without authority", "stakeholder alignment", "decision alignment" ], kinds: %w[demonstrated] }
     }.freeze
 
     INTENT_PATTERNS = [
@@ -38,6 +39,7 @@ module AskJared
       [ "ambiguity", /\bambigu(?:ity|ous)|unclear requirements|uncertainty/i ],
       [ "impact", /\bmeasurable (?:(?:business|product)(?: or (?:business|product))? )?impact|measurable result|business result|quantified outcome/i ],
       [ "stakeholder", /\bstakeholder|executive communication|communicate with .*stakeholder/i ],
+      [ "influence_without_authority", /\bwithout formal authority|formal decision[- ]maker|lack(?:ed)? formal authority|persuad(?:e|ed|ing)|convinc(?:e|ed|ing).*authority/i ],
       [ "mentorship", /\bmentor|mentorship|people development|succession/i ],
       [ "failure", /\bfailure|mistake|technical debt|production problem/i ],
       [ "collaboration", /\bcollaborat|worked with engineers|engineer-to-engineer/i ],
@@ -142,7 +144,7 @@ module AskJared
       begin
         ranked = semantic_rank(entries, question, intent)
         mode = "semantic-qualified"
-      rescue OpenAiEmbeddingProvider::ConfigurationError, OpenAiEmbeddingProvider::ProviderError
+      rescue OpenAiEmbeddingProvider::ConfigurationError, OpenAiEmbeddingProvider::ProviderError, ActiveRecord::StatementInvalid
         ranked = lexical_rank(entries, question, intent)
         mode = "lexical-qualified"
       end
@@ -156,7 +158,7 @@ module AskJared
       begin
         ranked = semantic_rank(entries, question, nil)
         mode = "semantic-fallback"
-      rescue OpenAiEmbeddingProvider::ConfigurationError, OpenAiEmbeddingProvider::ProviderError
+      rescue OpenAiEmbeddingProvider::ConfigurationError, OpenAiEmbeddingProvider::ProviderError, ActiveRecord::StatementInvalid
         ranked = lexical_rank(entries, question, nil)
         mode = "lexical-fallback"
       end

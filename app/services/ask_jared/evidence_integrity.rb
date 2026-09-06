@@ -12,6 +12,7 @@ module AskJared
     CAUSAL_LANGUAGE = /\b(caused|causes|led to|resulted in|produced|because of|drove)\b/i
     INFERENTIAL_LANGUAGE = /\b(ensure[sd]?|enabl(?:e|ed|es|ing)|enhanc(?:e|ed|es|ing)|position(?:ed|s|ing)?|demonstrat(?:e|ed|es|ing)|show(?:s|ed|ing)?|indicat(?:e|ed|es|ing))\b/i
     DOMAIN_TERMS = %w[typescript react rails stripe].freeze
+    GOVERNANCE_LANGUAGE = /\b(?:evidence shows|evidence does not establish|approved evidence|recruiter evidence|capability map|internal evidence|adjacent evidence|not established|should be evaluated)\b/i
     UNSUPPORTED_RELATIONAL_CLAIMS = [
       [ /\b(?:not|without|lacking)\s+(?:being\s+)?the formal decision[- ]maker\b/i, ->(claims) { claims.any? { |claim| claim["text"].match?(/formal decision[- ]maker|formal authority|decision authority/i) } }, "formal authority claim is not supported" ],
       [ /\b(?:convinced|persuaded)\b/i, ->(claims) { claims.any? { |claim| claim["text"].match?(/convinced|persuaded/i) } }, "persuasion claim is not supported" ],
@@ -22,7 +23,7 @@ module AskJared
       [ /\b(?:shipped|released|deployed)\b/i, ->(claims) { claims.any? { |claim| claim["text"].match?(/shipped|released|deployed/i) && claim["kind"] != "planned" } }, "shipped-status claim is not supported" ]
     ].freeze
 
-    def self.validate_response!(answer:, evidence_ids:, packet: nil, entries: nil, claim_refs: nil)
+    def self.validate_response!(answer:, evidence_ids:, packet: nil, entries: nil, claim_refs: nil, question: nil, intent: nil, strict_sentence: true)
       entries ||= packet
       referenced = entries.select { |entry| evidence_ids.include?(entry.id.to_s) }
       claims = packet.respond_to?(:claims) ? packet.claims : []
@@ -36,7 +37,7 @@ module AskJared
 
       referenced_claims = claims.select { |claim| claim_refs&.include?(claim["ref"]) }
       allowed_text = referenced_claims.map { |claim| claim["text"] }.join(" ")
-      validate_material_propositions!(answer, referenced_claims)
+      validate_material_propositions!(answer, referenced_claims, question: question, intent: intent)
       relationships = if packet.respond_to?(:relationships)
         packet.relationships
       else
@@ -46,13 +47,40 @@ module AskJared
         raise Violation, "causal language requires an approved causal relationship" unless relationships.any? { |relationship| relationship["type"] == "causes" }
       end
 
-      validate_sentences!(answer, referenced_claims, allowed_text, relationships: relationships) if claim_refs
+      validate_sentences!(answer, referenced_claims, allowed_text, relationships: relationships) if claim_refs && strict_sentence
+      raise Violation, "recruiter-facing governance language leaked into the answer" if answer.match?(GOVERNANCE_LANGUAGE)
       true
     end
 
-    def self.validate_material_propositions!(answer, claims)
+    def self.validate_material_propositions!(answer, claims, question: nil, intent: nil)
       UNSUPPORTED_RELATIONAL_CLAIMS.each do |pattern, support, message|
         raise Violation, message if answer.match?(pattern) && !support.call(claims)
+      end
+
+      if intent.to_s == "influence_without_authority" || question.to_s.match?(/influenced.*formal|formal.*decision-maker|without formal authority/i)
+        influence = claims.any? { |claim| claim["text"].match?(/influenc|recommend|propos|priorit|push(?:ed)? back|decision-quality|decision alignment/i) }
+        authority = claims.any? { |claim| claim["text"].match?(/without formal authority|not the formal|no formal|formal decision|decision authority/i) }
+        raise Violation, "influence-without-authority requires both supported propositions" if answer.match?(/influenc|persuad|convinc|formal decision|formal authority/i) && !(influence && authority)
+      end
+
+      proposition_rules = {
+        /\bowned\b/i => /\bowned\b|ownership|primary responsibility|sole responsibility/i,
+        /\b(?:decided|approved)\b/i => /\b(?:decided|approved|decision|direction)\b/i,
+        /\bmanaged\b/i => /\bmanaged|management|directly led|people management/i,
+        /\b(?:shipped|released|deployed)\b/i => /\b(?:shipped|released|deployed)\b/i,
+        /\bprototype\b/i => /\bprototype|planned|proof of concept/i,
+        /\b(?:caused|led to|resulted in|drove)\b/i => /\b(?:caused|led to|resulted in|drove)\b/i
+      }
+      proposition_rules.each do |pattern, support_pattern|
+        next unless answer.match?(pattern)
+        next if claims.any? { |claim| claim["text"].match?(support_pattern) }
+
+        raise Violation, "material proposition is not supported by the cited claims"
+      end
+      if answer.match?(/\b(?:has not|have not|does not have|doesn't have|no (?:professional|engineering|production)|lacks?)\b/i)
+        unless claims.any? { |claim| claim["text"].match?(/\b(?:has not|have not|does not have|doesn't have|no |lacks?|limited|newer territory|not established|not demonstrated)\b/i) }
+          raise Violation, "negative experience proposition is not supported by the cited claims"
+        end
       end
     end
 

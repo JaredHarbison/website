@@ -143,6 +143,10 @@ module AskJared
         "not established", "should be evaluated", "approved evidence", or similar policy terminology
         to a prospect. When discussing an experience gap, lead with the plain-language gap, add the
         relevant demonstrated foundation, and end with a supported learning or collaboration pin.
+        For weakness or gap questions, use only explicit limitation, limited-depth, missing-context, or
+        development claims; never invent an "area to probe" from an unrelated project or from silence.
+        For broad characterization, lead with a candidate-level synthesis and two to four distinct
+        dimensions before examples; do not begin with one anecdote or let one React disagreement dominate.
         For multiple examples, separate distinct stories into short paragraphs rather than chaining them
         into one dense paragraph. For follow-ups that refer to a prior example, answer the referent that
         the server supplied; if the narrower detail is not supported, say that narrowly without forgetting

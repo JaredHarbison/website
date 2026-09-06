@@ -68,6 +68,26 @@ class AskJaredQuestionServiceTest < ActiveSupport::TestCase
     assert_equal 1, EngagementEvent.where(event_type: "question_submitted").count
   end
 
+  test "weakness questions discard unrelated project evidence before generation" do
+    unrelated = KnowledgeEntry.create!(title: "Unrelated project", body: "Built a karaoke queue.", entry_type: "project", metadata: { "recruiter_evidence" => { "claims" => [ { "text" => "Built a karaoke queue.", "kind" => "demonstrated" } ] } }, approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "unrelated-project", source_fingerprint: "unrelated-project")
+    boundary = KnowledgeEntry.create!(title: "Explicit boundary", body: "Large conventional engineering-team experience is limited.", entry_type: "fact", metadata: { "recruiter_evidence" => { "claims" => [ { "text" => "Large conventional engineering-team experience is limited.", "kind" => "boundary" } ] } }, approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "explicit-boundary", source_fingerprint: "explicit-boundary")
+    retriever = Class.new do
+      def initialize(entries) = @entries = entries
+      def classified_intent(_) = "risk"
+      def call(*) = @entries
+    end.new([ unrelated, boundary ])
+    provider = Class.new do
+      attr_reader :context
+      def call(context:, **) = (@context = context; { "status" => "answer", "answer" => "Large-team experience is limited.", "evidence_ids" => context.map { |entry| entry.id.to_s }, "source_urls" => [] })
+    end.new
+
+    response = AskJared::QuestionService.new(token_service: @token_service, retriever: retriever, provider: provider).call(raw_token: @raw_token, question: "What is a weakness or gap in Jared's experience that a hiring manager should know about?", session_id: "weakness-filter", request_id: "weakness-filter")
+
+    assert_equal "answer", response["status"]
+    assert_equal [ boundary.id ], provider.context.map(&:id)
+    refute_includes response["answer"], "probe"
+  end
+
   test "rejects garbage before retrieval or a model request" do
     service = AskJared::QuestionService.new(token_service: @token_service)
 

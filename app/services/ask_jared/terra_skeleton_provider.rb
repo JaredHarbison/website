@@ -73,9 +73,12 @@ module AskJared
         a positioning or relationship role. Omit rather than infer. Each segment must identify
         every skeleton role it expresses in role_refs. Never put role IDs, claim aliases, or
         internal references in segment text. Use natural recruiter-facing language rather than
-        internal evidence-policy words such as boundary or not established. Lead with a useful
-        characterization when the intent asks what kind of engineer Jared is; preserve a material
-        gap only as a concise boundary after the supported strengths. Return status and segments only.
+        internal evidence-policy words such as boundary or not established. For broad characterization,
+        lead with a concise candidate-level characterization, then cover two to four distinct supported
+        dimensions before brief examples; do not start with one anecdote or let one React disagreement
+        dominate. For gap questions, use only explicit limitations, limited-depth claims, missing-context
+        claims, or supported development areas; never turn an unrelated project into an area to probe.
+        Return status and segments only.
       PROMPT
     end
   end

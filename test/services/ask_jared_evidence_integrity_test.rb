@@ -114,4 +114,26 @@ class AskJaredEvidenceIntegrityTest < ActiveSupport::TestCase
       end
     end
   end
+
+  test "requires both influence and formal-authority support for that specific claim" do
+    current = packet(claims: [ { "text" => "Jared recommended a roadmap sequence.", "kind" => "demonstrated", "provenance" => "story:test" } ])
+
+    assert_raises(AskJared::EvidenceIntegrity::Violation) do
+      AskJared::EvidenceIntegrity.validate_response!(
+        answer: "Jared influenced the decision without being the formal decision-maker.",
+        evidence_ids: [ "1" ], claim_refs: [ "story:test#claim-0" ], packet: current,
+        question: "How did Jared influence a decision without formal authority?", intent: "influence_without_authority"
+      )
+    end
+  end
+
+  test "rejects recruiter governance vocabulary and unsupported negative experience claims" do
+    current = packet(claims: [ { "text" => "Jared designed a Rails workflow.", "kind" => "demonstrated", "provenance" => "story:test" } ])
+
+    [ "The evidence shows Jared has not designed a production system.", "Jared has no professional engineering experience." ].each do |answer|
+      assert_raises(AskJared::EvidenceIntegrity::Violation, answer) do
+        AskJared::EvidenceIntegrity.validate_response!(answer: answer, evidence_ids: [ "1" ], claim_refs: [ "story:test#claim-0" ], packet: current)
+      end
+    end
+  end
 end

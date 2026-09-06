@@ -28,6 +28,21 @@ class AskJaredRecruiterAnswerSkeletonTest < ActiveSupport::TestCase
     assert_equal [ disagreement.id.to_s ], skeleton.evidence_ids_for(skeleton.role_ids)
   end
 
+  test "broad characterization selects multiple dimensions before a single anecdote" do
+    partner = entry("case-study:dogly-partner-applications", "Designed a resumable Rails application workflow.", "direct_fact")
+    product = entry("case-study:dogly-product-design", "Built a coherent product language across several product surfaces.", "direct_fact")
+    collaboration = entry("story:dogly-engineering-collaboration", "Moved from backend work into full-stack work and collaborated with engineers.", "direct_fact")
+    react = entry("story:dogly-react-migration-disagreement", "Pushed back on broader React use for authentication pages.", "action")
+    packet = AskJared::SynthesisEvidencePacket.new(entries: [ react, partner, product, collaboration ], intent: "characterization", question: "What kind of engineer is Jared?")
+
+    skeleton = AskJared::RecruiterAnswerSkeleton.new(packet: packet, intent: "characterization", question: "What kind of engineer is Jared?")
+    sources = skeleton.evidence_ids_for(skeleton.role_ids).map { |id| KnowledgeEntry.find(id).source_reference }
+
+    assert_operator sources.uniq.length, :>=, 3
+    assert_operator sources.count { |source| source.include?("react-migration") }, :<=, 1
+    assert_equal partner.id.to_s, skeleton.evidence_ids_for(skeleton.role_ids).first
+  end
+
   private
 
   def entry(source_reference, text, role, kind = "demonstrated")

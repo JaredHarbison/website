@@ -17,7 +17,8 @@ module AskJared
         answer_shape: shape_for(intent, question), themes: themes, story_slots: story_slots_for(intent, question),
         preferred_sources: sources, boundary_relevance: boundary_for(intent, question), retrieval_queries: queries,
         avoid: records.filter_map { |record| record["guidance"] if record["category"] == "boundary_guidance" || record["category"] == "recruiter_intent" },
-        referent_ids: Array(prior_evidence_ids), context_keys: @context.context_keys(records)
+        referent_ids: Array(prior_evidence_ids), context_keys: @context.context_keys(records),
+        dimensions: broad_characterization?(intent, question) ? broad_dimensions(records) : []
       ).tap { |plan| plan.define_singleton_method(:planning_latency_ms) { ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - started) * 1000).round } }
     rescue StandardError
       raise
@@ -33,6 +34,7 @@ module AskJared
     def shape_for(intent, question)
       return "separated distinct examples" if question.match?(/examples|some|another/i)
       return "narrow supported follow-up" if question.match?(/first|second|that|tell me more|why\??/i)
+      return "characterization first + 2-4 dimensions + brief supporting examples + proportionate boundary" if broad_characterization?(intent, question)
       return "conclusion + relevant evidence + proportionate boundary" if %w[characterization candidacy risk organization typescript].include?(intent.to_s)
       "direct answer + strongest evidence"
     end
@@ -45,6 +47,20 @@ module AskJared
     def boundary_for(intent, question)
       return "primary" if intent.to_s == "risk" || question.match?(/weakness|gap|worry|large engineering team|typescript/i)
       "secondary"
+    end
+
+    def broad_characterization?(intent, question)
+      intent.to_s == "characterization" && question.match?(/what kind of engineer|how would you describe|what stands out|engineering profile|strongest qualities|biggest strengths/i)
+    end
+
+    def broad_dimensions(records)
+      guidance = records.map { |record| record["guidance"].to_s.downcase }
+      dimensions = []
+      dimensions << "product-oriented full-stack identity" if guidance.any? { |text| text.match?(/product-oriented|full-stack|engineering identity/) }
+      dimensions << "Rails/backend foundation" if guidance.any? { |text| text.match?(/rails\/backend|backend.*rails|technical foundation/) }
+      dimensions << "autonomous ownership and ambiguity" if guidance.any? { |text| text.match?(/autonomous|ambiguity|responsibility/) }
+      dimensions << "product and stakeholder judgment" if guidance.any? { |text| text.match?(/product judgment|stakeholder|tradeoff/) }
+      dimensions.first(4)
     end
   end
 end

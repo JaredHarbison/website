@@ -28,38 +28,42 @@ module AskJared
       end
       validate_question!(question)
       session_digest = @usage_guard.digest_session(session_id)
-      unless admin_preview
+      qa_preview = token&.opportunity&.tracker_source == "internal_qa"
+      unless admin_preview || qa_preview
         question_count = EngagementEvent.where(session_digest: session_digest, event_type: "question_submitted").count
         raise ConversationLimitExceeded, "This conversation has reached its four-question limit" if question_count >= MAX_CONVERSATION_QUESTIONS
       end
-      @usage_guard.check!(token: token, session_digest: session_digest) unless admin_preview
+      @usage_guard.check!(token: token, session_digest: session_digest) unless admin_preview || qa_preview
 
       prior_primary = prior_primary_evidence(session_digest)
       prior_context = prior_answer_context(session_digest)
       prior_intent = prior_question_intent(session_digest)
       classified_intent = @retriever.respond_to?(:classified_intent) ? @retriever.classified_intent(question) : nil
       active_intent = continuation?(question) ? (prior_intent || classified_intent) : (classified_intent || prior_intent)
-      qa_preview = token&.opportunity&.tracker_source == "internal_qa"
       plan, architecture_used = planning(question: question, intent: active_intent, prior_evidence: prior_context["evidence_ids"], requested: architecture, admin_preview: admin_preview || qa_preview)
       if continuation?(question) && prior_context.any?
         referent_ids = referent_entry_ids(question, prior_context)
-        entries = retrieve_with_plan(question, intent: active_intent, plan: plan).select { |entry| referent_ids.include?(entry.id) || referent_ids.include?(entry.source_reference) }
-        if entries.empty? && referent_ids.any?
-          numeric_ids = referent_ids.select { |referent| referent.to_s.match?(/\A\d+\z/) }
-          entries = ::KnowledgeEntry.recruiter_retrievable.where(id: numeric_ids).to_a
-          entries = ::KnowledgeEntry.recruiter_retrievable.where(source_reference: referent_ids).to_a if entries.empty?
+        referent_keys = referent_ids.map(&:to_s)
+        numeric_ids = referent_ids.select { |referent| referent.to_s.match?(/\A\d+\z/) }
+        entries = ::KnowledgeEntry.recruiter_retrievable.where(id: numeric_ids).to_a if numeric_ids.any?
+        entries = ::KnowledgeEntry.recruiter_retrievable.where(source_reference: referent_ids).to_a if entries.empty? && referent_ids.any?
+        if entries.empty?
+          entries = retrieve_with_plan(question, intent: active_intent, plan: plan).select { |entry| referent_keys.include?(entry.id.to_s) || referent_keys.include?(entry.source_reference.to_s) }
         end
       else
         entries = retrieve_with_plan(question, intent: active_intent, plan: plan).reject { |entry| another_example?(question) && prior_primary.include?(entry.source_reference) }
         entries = entries.first(1) if another_example?(question) && skeleton_path?(active_intent)
       end
       entries = retrieve(question, limit: 12, intent: active_intent).reject { |entry| prior_primary.include?(entry.source_reference) } if entries.empty? && prior_primary.any? && !another_example?(question) && !continuation?(question)
+      entries = entries.select { |entry| weakness_evidence?(entry) } if active_intent.to_s == "risk"
       packet = SynthesisEvidencePacket.new(
         entries: entries,
         intent: active_intent,
         question: question.to_s.strip,
         max_claims: skeleton_path?(active_intent) ? nil : 3
       )
+      force_insufficient = active_intent.to_s == "influence_without_authority" && !supported_influence_without_authority?(packet)
+      force_insufficient ||= question.to_s.match?(/convinc|persuad/i) && !packet.claims.any? { |claim| claim["text"].match?(/convinc|persuad|influenc|advocat/i) }
       telemetry = {}
       response = if packet.empty?
         insufficient_response(another_example: another_example?(question))
@@ -86,6 +90,7 @@ module AskJared
       else
         validate_response(response, question: question.to_s.strip, packet: packet)
       end
+      response = insufficient_response if force_insufficient
       unless admin_preview
         @engagement_service.record!(raw_token: raw_token, event_type: "question_submitted", session_id: session_id, ip: ip, event_key: "#{request_id}:question", metadata: { "question" => question.to_s, "turn" => EngagementEvent.where(session_digest: session_digest, event_type: "question_submitted").count + 1 })
         primary_entry = primary_entry_for(entries, response: response, packet: packet)
@@ -145,7 +150,7 @@ module AskJared
     def validate_response(response, question:, packet:)
       response = normalize_response(response, packet: packet)
       resolved = resolve_claim_refs(response, packet: packet)
-      EvidenceIntegrity.validate_response!(answer: resolved["answer"], evidence_ids: resolved["evidence_ids"], claim_refs: resolved["claim_refs"], packet: packet)
+      EvidenceIntegrity.validate_response!(answer: resolved["answer"], evidence_ids: resolved["evidence_ids"], claim_refs: resolved["claim_refs"], packet: packet, question: question, intent: packet.intent)
       resolved
     rescue AskJared::EvidenceIntegrity::Violation => violation
       return insufficient_response unless @provider.respond_to?(:repair)
@@ -154,7 +159,7 @@ module AskJared
         repaired = @provider.repair(question: question, context: packet, response: response, violations: violation.violations)
         repaired = normalize_response(repaired, packet: packet)
         resolved = resolve_claim_refs(repaired, packet: packet)
-        EvidenceIntegrity.validate_response!(answer: resolved["answer"], evidence_ids: resolved["evidence_ids"], claim_refs: resolved["claim_refs"], packet: packet)
+        EvidenceIntegrity.validate_response!(answer: resolved["answer"], evidence_ids: resolved["evidence_ids"], claim_refs: resolved["claim_refs"], packet: packet, question: question, intent: packet.intent)
         resolved
       rescue AskJared::EvidenceIntegrity::Violation, ArgumentError, KeyError, TypeError, AskJared::OpenAiProvider::ConfigurationError, AskJared::OpenAiProvider::ProviderError
         insufficient_response
@@ -182,13 +187,15 @@ module AskJared
       separator = multiple_examples?(question) ? "\n\n" : " "
       answer = RecruiterAnswerSanitizer.clean(segments.map { |segment| segment["text"] }.join(separator))
       raise EvidenceIntegrity::Violation, "skeleton realization is empty" if answer.blank?
+      resolved_claim_refs = packet.resolve_claim_aliases!(skeleton.claim_refs_for(role_refs))
+      EvidenceIntegrity.validate_response!(answer: answer, evidence_ids: skeleton.evidence_ids_for(role_refs), claim_refs: resolved_claim_refs, packet: packet, question: question, intent: packet.intent, strict_sentence: false)
 
       {
         "status" => "answer",
         "answer" => answer,
         "evidence_ids" => skeleton.evidence_ids_for(role_refs),
         "source_urls" => packet.source_urls,
-        "claim_refs" => skeleton.claim_refs_for(role_refs)
+        "claim_refs" => resolved_claim_refs
       }
     rescue EvidenceIntegrity::Violation => violation
       return insufficient_response unless @skeleton_provider.respond_to?(:repair)
@@ -215,7 +222,10 @@ module AskJared
         skeleton.resolve_role_refs!(segment["role_refs"])
       end
       refs = response["segments"].flat_map { |segment| segment["role_refs"] }.uniq
-      { "status" => "answer", "answer" => RecruiterAnswerSanitizer.clean(response["segments"].map { |segment| segment["text"] }.join(" ")), "evidence_ids" => skeleton.evidence_ids_for(refs), "source_urls" => packet.source_urls, "claim_refs" => skeleton.claim_refs_for(refs) }
+      answer = RecruiterAnswerSanitizer.clean(response["segments"].map { |segment| segment["text"] }.join(" "))
+      claim_refs = packet.resolve_claim_aliases!(skeleton.claim_refs_for(refs))
+      EvidenceIntegrity.validate_response!(answer: answer, evidence_ids: skeleton.evidence_ids_for(refs), claim_refs: claim_refs, packet: packet, question: question, intent: packet.intent, strict_sentence: false)
+      { "status" => "answer", "answer" => answer, "evidence_ids" => skeleton.evidence_ids_for(refs), "source_urls" => packet.source_urls, "claim_refs" => claim_refs }
     end
 
     def normalize_response(response, packet:)
@@ -263,7 +273,24 @@ module AskJared
     end
 
     def continuation?(question)
-      question.to_s.match?(/\btell me more\b|\bwhat happened afterward\b|\bwhat did (?:he|jared) learn\b|\bwhat is the risk there\b|\bwhat did .* convince\b|\bwhy did he do that\b/i)
+      question.to_s.match?(/\btell me more\b|\bwhat happened afterward\b|\bwhat did (?:he|jared) learn\b|\bwhat is the risk there\b|\bwhat did .* convince\b|\bwhy did he do that\b|\bwhat did .* have to convince\b/i)
+    end
+
+    def supported_influence_without_authority?(packet)
+      claims = packet.claims
+      influence = claims.any? { |claim| claim["text"].match?(/influenc|recommend|propos|priorit|push(?:ed)? back|decision alignment/i) }
+      authority = claims.any? { |claim| claim["text"].match?(/without formal authority|not the formal|no formal|formal decision|decision authority/i) }
+      influence && authority
+    end
+
+    def weakness_evidence?(entry)
+      evidence = entry.metadata.fetch("recruiter_evidence", {})
+      claims = Array(evidence["claims"])
+      return true if evidence["evidence_kind"].to_s == "boundary"
+      return true if claims.any? { |claim| %w[boundary trajectory].include?(claim["kind"].to_s) }
+      return true if evidence["limitations"].present?
+
+      [ entry.short_body, entry.body ].compact.join(" ").match?(/\b(?:boundary|gap|limited|newer territory|not established|still developing|development area)\b/i)
     end
 
     def prior_primary_evidence(session_digest)
