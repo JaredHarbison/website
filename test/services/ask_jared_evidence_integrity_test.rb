@@ -79,6 +79,7 @@ class AskJaredEvidenceIntegrityTest < ActiveSupport::TestCase
       "Jared owned the whole platform." => "platform-wide ownership claim is not supported",
       "Jared managed engineers." => "engineering management claim is not supported",
       "Jared has professional TypeScript experience." => "TypeScript depth claim is not supported",
+      "Jared decided not to build the integration." => "not-built decision claim is not supported",
       "The prototype shipped." => "shipped-status claim is not supported"
     }
     current = packet(claims: [ { "text" => "Jared recommended X. The prototype was planned.", "kind" => "planned", "provenance" => "story:test" } ])

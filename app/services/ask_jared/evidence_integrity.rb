@@ -18,6 +18,7 @@ module AskJared
       [ /\bowned\s+(?:the\s+)?(?:whole|entire|full)\s+(?:product|platform|application)\b/i, ->(claims) { claims.any? { |claim| claim["text"].match?(/owned|ownership/i) && claim["text"].match?(/whole|entire|platform|application|product/i) } }, "platform-wide ownership claim is not supported" ],
       [ /\bmanaged\s+(?:engineers|developers|an engineering team|a team of engineers)\b/i, ->(claims) { claims.any? { |claim| claim["text"].match?(/managed|management/i) && claim["text"].match?(/engineer|developer|engineering team/i) } }, "engineering management claim is not supported" ],
       [ /\bprofessional\s+typescript\s+(?:experience|expertise|proficiency)\b|\b(?:typescript|ts)\s+(?:expert|proficient)\b/i, ->(claims) { claims.any? { |claim| claim["text"].match?(/typescript/i) && claim["text"].match?(/professional|experience|expert|proficien/i) && !claim["text"].match?(/not established|newer|learning|current/i) } }, "TypeScript depth claim is not supported" ],
+      [ /\b(?:decided|chose|choose)\b[^.?!]{0,100}\b(?:not to build|instead of building|over building)\b/i, ->(claims) { claims.any? { |claim| claim["text"].match?(/decided|chose|choose/i) && claim["text"].match?(/not to build|instead of building|over building/i) } }, "not-built decision claim is not supported" ],
       [ /\b(?:shipped|released|deployed)\b/i, ->(claims) { claims.any? { |claim| claim["text"].match?(/shipped|released|deployed/i) && claim["kind"] != "planned" } }, "shipped-status claim is not supported" ]
     ].freeze
 
