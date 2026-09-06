@@ -1,20 +1,45 @@
 require "yaml"
+require "securerandom"
 require "fileutils"
 
 battery = YAML.safe_load(File.read(Rails.root.join("test/fixtures/ask_jared_recruiter_evaluation.yml")), permitted_classes: [], aliases: false)
 output_dir = Rails.root.join("docs/ask-jared/phase1")
 FileUtils.mkdir_p(output_dir)
+evaluation_filename = ENV.fetch("PHASE1_EVALUATION_FILENAME", "evaluation.md")
 
 def run_case(question, architecture, index)
-  token_service = AskJared::TokenService.new
-  _token, raw = token_service.mint!
-  token_service.claim!(raw_token: raw, external_id: "phase1-#{architecture}-#{index}-#{SecureRandom.hex(4)}", company: "Phase 1 QA", role_title: "Evaluation")
   started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
   result = AskJared::QuestionService.new.call(
     raw_token: nil, question: question, session_id: "phase1-#{architecture}-#{index}", request_id: "phase1-#{architecture}-#{index}-#{SecureRandom.hex(4)}",
     admin_preview: true, architecture: architecture
   )
   result.merge("latency_ms" => ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - started) * 1000).round)
+rescue StandardError => error
+  { "status" => "runner_error", "answer" => error.message, "evidence_ids" => [], "source_urls" => [], "latency_ms" => nil }
+end
+
+def run_conversation(questions, architecture)
+  token_service = AskJared::TokenService.new
+  previous = ENV["ASK_JARED_CANDIDATE_CONTEXT"]
+  architecture == "candidate-context-v1" ? ENV["ASK_JARED_CANDIDATE_CONTEXT"] = "1" : ENV.delete("ASK_JARED_CANDIDATE_CONTEXT")
+  results = []
+  ActiveRecord::Base.transaction do
+    _token, raw = token_service.mint!
+    token_service.claim!(raw_token: raw, external_id: "phase1-sequence-#{SecureRandom.hex(6)}", company: "Phase 1 QA", role_title: "Evaluation")
+    service = AskJared::QuestionService.new
+    questions.each_with_index do |question, index|
+      results << run_case_with_token(service, raw, question, architecture, "sequence-#{index}")
+    end
+    raise ActiveRecord::Rollback
+  end
+  results
+ensure
+  previous ? ENV["ASK_JARED_CANDIDATE_CONTEXT"] = previous : ENV.delete("ASK_JARED_CANDIDATE_CONTEXT")
+end
+
+def run_case_with_token(service, raw_token, question, architecture, index)
+  started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+  service.call(raw_token: raw_token, question: question, session_id: "phase1-sequence-#{architecture}", request_id: "phase1-sequence-#{architecture}-#{index}").merge("latency_ms" => ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - started) * 1000).round)
 rescue StandardError => error
   { "status" => "runner_error", "answer" => error.message, "evidence_ids" => [], "source_urls" => [], "latency_ms" => nil }
 end
@@ -39,7 +64,15 @@ stability = stability_ids.map do |id|
   { item: item, runs: runs }
 end
 
-File.write(output_dir.join("evaluation.md"), <<~MARKDOWN)
+sequence_questions = [
+  "What kind of engineer is Jared?",
+  "What are some examples of product decisions Jared has influenced, not just engineering work he's implemented?",
+  "Tell me more about the first example. What did Jared have to convince people of?",
+  "What is a weakness or gap in Jared's experience that a hiring manager should know about?"
+]
+sequences = { "baseline-v1" => run_conversation(sequence_questions, "baseline-v1"), "candidate-context-v1" => run_conversation(sequence_questions, "candidate-context-v1") }
+
+File.write(output_dir.join(evaluation_filename), <<~MARKDOWN)
   # Ask Jared Phase 1 evaluation
 
   Generated #{Time.current.iso8601}. This is a frozen-battery capture; answers below are unedited service outputs.
@@ -61,6 +94,10 @@ File.write(output_dir.join("evaluation.md"), <<~MARKDOWN)
   Required stability prompts: #{stability_ids.join(", ")}; three runs per path were requested. Run-by-run outputs are retained below.
 
   #{stability.map { |entry| "### #{entry[:item]["id"]} — #{entry[:item]["question"]}\n\n" + entry[:runs].map { |run| "- Run #{run[:run]} — baseline: #{markdown_answer(run[:baseline])}; experiment: #{markdown_answer(run[:experiment])}" }.join("\n") }.join("\n\n")}
+
+  ## Exact four-question conversational sequences
+
+  #{sequences.map { |architecture, results| "### #{architecture}\n\n" + results.each_with_index.map { |result, index| "#{index + 1}. #{markdown_answer(result)}" }.join("\n") }.join("\n\n")}
 
   ## Capture interpretation
 
@@ -106,4 +143,4 @@ File.write(output_dir.join("candidate-context-inventory.md"), <<~MARKDOWN)
   #{inventory.join("\n")}
 MARKDOWN
 
-puts output_dir.join("evaluation.md")
+puts output_dir.join(evaluation_filename)

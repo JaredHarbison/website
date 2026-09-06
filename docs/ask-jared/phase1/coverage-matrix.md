@@ -1,6 +1,6 @@
 # Approved recruiter corpus coverage matrix
 
-Generated 2026-09-06T00:09:42Z from the current recruiter-visible approved KnowledgeEntry scope (34 entries). Primary/secondary labels are inferred from current retriever qualification and recruiter utility metadata; this is a QA diagnostic, not Candidate Context.
+Generated 2026-09-06T01:22:57Z from the current recruiter-visible approved KnowledgeEntry scope (34 entries). Primary/secondary labels are inferred from current retriever qualification and recruiter utility metadata; this is a QA diagnostic, not Candidate Context.
 
 | Intent | Eligible entries | Primary candidates | Secondary candidates | Boundary evidence | Coverage note |
 |---|---:|---|---|---|---|
