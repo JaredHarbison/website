@@ -27,7 +27,7 @@
       <form class="ask-form" action="/api/ask/questions" method="post" data-ask-form>
         <% unless @admin_preview %><input type="hidden" name="t" value="<%= prospect_token %>"><% end %>
         <% if @admin_preview %><input type="hidden" name="admin_preview" value="1"><% end %>
-        <% if @admin_preview %><input type="hidden" name="architecture" value="<%= @preview_architecture %>"><% end %>
+        <% if @admin_preview || @qa_preview %><input type="hidden" name="architecture" value="<%= @preview_architecture %>"><% end %>
         <% if @admin_preview %><%= hidden_field_tag :authenticity_token, form_authenticity_token %><% end %>
         <label for="ask-question">Your question</label>
         <textarea id="ask-question" name="question" rows="5" maxlength="600" required placeholder="What kind of engineer is Jared?" data-ask-question></textarea>

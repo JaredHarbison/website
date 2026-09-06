@@ -17,6 +17,7 @@ module AskJared
       @engagement_service = engagement_service
       @usage_guard = usage_guard
       @planner = planner
+      @v2_planner = CandidateContextPlanner.new(context: CandidateContext.new(version: CandidateContext::VERSION_V2))
     end
 
     def call(raw_token:, question:, session_id:, ip: nil, request_id:, admin_preview: false, architecture: nil, evaluation: false)
@@ -38,7 +39,8 @@ module AskJared
       prior_intent = prior_question_intent(session_digest)
       classified_intent = @retriever.respond_to?(:classified_intent) ? @retriever.classified_intent(question) : nil
       active_intent = continuation?(question) ? (prior_intent || classified_intent) : (classified_intent || prior_intent)
-      plan, architecture_used = planning(question: question, intent: active_intent, prior_evidence: prior_context, requested: architecture, admin_preview: admin_preview)
+      qa_preview = token&.opportunity&.tracker_source == "internal_qa"
+      plan, architecture_used = planning(question: question, intent: active_intent, prior_evidence: prior_context, requested: architecture, admin_preview: admin_preview || qa_preview)
       if continuation?(question) && prior_context.any?
         referent_ids = referent_entry_ids(question, prior_context)
         entries = retrieve_with_plan(question, intent: active_intent, plan: plan).select { |entry| referent_ids.include?(entry.id) || referent_ids.include?(entry.source_reference) }
@@ -130,10 +132,11 @@ module AskJared
     end
 
     def planning(question:, intent:, prior_evidence:, requested:, admin_preview:)
-      enabled = requested.to_s == CandidateContext::VERSION && (admin_preview || ENV.fetch("ASK_JARED_CANDIDATE_CONTEXT", "0") == "1")
+      enabled = [ CandidateContext::VERSION, CandidateContext::VERSION_V2 ].include?(requested.to_s) && (admin_preview || ENV.fetch("ASK_JARED_CANDIDATE_CONTEXT", "0") == "1")
       return [ nil, "baseline-v1" ] unless enabled
 
-      [ @planner.call(question: question.to_s.strip, intent: intent, prior_evidence_ids: prior_evidence), CandidateContext::VERSION ]
+      planner = requested.to_s == CandidateContext::VERSION_V2 ? @v2_planner : @planner
+      [ planner.call(question: question.to_s.strip, intent: intent, prior_evidence_ids: prior_evidence), requested.to_s ]
     rescue StandardError
       [ nil, "baseline-v1-planner-fallback" ]
     end

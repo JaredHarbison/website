@@ -23,6 +23,7 @@ class AskJaredCandidateContextTest < ActiveSupport::TestCase
 
   setup do
     EngagementEvent.delete_all
+    CandidateContextRecord.delete_all
     KnowledgeEntry.delete_all
     AskToken.delete_all
     Opportunity.delete_all
@@ -142,5 +143,16 @@ class AskJaredCandidateContextTest < ActiveSupport::TestCase
     assert_equal [ "approved.context" ], records.map { |record| record["key"] }
   ensure
     file&.unlink
+  end
+
+  test "v2 planner selects approved relevant records by intent and priority" do
+    approved = CandidateContextRecord.create!(stable_key: "positioning.engineering_identity", corpus_version: "candidate-context-v2", category: "positioning", approval_status: "approved", privacy_classification: "private", guidance: "Identity guidance", intent_tags: [ "characterization" ], affects: [ "interpretation" ], priority: 100)
+    CandidateContextRecord.create!(stable_key: "draft.identity", corpus_version: "candidate-context-v2", category: "positioning", approval_status: "draft", privacy_classification: "private", guidance: "Should not be selected", intent_tags: [ "characterization" ], affects: [ "interpretation" ], priority: 110)
+
+    plan = AskJared::CandidateContextPlanner.new(context: AskJared::CandidateContext.new(version: AskJared::CandidateContext::VERSION_V2)).call(question: "What kind of engineer is Jared?", intent: "characterization")
+
+    assert_includes plan.context_keys, approved.stable_key
+    refute_includes plan.context_keys, "draft.identity"
+    assert_equal AskJared::CandidateContext::VERSION_V2, plan.version
   end
 end

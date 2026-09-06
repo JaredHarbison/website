@@ -111,4 +111,22 @@ class ApiAskQuestionsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "baseline-v1", event.metadata["architecture"]
     assert_nil event.metadata["planner_version"]
   end
+
+  test "ignores candidate-context-v2 architecture selection from an unauthenticated public request" do
+    post "/api/ask/questions", params: { question: "What kind of engineer is Jared?", architecture: "candidate-context-v2" }, headers: { "X-Ask-Token" => @raw_token }
+
+    event = EngagementEvent.find_by!(event_type: "answer_returned")
+    assert_equal "baseline-v1", event.metadata["architecture"]
+  end
+
+  test "allows v2 architecture only for an explicitly internal QA token" do
+    token_service = AskJared::TokenService.new
+    _token, raw = token_service.mint!
+    token_service.claim!(raw_token: raw, external_id: "internal-qa-v2", company: "Internal QA", role_title: "Candidate Context v2", tracker_source: "internal_qa")
+
+    post "/api/ask/questions", params: { question: "What kind of engineer is Jared?", architecture: "candidate-context-v2", t: raw }
+
+    event = EngagementEvent.find_by!(event_type: "answer_returned")
+    assert_equal "candidate-context-v2", event.metadata["architecture"]
+  end
 end

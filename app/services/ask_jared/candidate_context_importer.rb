@@ -30,7 +30,7 @@ module AskJared
         approval_status: record.fetch("approval_status"), privacy_classification: record.fetch("privacy_classification"),
         purpose: record["purpose"], guidance: record.fetch("guidance"),
         source_references: Array(record["source_references"]), provenance: record["provenance"] || {},
-        affects: Array(record["affects"]), intent_tags: Array(record["intent_tags"]),
+        affects: Array(record["affects"]), intent_tags: Array(record["intent_tags"] || record["intents"]),
         relationships: record["relationships"] || {}, priority: record.fetch("priority", 0),
         retired_at: record.fetch("approval_status") == "retired" ? Time.current : nil
       }

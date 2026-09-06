@@ -6,12 +6,13 @@ class AskController < ApplicationController
     response.headers["X-Robots-Tag"] = "noindex, nofollow, noarchive"
     expires_now
     @admin_preview = current_admin_user.present?
-    @preview_architecture = @admin_preview && %w[baseline-v1 candidate-context-v1].include?(params[:architecture].to_s) ? params[:architecture].to_s : "baseline-v1"
     if params[:static].present?
       @ask_unavailable = true
       return render :show
     end
     @token = token_service.resolve(prospect_raw_token) unless @admin_preview
+    @qa_preview = @token&.opportunity&.tracker_source == "internal_qa"
+    @preview_architecture = (@admin_preview || @qa_preview) && %w[baseline-v1 candidate-context-v1 candidate-context-v2].include?(params[:architecture].to_s) ? params[:architecture].to_s : "baseline-v1"
     unless @admin_preview || token_service.recruiter_accessible?(@token)
       @ask_unavailable = true
       return render :show, status: :not_found

@@ -1,7 +1,5 @@
 module AskJared
   class CandidateContextPlanner
-    VERSION = CandidateContext::VERSION
-
     def initialize(context: CandidateContext.new)
       @context = context
     end
@@ -14,7 +12,7 @@ module AskJared
       queries = [ question ]
       queries += records.filter_map { |record| record["guidance"] if Array(record["affects"]).include?("retrieval") }.first(3)
       AnswerPlan.new(
-        architecture: VERSION, version: VERSION, intent: intent || "unclassified", target: target_for(intent, question),
+        architecture: @context.version, version: @context.version, intent: intent || "unclassified", target: target_for(intent, question),
         breadth: question.match?(/some|examples|strongest|qualities|kinds|what would/i) ? "broad" : "narrow",
         answer_shape: shape_for(intent, question), themes: themes, story_slots: story_slots_for(intent, question),
         preferred_sources: sources, boundary_relevance: boundary_for(intent, question), retrieval_queries: queries,

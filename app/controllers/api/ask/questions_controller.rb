@@ -12,14 +12,16 @@ module Api
 
       def create
         admin_preview = current_admin_user.present? && params[:admin_preview].to_s == "1"
+        raw_token = admin_preview ? nil : request.headers["X-Ask-Token"].presence || params[:t]
+        qa_preview = !admin_preview && AskJared::TokenService.new.resolve(raw_token)&.opportunity&.tracker_source == "internal_qa"
         render json: question_service.call(
-          raw_token: admin_preview ? nil : request.headers["X-Ask-Token"].presence || params[:t],
+          raw_token: raw_token,
           admin_preview: admin_preview,
           question: params[:question],
           session_id: ask_session_id,
           ip: request.remote_ip,
           request_id: request.request_id,
-          architecture: admin_preview ? params[:architecture].to_s : nil
+          architecture: (admin_preview || qa_preview) ? params[:architecture].to_s : nil
         )
       end
 
