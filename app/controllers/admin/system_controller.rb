@@ -5,6 +5,13 @@ module Admin
       @recruiter_count = KnowledgeEntry.recruiter_retrievable.count
       @missing_embeddings = KnowledgeEntry.recruiter_retrievable.where(embedding: nil).count
       @stale_embeddings = KnowledgeEntry.recruiter_retrievable.where.not(embedding_model: AskJared::EmbeddingService::MODEL).count
+      @knowledge_scope_counts = {
+        "all KnowledgeEntry rows" => KnowledgeEntry.count,
+        "approved recruiter-visible records" => KnowledgeEntry.recruiter_retrievable.count,
+        "approved internal records" => KnowledgeEntry.where(approval_status: "approved").where.not(visibility: "recruiter_visible").count,
+        "Candidate Context v2 approved records" => CandidateContextRecord.approved_for_planning.count,
+        "Candidate Context v2 draft records" => CandidateContextRecord.where(approval_status: "draft").count
+      }
       @issue_email_configured = ENV["JARED_ISSUE_EMAIL"].present?
       @recognized_model = "gpt-5.6-terra"
       @fallback_model = ENV["ASK_JARED_MODEL"].presence || "configured fallback"

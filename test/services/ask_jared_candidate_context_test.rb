@@ -1,4 +1,5 @@
 require "test_helper"
+require "tempfile"
 
 class AskJaredCandidateContextTest < ActiveSupport::TestCase
   FakeRetriever = Struct.new(:entries) do
@@ -102,5 +103,44 @@ class AskJaredCandidateContextTest < ActiveSupport::TestCase
 
     assert_equal "answer", response["status"]
     assert_equal entry.id.to_s, response["evidence_ids"].first
+  end
+
+  test "candidate context loader ignores draft and retired records" do
+    file = Tempfile.new([ "candidate-context", ".yml" ])
+    file.write(<<~YAML)
+      version: candidate-context-v2
+      records:
+        - key: approved.context
+          category: positioning
+          approval_status: approved
+          privacy_classification: private
+          purpose: approved
+          source_references: []
+          affects: [interpretation]
+          guidance: approved guidance
+        - key: draft.context
+          category: positioning
+          approval_status: draft
+          privacy_classification: private
+          purpose: draft
+          source_references: []
+          affects: [interpretation]
+          guidance: draft guidance
+        - key: retired.context
+          category: positioning
+          approval_status: retired
+          privacy_classification: private
+          purpose: retired
+          source_references: []
+          affects: [interpretation]
+          guidance: retired guidance
+      YAML
+    file.close
+
+    records = AskJared::CandidateContext.new(path: file.path).records
+
+    assert_equal [ "approved.context" ], records.map { |record| record["key"] }
+  ensure
+    file&.unlink
   end
 end

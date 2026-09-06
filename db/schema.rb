@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_09_05_000003) do
+ActiveRecord::Schema[8.0].define(version: 2026_09_06_000001) do
   create_table "admin_users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -62,6 +62,27 @@ ActiveRecord::Schema[8.0].define(version: 2026_09_05_000003) do
     t.index ["opportunity_id"], name: "index_ask_usage_events_on_opportunity_id"
     t.index ["request_id"], name: "index_ask_usage_events_on_request_id", unique: true
     t.index ["session_digest", "occurred_at"], name: "index_ask_usage_events_on_session_digest_and_occurred_at"
+  end
+
+  create_table "candidate_context_records", force: :cascade do |t|
+    t.string "stable_key", null: false
+    t.string "corpus_version", null: false
+    t.string "category", null: false
+    t.string "approval_status", default: "draft", null: false
+    t.string "privacy_classification", default: "private", null: false
+    t.text "purpose"
+    t.text "guidance", null: false
+    t.json "source_references", default: [], null: false
+    t.json "provenance", default: {}, null: false
+    t.json "affects", default: [], null: false
+    t.json "intent_tags", default: [], null: false
+    t.json "relationships", default: {}, null: false
+    t.integer "priority", default: 0, null: false
+    t.datetime "retired_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["corpus_version", "approval_status"], name: "idx_on_corpus_version_approval_status_2b95c06cdc"
+    t.index ["stable_key"], name: "index_candidate_context_records_on_stable_key", unique: true
   end
 
   create_table "engagement_events", force: :cascade do |t|

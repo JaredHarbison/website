@@ -6,7 +6,8 @@ module AskJared
     PATH = Rails.root.join("config/ask_jared_candidate_context.yml")
 
     def initialize(path: PATH)
-      @records = YAML.safe_load(File.read(path), permitted_classes: [], aliases: false).fetch("records").map(&:stringify_keys).freeze
+      document = YAML.safe_load(File.read(path), permitted_classes: [], aliases: false)
+      @records = document.fetch("records").map(&:stringify_keys).select { |record| approved?(record) }.freeze
     end
 
     def active?
@@ -32,6 +33,12 @@ module AskJared
     end
 
     private
+
+    # v1 predates the explicit approval field. Its version-controlled records are treated as
+    # approved legacy planning data; v2 records must carry approval_status: approved.
+    def approved?(record)
+      record.fetch("approval_status", "approved") == "approved" && record.fetch("privacy_classification", "private") == "private"
+    end
 
     def story_key_for(intent)
       {

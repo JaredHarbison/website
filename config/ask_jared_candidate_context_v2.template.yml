@@ -1,0 +1,31 @@
+version: candidate-context-v2
+# Private planning corpus only. This file is never recruiter evidence.
+# Stable IDs are immutable. Re-importing the same file upserts by id; omission does not delete.
+records:
+  - id: positioning.example
+    category: positioning
+    approval_status: draft
+    privacy_classification: private
+    purpose: "Short description of the planning use."
+    guidance: "Planning guidance: what to seek, emphasize, or subordinate. Do not write a recruiter-facing factual answer here."
+    source_references: []
+    provenance:
+      type: "jared-confirmed-private-context"
+      note: "Explain why this planning concept exists."
+    affects: [interpretation, story_ranking, retrieval, voice]
+    intent_tags: [characterization]
+    relationships: {}
+    priority: 50
+  - id: boundary.example
+    category: boundary_context
+    approval_status: draft
+    privacy_classification: private
+    purpose: "A boundary or trajectory planning cue."
+    guidance: "Seek approved recruiter evidence before stating any factual boundary."
+    source_references: []
+    provenance:
+      type: "jared-confirmed-private-context"
+    affects: [boundary_framing]
+    intent_tags: [risk]
+    relationships: {}
+    priority: 50
