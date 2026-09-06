@@ -1,0 +1,158 @@
+version: candidate-context-v1
+records:
+  - key: positioning.engineering_identity
+    category: positioning
+    purpose: Canonical professional characterization and lead themes.
+    source_references: ["case-study:dogly-product-design", "case-study:dogly-shopify-integration", "fact:engineering-experience-boundaries"]
+    affects: [interpretation, retrieval, voice]
+    guidance: "Lead broad characterization with product-minded, end-to-end, autonomous engineering and collaboration; keep technology lists secondary."
+  - key: positioning.product_engineer
+    category: positioning
+    purpose: Product-engineer orientation.
+    source_references: ["story:dogly-agenda-product-direction", "case-study:dogly-product-design"]
+    affects: [interpretation, story_ranking, voice]
+    guidance: "For broad fit questions, seek product judgment, user need, tradeoffs, and delivery together."
+  - key: positioning.backend_rails_foundation
+    category: positioning
+    purpose: Backend and Rails foundation.
+    source_references: ["case-study:dogly-shopify-integration", "case-study:dogly-membership"]
+    affects: [retrieval, story_ranking]
+    guidance: "Use Rails/backend as a primary foundation when the question asks about engineering identity or role fit."
+  - key: positioning.full_stack_trajectory
+    category: positioning
+    purpose: Full-stack trajectory.
+    source_references: ["case-study:dogly-shopify-integration", "case-study:dogly-product-design", "fact:engineering-experience-boundaries"]
+    affects: [interpretation, retrieval, voice]
+    guidance: "Seek end-to-end product work and full-stack breadth; do not turn breadth into universal expertise."
+  - key: positioning.react
+    category: positioning
+    purpose: React experience as a supported technology theme.
+    source_references: ["case-study:dogly-product-design", "case-study:dogly-membership"]
+    affects: [retrieval, story_ranking]
+    guidance: "React can support the engineering profile when approved evidence names it; do not transfer it to TypeScript."
+  - key: story.product_judgment_primary
+    category: story_guidance
+    purpose: Primary product-direction story.
+    source_references: ["story:dogly-agenda-product-direction"]
+    affects: [story_ranking, retrieval]
+    guidance: "Prefer Agenda over Community for product direction, user need, tradeoffs, comparison, and post-launch signals."
+  - key: story.product_judgment_secondary
+    category: story_guidance
+    purpose: Secondary product judgment story.
+    source_references: ["case-study:dogly-product-design", "case-study:dogly-membership"]
+    affects: [story_ranking, retrieval]
+    guidance: "Use distinct delivery or membership stories only when they answer the product proposition."
+  - key: story.technical_ownership_primary
+    category: story_guidance
+    purpose: Strong end-to-end ownership stories.
+    source_references: ["case-study:dogly-shopify-integration", "case-study:dogly-membership"]
+    affects: [story_ranking, retrieval]
+    guidance: "Seek implementation, integration, and operational ownership; preserve collaboration and attribution."
+  - key: story.collaboration_primary
+    category: story_guidance
+    purpose: Primary engineer collaboration story.
+    source_references: ["story:dogly-engineering-collaboration"]
+    affects: [story_ranking, retrieval]
+    guidance: "Use direct engineer-to-engineer collaboration rather than inferring team experience from retail leadership."
+  - key: story.ambiguity_primary
+    category: story_guidance
+    purpose: Ambiguous requirements story.
+    source_references: ["story:doglydaily-three-send-ux"]
+    affects: [story_ranking, retrieval]
+    guidance: "Use the product/UX ambiguity story and preserve planned versus completed state."
+  - key: story.disagreement_primary
+    category: story_guidance
+    purpose: Technical disagreement story.
+    source_references: ["story:dogly-react-migration-disagreement"]
+    affects: [story_ranking, retrieval]
+    guidance: "Use this for technical pushback and alternatives; do not add unsupported persuasion details."
+  - key: story.impact_primary
+    category: story_guidance
+    purpose: Measurable impact examples.
+    source_references: ["story:jcrew-dress-swim-decision", "story:dogly-agenda-product-direction", "story:dogly-agenda-simplification"]
+    affects: [story_ranking, retrieval]
+    guidance: "Separate distinct outcomes and preserve each metric's source, scope, and attribution."
+  - key: story.production_primary
+    category: story_guidance
+    purpose: Production ownership and incident response.
+    source_references: ["story:doglydaily-technical-debt-learning", "story:production-incident"]
+    affects: [story_ranking, retrieval]
+    guidance: "Use debugging, observability, and refactoring evidence; do not invent incident outcomes."
+  - key: story.failure_primary
+    category: story_guidance
+    purpose: Failure and debugging story.
+    source_references: ["story:doglydaily-technical-debt-learning"]
+    affects: [story_ranking, retrieval, voice]
+    guidance: "Lead with the mistake and the structural lesson, then the supported corrective work."
+  - key: story.mentorship_primary
+    category: story_guidance
+    purpose: Mentorship and people development.
+    source_references: ["story:anthropologie-succession-mentorship"]
+    affects: [story_ranking, retrieval]
+    guidance: "Use retail mentorship only for people development; do not relabel it engineering management."
+  - key: story.prioritization_primary
+    category: story_guidance
+    purpose: Prioritization and deciding what not to build.
+    source_references: ["story:dogly-pre-accelerator-prioritization", "story:dogly-agenda-product-direction"]
+    affects: [story_ranking, retrieval]
+    guidance: "Prioritize reasoning and tradeoffs; do not infer persuasion behavior unless evidence supports it."
+  - key: boundary.large_engineering_team
+    category: boundary_guidance
+    purpose: Large conventional engineering-team boundary.
+    source_references: ["fact:large-engineering-organization-boundary", "fact:engineering-experience-boundaries"]
+    affects: [boundary_framing, interpretation]
+    guidance: "Mention proportionately for risk or scale questions; distinguish retail organizational scale from engineering-team experience."
+  - key: boundary.typescript
+    category: boundary_guidance
+    purpose: Professional TypeScript boundary and current learning.
+    source_references: ["fact:professional-typescript-boundary", "fact:technology-depth-boundary"]
+    affects: [boundary_framing, retrieval, voice]
+    guidance: "State that prolonged professional depth is not established, then use only the supported learning trajectory."
+  - key: boundary.autonomy
+    category: boundary_guidance
+    purpose: Highly autonomous recent work.
+    source_references: ["fact:engineering-experience-boundaries", "case-study:dogly-shopify-integration"]
+    affects: [interpretation, voice]
+    guidance: "Frame autonomy as demonstrated operating context, not proof of identical performance in a large organization."
+  - key: intent.characterization
+    category: recruiter_intent
+    purpose: Interpret broad engineer-characterization questions.
+    source_references: ["fact:engineering-experience-boundaries", "case-study:dogly-product-design"]
+    affects: [interpretation, voice]
+    guidance: "Answer identity, operating style, scope, and differentiators before technical inventory."
+  - key: intent.product_decision
+    category: recruiter_intent
+    purpose: Distinguish product decisions from implementation.
+    source_references: ["story:dogly-agenda-product-direction"]
+    affects: [interpretation, story_ranking]
+    guidance: "Seek decisions, judgment, influence, tradeoffs, and outcomes; do not relabel implementation as product direction."
+  - key: intent.weakness
+    category: recruiter_intent
+    purpose: Interpret weakness and risk questions.
+    source_references: ["fact:large-engineering-organization-boundary", "fact:professional-typescript-boundary"]
+    affects: [interpretation, boundary_framing, voice]
+    guidance: "Name the material gap plainly, explain its actual scope, and add relevant foundation or mitigation."
+  - key: voice.recruiter_natural
+    category: answer_voice
+    purpose: Recruiter-natural answer framing.
+    source_references: ["fact:engineering-experience-boundaries"]
+    affects: [voice]
+    guidance: "Lead with a conclusion, use plain language, and avoid internal governance vocabulary."
+  - key: voice.breadth
+    category: answer_voice
+    purpose: Broad versus narrow answer shape.
+    source_references: ["fact:engineering-experience-boundaries"]
+    affects: [interpretation, voice]
+    guidance: "Use concise synthesis for broad questions, separated story units for multiple examples, and narrow caveats for unsupported details."
+  - key: continuity.follow_up
+    category: answer_voice
+    purpose: Follow-up referent handling.
+    source_references: ["story:dogly-agenda-product-direction", "story:dogly-engineering-collaboration"]
+    affects: [interpretation, retrieval]
+    guidance: "Prefer previous evidence references for first/second/that story; prior prose may guide reference only, never add facts."
+  - key: safety.non_transfer
+    category: boundary_guidance
+    purpose: Prevent adjacent-domain and causality transfer.
+    source_references: ["fact:technology-depth-boundary", "career:jcrew-store-director-columbus-circle", "story:dogly-agenda-product-direction"]
+    affects: [boundary_framing, retrieval, voice]
+    guidance: "Do not transfer retail management to engineering management, React to TypeScript, or associated metrics to causal claims."

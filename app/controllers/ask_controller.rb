@@ -6,6 +6,7 @@ class AskController < ApplicationController
     response.headers["X-Robots-Tag"] = "noindex, nofollow, noarchive"
     expires_now
     @admin_preview = current_admin_user.present?
+    @preview_architecture = @admin_preview && %w[baseline-v1 candidate-context-v1].include?(params[:architecture].to_s) ? params[:architecture].to_s : "baseline-v1"
     if params[:static].present?
       @ask_unavailable = true
       return render :show

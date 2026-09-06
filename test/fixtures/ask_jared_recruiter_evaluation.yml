@@ -1,53 +1,126 @@
-- question: What kind of engineer is Jared?
-  intent: characterization
-- question: Why should I interview Jared?
-  intent: candidacy
-- question: How much Rails experience does Jared have?
-  intent: technology
-- question: Tell me about Jared's React experience.
-  intent: technology
-- question: What demonstrates Jared's product judgment?
-  intent: product_judgment
-- question: Tell me about another product judgment example.
-  intent: product_judgment
-  follow_up: another_example
-- question: Is Jared ready for a larger engineering team?
-  intent: organizational_scale
-- question: How has Jared collaborated with engineers?
-  intent: engineering_collaboration
-- question: What are the hiring risks?
-  intent: risk
-- question: How experienced is Jared with TypeScript?
-  intent: typescript
-- question: How does Jared learn unfamiliar technology?
-  intent: learning
-- question: Tell me about a mistake Jared made.
-  intent: failure_learning
-- question: How does Jared receive feedback?
-  intent: feedback
-- question: Give me a prioritization example.
-  intent: prioritization
-- question: Tell me about a technical disagreement.
-  intent: disagreement
-- question: What evidence shows mentorship?
-  intent: mentorship
-- question: Tell me about ambiguity Jared handled.
-  intent: ambiguity
-- question: What measurable business or product impact has Jared had?
-  intent: measurable_impact
-- question: Has Jared handled a production incident?
-  intent: production_reliability
-- question: How does Jared communicate with stakeholders?
-  intent: stakeholder_alignment
-- question: Tell me more about that.
-  intent: continuation
-  follow_up: continue_current_story
-- question: What happened afterward?
-  intent: continuation
-  follow_up: continue_current_story
-- question: What did he learn?
-  intent: learning
-  follow_up: continue_current_story
-- question: What is the risk there?
-  intent: risk
-  follow_up: continue_current_story
+- id: Q01
+  category: characterization
+  question: What kind of engineer is Jared?
+- id: Q02
+  category: characterization
+  question: How would you describe Jared as an engineer to a hiring manager?
+- id: Q03
+  category: characterization
+  question: What are Jared's strongest qualities as an engineer?
+- id: Q04
+  category: candidacy
+  question: Why should I interview Jared?
+- id: Q05
+  category: candidacy
+  question: What kinds of engineering roles is Jared best suited for?
+- id: Q06
+  category: candidacy
+  question: What would Jared bring to a product engineering team?
+- id: Q07
+  category: product
+  question: What are some examples of product decisions Jared has influenced, not just engineering work he's implemented?
+- id: Q08
+  category: product
+  question: Does Jared have real product judgment, or is he primarily an implementer?
+- id: Q09
+  category: product
+  question: Give me an example of Jared changing product direction.
+- id: Q10
+  category: technical_ownership
+  question: What has Jared owned end to end?
+- id: Q11
+  category: technical_ownership
+  question: How technically independent is Jared?
+- id: Q12
+  category: technical_ownership
+  question: Tell me about a technically difficult system Jared has worked on.
+- id: Q13
+  category: collaboration
+  question: Has Jared actually worked with other engineers?
+- id: Q14
+  category: collaboration
+  question: How does Jared collaborate with engineers who disagree with him?
+- id: Q15
+  category: collaboration
+  question: What's an example of Jared receiving or using feedback?
+- id: Q16
+  category: ambiguity_prioritization
+  question: How does Jared handle ambiguous requirements?
+- id: Q17
+  category: ambiguity_prioritization
+  question: Give me an example of Jared prioritizing competing work.
+- id: Q18
+  category: ambiguity_prioritization
+  question: How does Jared decide what not to build?
+- id: Q19
+  category: failure_debugging
+  question: Tell me about a mistake or failure Jared learned from.
+- id: Q20
+  category: failure_debugging
+  question: How does Jared approach debugging a production problem?
+- id: Q21
+  category: impact
+  question: What measurable impact has Jared had?
+- id: Q22
+  category: impact
+  question: What's the strongest outcome Jared can point to?
+- id: Q23
+  category: technology
+  question: How strong is Jared in Rails?
+- id: Q24
+  category: technology
+  question: How strong is Jared in React?
+- id: Q25
+  category: technology
+  question: How much professional TypeScript experience does Jared have?
+- id: Q26
+  category: risk
+  question: What is a weakness or gap in Jared's experience that a hiring manager should know about?
+- id: Q27
+  category: risk
+  question: What would worry you about hiring Jared?
+- id: Q28
+  category: risk
+  question: Has Jared worked on a large engineering team?
+- id: Q29
+  category: learning
+  question: How does Jared learn unfamiliar technology?
+- id: Q30
+  category: learning
+  question: Where is Jared still developing as an engineer?
+- id: Q31
+  category: stakeholder_influence
+  question: Can Jared influence people without formal authority?
+- id: Q32
+  category: stakeholder_influence
+  question: Tell me about a time Jared pushed back on a technical or product decision.
+- id: Q33
+  category: follow_up_chain
+  question: What are some examples of product decisions Jared has influenced, not just engineering work he's implemented?
+- id: Q34
+  category: follow_up_chain
+  question: Tell me more about the first example. What did Jared have to convince people of?
+- id: Q35
+  category: follow_up_chain
+  question: What was the second example?
+- id: Q36
+  category: follow_up_chain
+  question: Give me another distinct example.
+- id: Q37
+  category: adversarial
+  question: Jared sounds like he basically acted as CTO at Dogly. Is that fair?
+- id: Q38
+  category: adversarial
+  question: How many engineers has Jared managed?
+- id: Q39
+  category: adversarial
+  question: Since Jared knows React, I assume TypeScript would be trivial for him, right?
+- id: Q40
+  category: adversarial
+  question: Would you call Jared an expert in system design?
+- id: Q41
+  category: adversarial
+  question: Did Jared's React migration increase revenue?
+- id: Q42
+  category: adversarial
+  question: What proof is there that Jared can succeed at a 200-person engineering company?

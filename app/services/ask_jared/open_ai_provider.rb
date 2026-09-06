@@ -35,8 +35,8 @@ module AskJared
       @http = http
     end
 
-    def call(question:, context:)
-      request(question: question, context: bounded_context(context), messages: nil)
+    def call(question:, context:, plan: nil)
+      request(question: question, context: bounded_context(context), messages: nil, plan: plan)
     end
 
     def repair(question:, context:, response:, violations:)
@@ -49,17 +49,17 @@ module AskJared
         entry IDs or internal claim references as claim_refs. The same aliases apply to this repair.
         Return the same strict JSON shape.
       PROMPT
-      request(question: question, context: bounded_context(context), messages: [ { role: "user", content: repair_instructions } ], response: response)
+      request(question: question, context: bounded_context(context), messages: [ { role: "user", content: repair_instructions } ], response: response, plan: nil)
     end
 
     private
 
-    def request(question:, context:, messages:, response: nil)
+    def request(question:, context:, messages:, response: nil, plan: nil)
       raise ConfigurationError, "OPENAI_API_KEY is not configured" if @api_key.blank?
 
       response = @http.post(
         ENDPOINT,
-        JSON.generate(request_body(question: question, context: context, messages: messages, response: response)),
+        JSON.generate(request_body(question: question, context: context, messages: messages, response: response, plan: plan)),
         { "Authorization" => "Bearer #{@api_key}", "Content-Type" => "application/json" }
       )
       raise ProviderError, "OpenAI request failed" unless response.is_a?(Net::HTTPSuccess)
@@ -76,8 +76,9 @@ module AskJared
     class ConfigurationError < StandardError; end
     class ProviderError < StandardError; end
 
-    def request_body(question:, context:, messages: nil, response: nil)
+    def request_body(question:, context:, messages: nil, response: nil, plan: nil)
       user_content = "Question: #{question}\n\nApproved claim packet:\n#{format_context(context)}"
+      user_content = "Question plan (planning guidance only; never factual authority):\n#{plan.summary.to_json}\n\n#{user_content}" if plan
       user_content = "#{user_content}\n\n#{messages.first[:content]}\n\nPrevious draft:\n#{response.to_json}" if messages
       {
         model: @model,

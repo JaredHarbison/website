@@ -8,7 +8,7 @@ module AskJared
 
     RECOGNIZED_INTENTS = ApprovedKnowledgeRetriever::INTENT_SPECS.keys.freeze
 
-    def initialize(token_service: TokenService.new, retriever: ApprovedKnowledgeRetriever.new, provider: OpenAiProvider.new, skeleton_provider: nil, engagement_service: EngagementService.new, usage_guard: UsageGuard.new)
+    def initialize(token_service: TokenService.new, retriever: ApprovedKnowledgeRetriever.new, provider: OpenAiProvider.new, skeleton_provider: nil, engagement_service: EngagementService.new, usage_guard: UsageGuard.new, planner: CandidateContextPlanner.new)
       @token_service = token_service
       @retriever = retriever
       @provider = provider
@@ -16,9 +16,10 @@ module AskJared
       @skeleton_enabled = provider.is_a?(OpenAiProvider) || skeleton_provider.present?
       @engagement_service = engagement_service
       @usage_guard = usage_guard
+      @planner = planner
     end
 
-    def call(raw_token:, question:, session_id:, ip: nil, request_id:, admin_preview: false)
+    def call(raw_token:, question:, session_id:, ip: nil, request_id:, admin_preview: false, architecture: nil)
       started_at = Process.clock_gettime(Process::CLOCK_MONOTONIC)
       token = @token_service.resolve(raw_token)
       unless admin_preview
@@ -37,16 +38,17 @@ module AskJared
       prior_intent = prior_question_intent(session_digest)
       classified_intent = @retriever.respond_to?(:classified_intent) ? @retriever.classified_intent(question) : nil
       active_intent = continuation?(question) ? (prior_intent || classified_intent) : (classified_intent || prior_intent)
+      plan, architecture_used = planning(question: question, intent: active_intent, prior_evidence: prior_context, requested: architecture, admin_preview: admin_preview)
       if continuation?(question) && prior_context.any?
         referent_ids = referent_entry_ids(question, prior_context)
-        entries = retrieve(question, limit: 12, intent: active_intent).select { |entry| referent_ids.include?(entry.id) || referent_ids.include?(entry.source_reference) }
+        entries = retrieve_with_plan(question, intent: active_intent, plan: plan).select { |entry| referent_ids.include?(entry.id) || referent_ids.include?(entry.source_reference) }
         if entries.empty? && referent_ids.any?
           numeric_ids = referent_ids.select { |referent| referent.to_s.match?(/\A\d+\z/) }
           entries = ::KnowledgeEntry.recruiter_retrievable.where(id: numeric_ids).to_a
           entries = ::KnowledgeEntry.recruiter_retrievable.where(source_reference: referent_ids).to_a if entries.empty?
         end
       else
-        entries = retrieve(question, intent: active_intent).reject { |entry| another_example?(question) && prior_primary.include?(entry.source_reference) }
+        entries = retrieve_with_plan(question, intent: active_intent, plan: plan).reject { |entry| another_example?(question) && prior_primary.include?(entry.source_reference) }
         entries = entries.first(1) if another_example?(question) && skeleton_path?(active_intent)
       end
       entries = retrieve(question, limit: 12, intent: active_intent).reject { |entry| prior_primary.include?(entry.source_reference) } if entries.empty? && prior_primary.any? && !another_example?(question) && !continuation?(question)
@@ -60,9 +62,21 @@ module AskJared
       response = if packet.empty?
         insufficient_response(another_example: another_example?(question))
       elsif skeleton_path?(active_intent)
-        @skeleton_provider.call(question: question.to_s.strip, skeleton: RecruiterAnswerSkeleton.new(packet: packet, intent: active_intent, question: question.to_s.strip))
+        begin
+          @skeleton_provider.call(question: question.to_s.strip, skeleton: RecruiterAnswerSkeleton.new(packet: packet, intent: active_intent, question: question.to_s.strip))
+        rescue OpenAiProvider::ConfigurationError, OpenAiProvider::ProviderError
+          insufficient_response
+        end
       else
-        @provider.call(question: question.to_s.strip, context: packet)
+        begin
+          if plan
+            @provider.call(question: question.to_s.strip, context: packet, plan: plan)
+          else
+            @provider.call(question: question.to_s.strip, context: packet)
+          end
+        rescue OpenAiProvider::ConfigurationError, OpenAiProvider::ProviderError
+          insufficient_response
+        end
       end
       telemetry = response.delete("__telemetry") || {} if response.is_a?(Hash)
       response = if skeleton_path?(active_intent) && !packet.empty?
@@ -79,6 +93,8 @@ module AskJared
           "evidence_ids" => response["evidence_ids"], "skeleton_roles" => response["claim_refs"],
           "model" => model_for(skeleton_path?(active_intent)), "latency_ms" => ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - started_at) * 1000).round,
           "intent_path" => classified_intent.present? ? "recognized" : "fallback", "evidence_count" => response["evidence_ids"].to_a.length,
+          "architecture" => architecture_used, "planner_version" => plan&.version, "planner_model" => "deterministic",
+          "context_keys" => plan&.context_keys, "plan_summary" => plan&.summary,
           "turn" => EngagementEvent.where(session_digest: session_digest, event_type: "answer_returned").count + 1,
           "validation" => "passed", "input_tokens" => telemetry["input_tokens"], "output_tokens" => telemetry["output_tokens"],
           "estimated_cost_cents" => telemetry["estimated_cost_cents"], "pricing_version" => telemetry["pricing_version"]
@@ -97,6 +113,25 @@ module AskJared
       options[:limit] = limit if limit
       options[:intent] = intent if intent && @retriever.respond_to?(:classified_intent)
       @retriever.call(question, **options)
+    end
+
+    def retrieve_with_plan(question, intent:, plan:)
+      return retrieve(question, intent: intent) unless plan
+
+      queries = plan.retrieval_queries.first(4)
+      results = queries.flat_map { |query| retrieve(query, limit: 12, intent: intent) }
+      unique = results.uniq { |entry| entry.id }
+      preferred = unique.select { |entry| plan.preferred_sources.include?(entry.source_reference.to_s) }
+      (preferred + unique.reject { |entry| preferred.include?(entry) }).first(12)
+    end
+
+    def planning(question:, intent:, prior_evidence:, requested:, admin_preview:)
+      enabled = requested.to_s == CandidateContext::VERSION && (admin_preview || ENV.fetch("ASK_JARED_CANDIDATE_CONTEXT", "0") == "1")
+      return [ nil, "baseline-v1" ] unless enabled
+
+      [ @planner.call(question: question.to_s.strip, intent: intent, prior_evidence_ids: prior_evidence), CandidateContext::VERSION ]
+    rescue StandardError
+      [ nil, "baseline-v1-planner-fallback" ]
     end
 
     def validate_response(response, question:, packet:)

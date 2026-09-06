@@ -18,7 +18,8 @@ module Api
           question: params[:question],
           session_id: ask_session_id,
           ip: request.remote_ip,
-          request_id: request.request_id
+          request_id: request.request_id,
+          architecture: admin_preview ? params[:architecture].to_s : nil
         )
       end
 

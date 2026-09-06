@@ -29,7 +29,8 @@ module AskJared
           "answer_status", "evidence_ids", "skeleton_roles", "model", "validation", "issue_category", "feedback",
           "page", "turn", "browser", "device", "server_error", "contact", "name", "email", "message",
           "company", "role", "verification_id", "delivery_status", "latency_ms", "input_tokens", "output_tokens",
-          "estimated_cost_cents", "pricing_version", "intent_path", "evidence_count", "answer_status", "answer_event_id", "issue_answer_event_id"
+          "estimated_cost_cents", "pricing_version", "intent_path", "evidence_count", "answer_status", "answer_event_id", "issue_answer_event_id",
+          "architecture", "planner_version", "planner_model", "context_keys", "plan_summary"
         )
         event.occurred_at = Time.current
         event.meaningful = MEANINGFUL_EVENTS.include?(event_type)
