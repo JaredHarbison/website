@@ -1,189 +1,387 @@
-# Candidate Context v2 smoke evaluation
+# Candidate Context v2 repair smoke evaluation
 
-Generated 2026-09-06T14:40:51Z from production. Answers are unedited service outputs.
+Generated from production. The JSON below contains the exact unedited service outputs, evidence IDs, models, planner versions, and validation results.
 
-## Q1 — What kind of engineer is Jared?
-
-### baseline-v1
-
-- Status: `answer`
-- Evidence IDs: `50, 52`
-- Model: `gpt-5.6-terra`
-- Validation: `passed`
-- Answer: Jared is a backend-to-full-stack engineer who used code review and senior guidance before independently implementing an MVP React frontend with documentation and targeted help. At Dogly, he later retained migrations and routing while the frontend engineer implemented bounded controller actions, and his later work became highly autonomous. He pushed back on broader React use for relatively static authentication pages, citing Rails’ existing secure handling, limited SEO partly due to insufficient server-side rendering, downstream migration work, and revenue-generating roadmap priorities; he documented dependencies and time cost while acknowledging the consistency benefit. He has direct professional engineer-to-engineer collaboration experience, while sustained larger-team engineering experience remains new context.
-
-### candidate-context-v2
-
-- Status: `answer`
-- Evidence IDs: `50, 52`
-- Model: `gpt-5.6-terra`
-- Validation: `passed`
-- Answer: Jared is a backend-to-full-stack engineer whose later work at Dogly became highly autonomous. He began on a team with a senior engineer and a frontend engineer/designer, used code review and senior guidance, independently implemented an MVP React frontend with documentation and targeted help, and later retained migrations and routing while the frontend engineer implemented bounded controller actions. He also brought a pragmatic perspective to a proposed broader React migration, documenting its dependencies and time cost while noting that Rails already handled authentication flows securely, server-side rendering was already limited, the migration had downstream work, and revenue-generating roadmap work had priority; he acknowledged the consistency benefit. He has demonstrated direct professional engineer-to-engineer collaboration, while sustained larger-team engineering experience remains new context.
-
-## Q2 — What are Jared's strongest qualities as an engineer?
-
-### baseline-v1
-
-- Status: `insufficient_information`
-- Evidence IDs: `none`
-- Model: `gpt-4o-mini`
-- Validation: `passed`
-- Answer: I don’t have enough information to answer that confidently.
-
-### candidate-context-v2
-
-- Status: `insufficient_information`
-- Evidence IDs: `none`
-- Model: `gpt-4o-mini`
-- Validation: `passed`
-- Answer: I don’t have enough information to answer that confidently.
-
-## Q3 — What is a weakness or gap in Jared's experience that a hiring manager should know about?
-
-### baseline-v1
-
-- Status: `answer`
-- Evidence IDs: `43, 42, 41`
-- Model: `gpt-5.6-terra`
-- Validation: `passed`
-- Answer: Jared’s technology depth varies, so it should be evaluated technology by technology rather than assumed to be uniform. Professional TypeScript depth is not established, although he has a documented current learning trajectory. Experience on large conventional engineering teams is also a gap, while adjacent collaboration and organizational-scale experience are demonstrated.
-
-### candidate-context-v2
-
-- Status: `answer`
-- Evidence IDs: `43, 42, 41`
-- Model: `gpt-5.6-terra`
-- Validation: `passed`
-- Answer: Jared’s depth varies by technology and should be evaluated in the specific technology domain rather than assumed globally. His professional TypeScript depth is not established, though he has a documented current learning trajectory. Experience on large conventional engineering teams is also a gap; he does have adjacent collaboration and organizational-scale experience.
-
-## Q4 — What are some examples of product decisions Jared has influenced, not just engineering work he's implemented?
-
-### baseline-v1
-
-- Status: `answer`
-- Evidence IDs: `48, 52`
-- Model: `gpt-5.6-terra`
-- Validation: `passed`
-- Answer: Jared has influenced product prioritization by sequencing dependency upgrades before email notifications, expert profiles, and aesthetic redesign, weighing foundational risk, reuse, requirement stability, and the risk of throwaway work. He started aesthetic work after discovery began to avoid multiple aesthetic passes.
-
-He also pushed back on expanding React to relatively static authentication pages, noting that Rails already handled those flows securely, SEO was already limited in part by insufficient server-side rendering, and the migration carried downstream work and time cost while revenue-generating roadmap work took priority. He acknowledged the consistency benefit of broader React use.
-
-### candidate-context-v2
-
-- Status: `answer`
-- Evidence IDs: `48, 52`
-- Model: `gpt-5.6-terra`
-- Validation: `passed`
-- Answer: Jared has influenced product prioritization by sequencing dependency upgrades ahead of email notifications, expert profiles, and aesthetic redesign before an accelerator, weighing foundational risk, reuse, requirement stability, and the risk of throwaway work. He also delayed aesthetic work until discovery had started to avoid multiple aesthetic passes.
-
-In a frontend architecture discussion, Jared pushed back on expanding React to relatively static authentication pages, noting that Rails already handled those flows securely, server-side rendering was already limited for SEO, the migration carried downstream work, and revenue-generating roadmap work took priority. He documented the dependencies and time cost while acknowledging the consistency benefit of broader React use.
-
-## Q5 — Tell me more about the first example. What did Jared have to convince people of?
-
-### baseline-v1
-
-- Status: `answer`
-- Evidence IDs: `47`
-- Model: `gpt-4o-mini`
-- Validation: `passed`
-- Answer: During the F Street Anthropologie opening, Jared had to convince stakeholders of the potential of a comparatively green manager he hired. He recognized her strong skills in People, Product, Process thinking, and aesthetic vision. To support her development, he partnered with her manager, provided her exposure to higher-level meetings, and maintained a supportive guide posture. Her manager became Assistant Store Manager after roughly six months, and the lower-level manager then moved into that role and developed her own replacement behind her.
-
-### candidate-context-v2
-
-- Status: `answer`
-- Evidence IDs: `47`
-- Model: `gpt-4o-mini`
-- Validation: `passed`
-- Answer: During the F Street Anthropologie opening, Jared had to convince stakeholders of the potential of a comparatively green manager he hired. He emphasized her strong skills in People, Product, Process thinking, and aesthetic vision. He partnered with her manager, provided her exposure to higher-level meetings, and maintained a supportive guide posture. Her manager became Assistant Store Manager after roughly six months, and the lower-level manager then moved into that role and developed her own replacement behind her.
-
-## Q6 — What has Jared owned end to end?
-
-### baseline-v1
-
-- Status: `answer`
-- Evidence IDs: `51, 47`
-- Model: `gpt-4o-mini`
-- Validation: `passed`
-- Answer: Jared has owned the end-to-end process of integrating Stripe for a subscription service. He researched the design, wrote an implementation plan, identified gaps, and utilized Stripe documentation to successfully implement the integration, despite having no prior experience with third-party integrations. he has been involved in succession-oriented development at Anthropologie, where he built readiness behind each promotion.
-
-### candidate-context-v2
-
-- Status: `answer`
-- Evidence IDs: `52`
-- Model: `gpt-4o-mini`
-- Validation: `passed`
-- Answer: Jared has owned the end-to-end process of integrating Stripe for subscriptions. He researched the design, wrote an implementation plan, identified gaps, and utilized Stripe documentation to implement the subscription integration. He had not built a third-party integration before this project and had implementation-level gaps around subscriptions, webhooks, concurrency, idempotency, and rate limiting.
-
-## Q7 — How much professional TypeScript experience does Jared have?
-
-### baseline-v1
-
-- Status: `answer`
-- Evidence IDs: `42, 43`
-- Model: `gpt-5.6-terra`
-- Validation: `passed`
-- Answer: Jared’s professional TypeScript depth is not established, though a current learning trajectory is documented. Technology depth varies and should be evaluated by technology rather than inferred globally.
-
-### candidate-context-v2
-
-- Status: `answer`
-- Evidence IDs: `42, 43`
-- Model: `gpt-5.6-terra`
-- Validation: `passed`
-- Answer: Jared’s professional TypeScript depth is not established, though he has a documented current learning trajectory. Technology depth varies and should be evaluated by technology rather than inferred globally.
-
-## Q8 — Tell me about a time Jared disagreed with a technical direction.
-
-### baseline-v1
-
-- Status: `answer`
-- Evidence IDs: `52`
-- Model: `gpt-5.6-terra`
-- Validation: `passed`
-- Answer: At Dogly, Jared pushed back on broader React use for relatively static authentication pages. He noted that Rails already handled those flows securely, SEO was already limited partly by insufficient server-side rendering, the migration involved downstream work, and revenue-generating roadmap work had priority; he documented the dependencies and time cost while acknowledging the consistency benefit.
-
-### candidate-context-v2
-
-- Status: `answer`
-- Evidence IDs: `52`
-- Model: `gpt-5.6-terra`
-- Validation: `passed`
-- Answer: At Dogly, Jared pushed back on broader React use for relatively static authentication pages. He noted that Rails already handled those flows securely, SEO was already limited in part by insufficient server-side rendering, the migration involved downstream work, and revenue-generating roadmap work had priority; he documented the dependencies and time cost while acknowledging the consistency benefit.
-
-## Q9 — Tell me about something Jared decided not to build.
-
-### baseline-v1
-
-- Status: `insufficient_information`
-- Evidence IDs: `none`
-- Model: `gpt-4o-mini`
-- Validation: `passed`
-- Answer: The available evidence does not specify a particular project or feature that Jared decided not to build. It primarily discusses his experiences with building integrations and addressing issues in production environments.
-
-### candidate-context-v2
-
-- Status: `insufficient_information`
-- Evidence IDs: `none`
-- Model: `gpt-4o-mini`
-- Validation: `passed`
-- Answer: I don’t have enough information to answer that confidently.
-
-## Q10 — How has Jared influenced a decision when he wasn't the formal decision-maker?
-
-### baseline-v1
-
-- Status: `insufficient_information`
-- Evidence IDs: `none`
-- Model: `gpt-4o-mini`
-- Validation: `passed`
-- Answer: I don’t have enough information to answer that confidently.
-
-### candidate-context-v2
-
-- Status: `answer`
-- Evidence IDs: `47`
-- Model: `gpt-4o-mini`
-- Validation: `passed`
-- Answer: Jared influenced a decision during the F Street Anthropologie opening by hiring and developing a less experienced manager. He partnered with her manager to provide her with exposure to higher-level meetings and adopted a supportive guide posture. Her manager became ASM after roughly six months, showcasing Jared's impact on the decision-making process despite not being the formal decision-maker himself.
-
-**Review note:** Q10 candidate-context-v2 makes a formal-decision-maker inference not established by evidence 47; treat as a blocker for v2 promotion.
+```json
+{
+  "generated_at": "2026-09-06T15:50:03Z",
+  "architecture_versions": [
+    "baseline-v1",
+    "candidate-context-v2"
+  ],
+  "rows": [
+    {
+      "id": 1,
+      "question": "What kind of engineer is Jared?",
+      "baseline": {
+        "status": "answer",
+        "answer": "Jared is a backend-to-full-stack engineer who developed from senior guidance and code review to independently implementing an MVP React frontend with documentation and targeted help, then later working with high autonomy. In collaboration, he retained migrations and routing while a frontend engineer implemented bounded controller actions, and he weighed a broader React migration against Rails’ existing secure authentication flows, limited server-side rendering, downstream work, and revenue-generating roadmap priorities while documenting the dependencies and time cost. He has direct professional engineer-to-engineer collaboration experience, while sustained work in larger engineering teams remains new context.",
+        "evidence_ids": [
+          "50",
+          "52"
+        ],
+        "source_urls": [],
+        "evaluation": {
+          "architecture": "baseline-v1",
+          "planner_version": null,
+          "model": "gpt-5.6-terra",
+          "validation": "passed",
+          "input_tokens": 612,
+          "output_tokens": 235,
+          "estimated_cost_cents": null,
+          "pricing_version": null
+        }
+      },
+      "candidate_context_v2": {
+        "status": "answer",
+        "answer": "At Dogly, Jared began focused on backend before becoming full-stack; he independently implemented an MVP React frontend with documentation and targeted help, while using code review and senior guidance. He also showed pragmatic technical judgment by pushing back on broader React use for relatively static authentication pages, documenting the security, server-side-rendering, downstream-work, and roadmap considerations while acknowledging the consistency benefit. He has documented direct engineer-to-engineer collaboration and later highly autonomous work, though sustained larger-team engineering experience is still new context.",
+        "evidence_ids": [
+          "50",
+          "52"
+        ],
+        "source_urls": [],
+        "evaluation": {
+          "architecture": "candidate-context-v2",
+          "planner_version": "candidate-context-v2",
+          "model": "gpt-5.6-terra",
+          "validation": "passed",
+          "input_tokens": 612,
+          "output_tokens": 410,
+          "estimated_cost_cents": null,
+          "pricing_version": null
+        }
+      }
+    },
+    {
+      "id": 2,
+      "question": "What are Jared's strongest qualities as an engineer?",
+      "baseline": {
+        "status": "answer",
+        "answer": "Jared moved from backend focus into full-stack work at Dogly, collaborating directly with other engineers while using code review and senior guidance. He independently implemented an MVP React frontend with documentation and targeted help, and later retained migrations and routing while the frontend engineer implemented bounded controller actions. He also pushed back on broader React use for relatively static authentication pages, documenting the downstream work and time cost while noting that Rails already handled those flows securely, server-side rendering was limited, and revenue-generating roadmap work had priority. His later work became highly autonomous, while sustained larger-team engineering experience remains new context.",
+        "evidence_ids": [
+          "50",
+          "52"
+        ],
+        "source_urls": [],
+        "evaluation": {
+          "architecture": "baseline-v1",
+          "planner_version": null,
+          "model": "gpt-5.6-terra",
+          "validation": "passed",
+          "input_tokens": 618,
+          "output_tokens": 396,
+          "estimated_cost_cents": null,
+          "pricing_version": null
+        }
+      },
+      "candidate_context_v2": {
+        "status": "answer",
+        "answer": "Jared is a backend-to-full-stack engineer who documented independent implementation, thoughtful use of code review and senior guidance, and direct collaboration with other engineers. On Dogly, he independently built an MVP React frontend with documentation and targeted help, then later retained migrations and routing while a frontend engineer implemented bounded controller actions. He also showed pragmatic technical judgment during a React migration discussion, pushing back on broader React use for relatively static authentication pages in favor of existing Rails flows, given limited server-side rendering, downstream migration work, and revenue-generating roadmap priorities. He documented the dependencies and time cost while acknowledging the consistency benefit. His later work became highly autonomous, though sustained experience in a larger engineering team remains new context.",
+        "evidence_ids": [
+          "50",
+          "52"
+        ],
+        "source_urls": [],
+        "evaluation": {
+          "architecture": "candidate-context-v2",
+          "planner_version": "candidate-context-v2",
+          "model": "gpt-5.6-terra",
+          "validation": "passed",
+          "input_tokens": 618,
+          "output_tokens": 194,
+          "estimated_cost_cents": null,
+          "pricing_version": null
+        }
+      }
+    },
+    {
+      "id": 3,
+      "question": "What is a weakness or gap in Jared's experience that a hiring manager should know about?",
+      "baseline": {
+        "status": "answer",
+        "answer": "Jared’s technology depth is best considered specifically by technology rather than inferred globally. TypeScript is newer territory for Jared, although he has a documented current learning trajectory. Experience in large conventional engineering teams is a gap, alongside documented adjacent collaboration and organizational-scale experience.",
+        "evidence_ids": [
+          "43",
+          "42",
+          "41"
+        ],
+        "source_urls": [],
+        "evaluation": {
+          "architecture": "baseline-v1",
+          "planner_version": null,
+          "model": "gpt-5.6-terra",
+          "validation": "passed",
+          "input_tokens": 577,
+          "output_tokens": 223,
+          "estimated_cost_cents": null,
+          "pricing_version": null
+        }
+      },
+      "candidate_context_v2": {
+        "status": "answer",
+        "answer": "His depth varies by technology, so it is best to look at each one specifically rather than assumed globally. His TypeScript is newer territory for Jared, though he has a documented current learning trajectory. Experience in large conventional engineering teams is also a gap, although adjacent collaboration and organizational-scale experience are documented.",
+        "evidence_ids": [
+          "43",
+          "42",
+          "41"
+        ],
+        "source_urls": [],
+        "evaluation": {
+          "architecture": "candidate-context-v2",
+          "planner_version": "candidate-context-v2",
+          "model": "gpt-5.6-terra",
+          "validation": "passed",
+          "input_tokens": 577,
+          "output_tokens": 289,
+          "estimated_cost_cents": null,
+          "pricing_version": null
+        }
+      }
+    },
+    {
+      "id": 4,
+      "question": "What are some examples of product decisions Jared has influenced, not just engineering work he's implemented?",
+      "baseline": {
+        "status": "answer",
+        "answer": "Jared has influenced product prioritization by sequencing dependency upgrades, email notifications, expert profiles, and aesthetic redesign based on foundational risk, reuse, requirement stability, and the risk of throwaway work; aesthetic work began after discovery started to avoid multiple passes.\n\nHe also pushed back on expanding React to relatively static authentication pages, documenting the downstream migration work and time cost while weighing consistency against Rails’ existing secure handling, limited SEO from insufficient server-side rendering, and the priority of revenue-generating roadmap work.",
+        "evidence_ids": [
+          "48",
+          "52"
+        ],
+        "source_urls": [],
+        "answer_event_id": 1362
+      },
+      "candidate_context_v2": {
+        "status": "answer",
+        "answer": "Jared has influenced product prioritization by sequencing dependency upgrades, email notifications, expert profiles, and aesthetic redesign based on foundational risk, reuse, requirement stability, and the risk of throwaway work; the aesthetic work began after discovery started to avoid multiple aesthetic passes.\n\nHe also pushed back on expanding React to relatively static authentication pages, documenting the downstream dependencies and time cost while recognizing the consistency benefit. His view was that Rails already handled those flows securely, server-side rendering was already limited, and revenue-generating roadmap work took priority.",
+        "evidence_ids": [
+          "48",
+          "52"
+        ],
+        "source_urls": [],
+        "answer_event_id": 1366
+      }
+    },
+    {
+      "id": 5,
+      "question": "Tell me more about the first example. What did Jared have to convince people of?",
+      "baseline": {
+        "status": "answer",
+        "answer": "In the first example, Jared’s prioritization centered on addressing dependency upgrades before email notifications, expert profiles, and aesthetic redesign. He evaluated foundational risk, reuse, expected requirement stability, and the risk of throwaway work; the aesthetic work began after discovery started to avoid multiple aesthetic passes.",
+        "evidence_ids": [
+          "48"
+        ],
+        "source_urls": [],
+        "answer_event_id": 1364
+      },
+      "candidate_context_v2": {
+        "status": "answer",
+        "answer": "Before an accelerator, Jared prioritized dependency upgrades, then email notifications, expert profiles, and finally aesthetic redesign. He evaluated foundational risk, reuse, expected requirement stability, and throwaway-work risk; aesthetic work began after discovery started to avoid multiple aesthetic passes.",
+        "evidence_ids": [
+          "48"
+        ],
+        "source_urls": [],
+        "answer_event_id": 1368
+      }
+    },
+    {
+      "id": 6,
+      "question": "What has Jared owned end to end?",
+      "baseline": {
+        "status": "answer",
+        "answer": "Jared has owned implementation work across Dogly’s Stripe subscription integration and MVP frontend, using documentation, code review, senior guidance, and targeted help where needed. For the Stripe integration, he researched the design, wrote an implementation plan, identified gaps, and implemented the subscription integration; his roughly 15% time estimate is a self-estimate. On the frontend, he independently implemented an MVP React frontend, and later retained migrations and routing while a frontend engineer implemented bounded controller actions. His sustained larger-team engineering experience remains new context.",
+        "evidence_ids": [
+          "51",
+          "50"
+        ],
+        "source_urls": [],
+        "evaluation": {
+          "architecture": "baseline-v1",
+          "planner_version": null,
+          "model": "gpt-5.6-terra",
+          "validation": "passed",
+          "input_tokens": 562,
+          "output_tokens": 138,
+          "estimated_cost_cents": null,
+          "pricing_version": null
+        }
+      },
+      "candidate_context_v2": {
+        "status": "answer",
+        "answer": "Jared took Dogly’s Stripe subscription integration from researching the design and writing an implementation plan through identifying gaps, using Stripe documentation and technical material, and implementing the integration; his roughly 15% time estimate is a self-estimate. Before that work, he had not built a third-party integration and had implementation-level gaps around subscriptions, webhooks, concurrency, idempotency, and rate limiting. At Dogly, he independently implemented an MVP React frontend with documentation and targeted help, and later retained migrations and routing while the frontend engineer implemented bounded controller actions. He worked with code review and senior guidance before later work became highly autonomous; sustained larger-team engineering experience remains new context.",
+        "evidence_ids": [
+          "51",
+          "50"
+        ],
+        "source_urls": [],
+        "evaluation": {
+          "architecture": "candidate-context-v2",
+          "planner_version": "candidate-context-v2",
+          "model": "gpt-5.6-terra",
+          "validation": "passed",
+          "input_tokens": 562,
+          "output_tokens": 242,
+          "estimated_cost_cents": null,
+          "pricing_version": null
+        }
+      }
+    },
+    {
+      "id": 7,
+      "question": "How much professional TypeScript experience does Jared have?",
+      "baseline": {
+        "status": "answer",
+        "answer": "Jared’s TypeScript is newer territory for Jared, though a current learning trajectory is documented. His technology depth varies and is best considered specifically by technology rather than inferred globally.",
+        "evidence_ids": [
+          "42",
+          "43"
+        ],
+        "source_urls": [],
+        "evaluation": {
+          "architecture": "baseline-v1",
+          "planner_version": null,
+          "model": "gpt-5.6-terra",
+          "validation": "passed",
+          "input_tokens": 578,
+          "output_tokens": 72,
+          "estimated_cost_cents": null,
+          "pricing_version": null
+        }
+      },
+      "candidate_context_v2": {
+        "status": "answer",
+        "answer": "Jared’s TypeScript is newer territory for Jared; he has a documented current learning trajectory. Technology depth varies and is best considered specifically by technology rather than inferred globally.",
+        "evidence_ids": [
+          "42",
+          "43"
+        ],
+        "source_urls": [],
+        "evaluation": {
+          "architecture": "candidate-context-v2",
+          "planner_version": "candidate-context-v2",
+          "model": "gpt-5.6-terra",
+          "validation": "passed",
+          "input_tokens": 578,
+          "output_tokens": 65,
+          "estimated_cost_cents": null,
+          "pricing_version": null
+        }
+      }
+    },
+    {
+      "id": 8,
+      "question": "Tell me about a time Jared disagreed with a technical direction.",
+      "baseline": {
+        "status": "answer",
+        "answer": "At Dogly, Jared pushed back on broader React use for relatively static authentication pages, noting that Rails already handled those flows securely, SEO was already limited partly by insufficient server-side rendering, the migration involved downstream work, and revenue-generating roadmap work had priority. He documented the dependencies and time cost while acknowledging the consistency benefit.",
+        "evidence_ids": [
+          "52"
+        ],
+        "source_urls": [],
+        "evaluation": {
+          "architecture": "baseline-v1",
+          "planner_version": null,
+          "model": "gpt-5.6-terra",
+          "validation": "passed",
+          "input_tokens": 439,
+          "output_tokens": 94,
+          "estimated_cost_cents": null,
+          "pricing_version": null
+        }
+      },
+      "candidate_context_v2": {
+        "status": "answer",
+        "answer": "At Dogly, Jared pushed back on broader React use for relatively static authentication pages. He noted that Rails already handled those flows securely, SEO was already limited in part by insufficient server-side rendering, the migration involved downstream work, and revenue-generating roadmap work had priority. He documented the dependencies and time cost while acknowledging the consistency benefit.",
+        "evidence_ids": [
+          "52"
+        ],
+        "source_urls": [],
+        "evaluation": {
+          "architecture": "candidate-context-v2",
+          "planner_version": "candidate-context-v2",
+          "model": "gpt-5.6-terra",
+          "validation": "passed",
+          "input_tokens": 439,
+          "output_tokens": 96,
+          "estimated_cost_cents": null,
+          "pricing_version": null
+        }
+      }
+    },
+    {
+      "id": 9,
+      "question": "Tell me about something Jared decided not to build.",
+      "baseline": {
+        "status": "insufficient_information",
+        "answer": "I don’t have enough information to answer that confidently.",
+        "evidence_ids": [],
+        "source_urls": [],
+        "evaluation": {
+          "architecture": "baseline-v1",
+          "planner_version": null,
+          "model": "gpt-4o-mini",
+          "validation": "passed",
+          "input_tokens": 1138,
+          "output_tokens": 53,
+          "estimated_cost_cents": 0,
+          "pricing_version": "2026-09-05"
+        }
+      },
+      "candidate_context_v2": {
+        "status": "insufficient_information",
+        "answer": "I don’t have enough information to answer that confidently.",
+        "evidence_ids": [],
+        "source_urls": [],
+        "evaluation": {
+          "architecture": "candidate-context-v2",
+          "planner_version": "candidate-context-v2",
+          "model": "gpt-4o-mini",
+          "validation": "passed",
+          "input_tokens": 1197,
+          "output_tokens": 64,
+          "estimated_cost_cents": 0,
+          "pricing_version": "2026-09-05"
+        }
+      }
+    },
+    {
+      "id": 10,
+      "question": "How has Jared influenced a decision when he wasn't the formal decision-maker?",
+      "baseline": {
+        "status": "answer",
+        "answer": "Jared influenced a decision during the F Street Anthropologie opening by hiring and developing a less experienced manager. He partnered with her manager to provide her with exposure to higher-level meetings and adopted a supportive guide posture. Her manager became ASM after roughly six months, and the lower-level manager then moved into that role and developed her own replacement behind her.",
+        "evidence_ids": [
+          "47"
+        ],
+        "source_urls": [],
+        "evaluation": {
+          "architecture": "baseline-v1",
+          "planner_version": null,
+          "model": "gpt-4o-mini",
+          "validation": "passed",
+          "input_tokens": 1133,
+          "output_tokens": 100,
+          "estimated_cost_cents": 0,
+          "pricing_version": "2026-09-05"
+        }
+      },
+      "candidate_context_v2": {
+        "status": "insufficient_information",
+        "answer": "I don’t have enough information to answer that confidently.",
+        "evidence_ids": [],
+        "source_urls": [],
+        "evaluation": {
+          "architecture": "candidate-context-v2",
+          "planner_version": "candidate-context-v2",
+          "model": "gpt-4o-mini",
+          "validation": "passed",
+          "input_tokens": 1198,
+          "output_tokens": 112,
+          "estimated_cost_cents": 0,
+          "pricing_version": "2026-09-05"
+        }
+      }
+    }
+  ]
+}
+```
