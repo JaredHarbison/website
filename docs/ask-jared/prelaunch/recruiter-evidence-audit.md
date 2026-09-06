@@ -1,12 +1,12 @@
 # Recruiter evidence pre-launch audit
 
-Generated 2026-09-06T02:39:59Z. This includes every recruiter-visible record (34); the companion inventory includes all 35 KnowledgeEntry rows. No substantive biography was invented or rewritten.
+Generated 2026-09-06T14:01:16Z. This includes every recruiter-visible record (54); the companion inventory includes all 56 KnowledgeEntry rows. No substantive biography was invented or rewritten.
 
 Preliminary dispositions are triage signals, not approvals for data mutation. The JSON artifact retains full current bodies and metadata.
 
-### Knowledge #31 — Dogly Product Design
+### Knowledge #1 — Dogly Product Design
 
-- ID / source ref: `31` / `case-study:dogly-product-design`
+- ID / source ref: `1` / `case-study:dogly-product-design`
 - Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
 - Evidence/source kind: `leadership_story` / `repository_evidence` / `published_case_study`
 - Current content: Building a coherent, image-led product language across six years of expert content, community, subscriptions, onboarding, daily guidance, and commerce.
@@ -21,9 +21,9 @@ Preliminary dispositions are triage signals, not approvals for data mutation. Th
 - Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
 - Confidence: mechanical preliminary screen; human review required for substantive changes.
 
-### Knowledge #32 — Dogly Membership Experience
+### Knowledge #2 — Dogly Membership Experience
 
-- ID / source ref: `32` / `case-study:dogly-membership`
+- ID / source ref: `2` / `case-study:dogly-membership`
 - Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
 - Evidence/source kind: `product_story` / `repository_evidence` / `published_case_study`
 - Current content: Connecting discovery, conversation, personalized email, daily plans, subscriptions, and live expert groups into a membership journey associated with more than 40% subscription growth in internal comparisons.
@@ -38,9 +38,9 @@ Preliminary dispositions are triage signals, not approvals for data mutation. Th
 - Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
 - Confidence: mechanical preliminary screen; human review required for substantive changes.
 
-### Knowledge #33 — Dogly Shopify Integration
+### Knowledge #3 — Dogly Shopify Integration
 
-- ID / source ref: `33` / `case-study:dogly-shopify-integration`
+- ID / source ref: `3` / `case-study:dogly-shopify-integration`
 - Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
 - Evidence/source kind: `integration_story` / `repository_evidence` / `published_case_study`
 - Current content: Designing a two-way Shopify integration: bringing qualifying purchases from partner stores into Dogly, then sending Dogly marketplace orders back to brands for fulfillment.
@@ -55,9 +55,9 @@ Preliminary dispositions are triage signals, not approvals for data mutation. Th
 - Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
 - Confidence: mechanical preliminary screen; human review required for substantive changes.
 
-### Knowledge #34 — Dogly Partner Applications
+### Knowledge #4 — Dogly Partner Applications
 
-- ID / source ref: `34` / `case-study:dogly-partner-applications`
+- ID / source ref: `4` / `case-study:dogly-partner-applications`
 - Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
 - Evidence/source kind: `project` / `repository_evidence` / `published_case_study`
 - Current content: Designing a resumable partner application and transparent review workflow inside a mature Rails marketplace without forcing a platform rewrite.
@@ -72,9 +72,9 @@ Preliminary dispositions are triage signals, not approvals for data mutation. Th
 - Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
 - Confidence: mechanical preliminary screen; human review required for substantive changes.
 
-### Knowledge #35 — Dogly Advocate Discovery
+### Knowledge #5 — Dogly Advocate Discovery
 
-- ID / source ref: `35` / `case-study:dogly-advocate-discovery`
+- ID / source ref: `5` / `case-study:dogly-advocate-discovery`
 - Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
 - Evidence/source kind: `project` / `repository_evidence` / `published_case_study`
 - Current content: Designing browse and match modes for finding the right professional in a content-rich Rails application.
@@ -89,9 +89,9 @@ Preliminary dispositions are triage signals, not approvals for data mutation. Th
 - Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
 - Confidence: mechanical preliminary screen; human review required for substantive changes.
 
-### Knowledge #36 — Fridge No More Bulk Ordering
+### Knowledge #6 — Fridge No More Bulk Ordering
 
-- ID / source ref: `36` / `case-study:fridge-no-more-bulk-ordering`
+- ID / source ref: `6` / `case-study:fridge-no-more-bulk-ordering`
 - Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
 - Evidence/source kind: `product_story` / `repository_evidence` / `published_case_study`
 - Current content: Turning Dogly's retail catalog into an operational bulk-ordering workflow that produced a first retained order of $11,935.90 across 210 cases.
@@ -106,9 +106,9 @@ Preliminary dispositions are triage signals, not approvals for data mutation. Th
 - Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
 - Confidence: mechanical preliminary screen; human review required for substantive changes.
 
-### Knowledge #37 — The Federation Briefing
+### Knowledge #7 — The Federation Briefing
 
-- ID / source ref: `37` / `case-study:federation-briefing`
+- ID / source ref: `7` / `case-study:federation-briefing`
 - Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
 - Evidence/source kind: `engineering_story` / `repository_evidence` / `published_case_study`
 - Current content: Turning a week of Star Trek community discussions into a sourced AI briefing that shows its work and knows when it does not have enough evidence.
@@ -123,9 +123,9 @@ Preliminary dispositions are triage signals, not approvals for data mutation. Th
 - Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
 - Confidence: mechanical preliminary screen; human review required for substantive changes.
 
-### Knowledge #38 — Karaoke Queue: Built for the Room
+### Knowledge #8 — Karaoke Queue: Built for the Room
 
-- ID / source ref: `38` / `case-study:karaoke-queue`
+- ID / source ref: `8` / `case-study:karaoke-queue`
 - Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
 - Evidence/source kind: `project` / `repository_evidence` / `published_case_study`
 - Current content: Designing a shared, multi-role karaoke queue where performers can participate from their phones while hosts retain control of a live event.
@@ -140,9 +140,9 @@ Preliminary dispositions are triage signals, not approvals for data mutation. Th
 - Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
 - Confidence: mechanical preliminary screen; human review required for substantive changes.
 
-### Knowledge #39 — Dogly acquisition and guided membership journey
+### Knowledge #9 — Dogly acquisition and guided membership journey
 
-- ID / source ref: `39` / `story:dogly-shopify-membership-acquisition`
+- ID / source ref: `9` / `story:dogly-shopify-membership-acquisition`
 - Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
 - Evidence/source kind: `product_story` / `repository_evidence` / `missing`
 - Current content: Shopify expanded acquisition into Dogly's existing journey; partner-purchase conversion was approximately at the existing journey's rate, shifting the opportunity toward DoglyDaily and post-acquisition member value.
@@ -157,9 +157,9 @@ Preliminary dispositions are triage signals, not approvals for data mutation. Th
 - Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
 - Confidence: mechanical preliminary screen; human review required for substantive changes.
 
-### Knowledge #40 — Dogly membership subscription comparison
+### Knowledge #10 — Dogly membership subscription comparison
 
-- ID / source ref: `40` / `metric:dogly-membership-subscription-growth`
+- ID / source ref: `10` / `metric:dogly-membership-subscription-growth`
 - Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
 - Evidence/source kind: `metric` / `repository_evidence` / `missing`
 - Current content: Bounded metric: an internal pre/post subscription comparison associated with the membership work was reported as greater than 40%; it is not a controlled causal measurement.
@@ -174,9 +174,349 @@ Preliminary dispositions are triage signals, not approvals for data mutation. Th
 - Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
 - Confidence: mechanical preliminary screen; human review required for substantive changes.
 
-### Knowledge #41 — Dogly Agenda product direction
+### Knowledge #11 — Dogly SEO and Platform Modernization
 
-- ID / source ref: `41` / `story:dogly-agenda-product-direction`
+- ID / source ref: `11` / `consolidated:dogly-seo-platform-modernization`
+- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
+- Evidence/source kind: `performance_story` / `repository_evidence` / `repository_and_git`
+- Current content: Jared led a phased modernization of Dogly's customer-facing web experience and internal controls, improving maintainability, SEO instrumentation, and self-service workflows. Average SEO page scores rose from about 15% to about 85%; organic traffic impact is not established.
+- Source/provenance: consolidated:dogly-seo-platform-modernization
+- Capabilities/intents: Product engineering, frontend modernization, SEO instrumentation, UX, maintainability
+- Important metadata: utility `missing`; confidence `repository_evidenced`; status `Shipped`
+- Ownership: leadership `project_lead`; sole authorship `not established`; people management `not established`
+- Contributions/collaboration: Led phased modernization; updated frontend build and styles; removed jQuery; added metadata and admin controls. / Not recorded
+- Outcome/limits: Jared led a phased modernization of Dogly's customer-facing web experience and internal controls, improving maintainability, SEO instrumentation, and self-service workflows. Average SEO page scores rose from about 15% to about 85%; organic traffic impact is not established. / SEO score improvement is evidenced; organic traffic or revenue impact is not established.; safe attribution: Not recorded
+- Potential issue: ownership scope, outcome/causality
+- Preliminary disposition: **NEEDS_JARED_REVIEW**
+- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
+- Confidence: mechanical preliminary screen; human review required for substantive changes.
+
+### Knowledge #12 — Dogly Integrations and Onboarding Automation
+
+- ID / source ref: `12` / `consolidated:dogly-integrations-onboarding-automation`
+- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
+- Evidence/source kind: `integration_story` / `repository_evidence` / `repository_and_git`
+- Current content: Jared designed and shipped integrations and scheduled automation across partner and customer workflows, using Shopify, Recharge, AWS, REST APIs, Stripe webhooks, and PostgreSQL to reduce manual handoffs. The inventory states that AWS workflows onboarded thousands of new users monthly.
+- Source/provenance: consolidated:dogly-integrations-onboarding-automation
+- Capabilities/intents: Integrations, APIs, automation, operational systems, Shopify, Recharge, AWS, Stripe, PostgreSQL
+- Important metadata: utility `missing`; confidence `repository_evidenced`; status `Shipped`
+- Ownership: leadership `project_lead`; sole authorship `not established`; people management `not established`
+- Contributions/collaboration: Designed and shipped external integrations, scheduled automation, webhook flows, and synchronization workflows. / Dogly partners and internal stakeholders where requirements were involved
+- Outcome/limits: Jared designed and shipped integrations and scheduled automation across partner and customer workflows, using Shopify, Recharge, AWS, REST APIs, Stripe webhooks, and PostgreSQL to reduce manual handoffs. The inventory states that AWS workflows onboarded thousands of new users monthly. / The evidence does not provide per-integration volumes or a quantified reduction in manual work.; safe attribution: Not recorded
+- Potential issue: ownership scope, outcome/causality
+- Preliminary disposition: **KEEP**
+- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
+- Confidence: mechanical preliminary screen; human review required for substantive changes.
+
+### Knowledge #13 — Dogly Reporting and Admin Visibility
+
+- ID / source ref: `13` / `consolidated:dogly-reporting-and-admin-visibility`
+- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
+- Evidence/source kind: `product_story` / `repository_evidence` / `repository_and_git`
+- Current content: Jared automated recurring reporting and improved admin visibility into application counts and partner revenue using Rails, Stripe webhooks, Heroku Dataclips, Google Sheets, and dashboard/query work. The source supports workflow and visibility improvements, not revenue growth.
+- Source/provenance: consolidated:dogly-reporting-and-admin-visibility
+- Capabilities/intents: Data workflows, reporting, dashboards, query correctness, stakeholder enablement
+- Important metadata: utility `missing`; confidence `repository_evidenced`; status `Shipped`
+- Ownership: leadership `project_lead`; sole authorship `not established`; people management `not established`
+- Contributions/collaboration: Automated reporting; corrected admin counts; added partner revenue dashboard. / Not recorded
+- Outcome/limits: Jared automated recurring reporting and improved admin visibility into application counts and partner revenue using Rails, Stripe webhooks, Heroku Dataclips, Google Sheets, and dashboard/query work. The source supports workflow and visibility improvements, not revenue growth. / No measured time, revenue, adoption, or accuracy improvement is established beyond the implemented behavior.; safe attribution: Not recorded
+- Potential issue: ownership scope, outcome/causality
+- Preliminary disposition: **KEEP**
+- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
+- Confidence: mechanical preliminary screen; human review required for substantive changes.
+
+### Knowledge #14 — Dogly Reliability, Security, and Incident Operations
+
+- ID / source ref: `14` / `consolidated:dogly-reliability-security-operations`
+- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
+- Evidence/source kind: `incident_story` / `repository_evidence` / `repository_and_git`
+- Current content: Jared owned ongoing reliability and security work across deploys, upgrades, monitoring, abuse prevention, and incident-response documentation. The evidence supports mitigations and a repeatable workflow, not a quantified reduction in abuse or incident frequency.
+- Source/provenance: consolidated:dogly-reliability-security-operations
+- Capabilities/intents: Reliability, security, incident response, observability, production support
+- Important metadata: utility `missing`; confidence `repository_evidenced`; status `Shipped`
+- Ownership: leadership `project_lead`; sole authorship `not established`; people management `not established`
+- Contributions/collaboration: Owned monitoring, upgrades, CI/CD, abuse-prevention controls, incident-response documentation, and production support. / Other Dogly contributors and operators where operational work was shared
+- Outcome/limits: Jared owned ongoing reliability and security work across deploys, upgrades, monitoring, abuse prevention, and incident-response documentation. The evidence supports mitigations and a repeatable workflow, not a quantified reduction in abuse or incident frequency. / No quantified abuse reduction, incident frequency, or service-level improvement is evidenced.; safe attribution: Not recorded
+- Potential issue: ownership scope, outcome/causality
+- Preliminary disposition: **KEEP**
+- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
+- Confidence: mechanical preliminary screen; human review required for substantive changes.
+
+### Knowledge #15 — Dogly Payout Data Integrity
+
+- ID / source ref: `15` / `consolidated:dogly-payout-data-integrity`
+- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
+- Evidence/source kind: `engineering_story` / `repository_evidence` / `repository_and_git`
+- Current content: Jared clarified payout source relationships and incorporated subscription refund events into partner settlement calculations, improving the modeled financial workflow without claiming a measured accuracy improvement.
+- Source/provenance: consolidated:dogly-payout-data-integrity
+- Capabilities/intents: Data modeling, domain modeling, event modeling, financial workflows, Stripe
+- Important metadata: utility `missing`; confidence `repository_evidenced`; status `Shipped`
+- Ownership: leadership `project_lead`; sole authorship `not established`; people management `not established`
+- Contributions/collaboration: Updated payout source linkage, plan metadata, refund event recording, and settlement integration. / Not recorded
+- Outcome/limits: Jared clarified payout source relationships and incorporated subscription refund events into partner settlement calculations, improving the modeled financial workflow without claiming a measured accuracy improvement. / The evidence does not establish a production incident, financial-loss prevention, or measured accuracy change.; safe attribution: Not recorded
+- Potential issue: ownership scope, outcome/causality
+- Preliminary disposition: **KEEP**
+- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
+- Confidence: mechanical preliminary screen; human review required for substantive changes.
+
+### Knowledge #16 — Dogly Stripe Admin Route Regression
+
+- ID / source ref: `16` / `consolidated:dogly-stripe-route-regression`
+- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
+- Evidence/source kind: `debugging_story` / `repository_evidence` / `repository_and_git`
+- Current content: Jared corrected an invalid Rails route helper used by an admin Stripe refresh flow. The code and commits establish the repair, but not the incident timing or production impact.
+- Source/provenance: consolidated:dogly-stripe-route-regression
+- Capabilities/intents: Rails routing, debugging, integrations, production support
+- Important metadata: utility `missing`; confidence `repository_evidenced`; status `Shipped`
+- Ownership: leadership `project_lead`; sole authorship `not established`; people management `not established`
+- Contributions/collaboration: Traced and corrected the invalid route helper. / Not recorded
+- Outcome/limits: Jared corrected an invalid Rails route helper used by an admin Stripe refresh flow. The code and commits establish the repair, but not the incident timing or production impact. / The original user-visible symptom and production impact are not established.; safe attribution: Not recorded
+- Potential issue: ownership scope, outcome/causality
+- Preliminary disposition: **KEEP**
+- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
+- Confidence: mechanical preliminary screen; human review required for substantive changes.
+
+### Knowledge #17 — Dogly Onboarding UX and Route Continuity
+
+- ID / source ref: `17` / `consolidated:dogly-onboarding-ux-routing`
+- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
+- Evidence/source kind: `product_story` / `repository_evidence` / `repository_and_git`
+- Current content: Jared refined Dogly onboarding so later questions appear only when prerequisite context exists and preserved typed application routes through navigation changes.
+- Source/provenance: consolidated:dogly-onboarding-ux-routing
+- Capabilities/intents: Product judgment, onboarding UX, conditional UI, routing, backward compatibility
+- Important metadata: utility `missing`; confidence `repository_evidenced`; status `Shipped`
+- Ownership: leadership `project_lead`; sole authorship `not established`; people management `not established`
+- Contributions/collaboration: Implemented prerequisite gating and route-preservation behavior across Rails and Stimulus. / Not recorded
+- Outcome/limits: Jared refined Dogly onboarding so later questions appear only when prerequisite context exists and preserved typed application routes through navigation changes. / No completion-rate, conversion, or prior-breakage metric is established.; safe attribution: Not recorded
+- Potential issue: ownership scope, outcome/causality
+- Preliminary disposition: **KEEP**
+- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
+- Confidence: mechanical preliminary screen; human review required for substantive changes.
+
+### Knowledge #18 — Dogly Runtime Admin Guide Publishing
+
+- ID / source ref: `18` / `consolidated:dogly-admin-guide-publishing`
+- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
+- Evidence/source kind: `project` / `repository_evidence` / `repository_and_git`
+- Current content: Jared shipped Markdown-backed admin guides and adjusted deployment packaging so operators could reach documentation from the running application rather than searching source files.
+- Source/provenance: consolidated:dogly-admin-guide-publishing
+- Capabilities/intents: Documentation, internal tooling, deployment, self-service
+- Important metadata: utility `missing`; confidence `repository_evidenced`; status `Shipped`
+- Ownership: leadership `project_lead`; sole authorship `not established`; people management `not established`
+- Contributions/collaboration: Added runtime guides and deployment preservation for Markdown documentation. / Not recorded
+- Outcome/limits: Jared shipped Markdown-backed admin guides and adjusted deployment packaging so operators could reach documentation from the running application rather than searching source files. / User adoption and time saved are not measured.; safe attribution: Not recorded
+- Potential issue: ownership scope, outcome/causality
+- Preliminary disposition: **KEEP**
+- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
+- Confidence: mechanical preliminary screen; human review required for substantive changes.
+
+### Knowledge #19 — Dogly Checkout and Payment Correctness
+
+- ID / source ref: `19` / `consolidated:dogly-checkout-payment-correctness`
+- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
+- Evidence/source kind: `debugging_story` / `repository_evidence` / `repository_and_git`
+- Current content: Jared corrected several Solidus and Stripe checkout lifecycle boundaries: payment-method timing, paid-state gating, member-discount amounts, and card ownership before confirmation. The evidence establishes defensive behavior, not a quantified production outcome.
+- Source/provenance: consolidated:dogly-checkout-payment-correctness
+- Capabilities/intents: Backend engineering, Stripe, Solidus, state machines, defensive programming, debugging
+- Important metadata: utility `missing`; confidence `repository_evidenced`; status `Shipped`
+- Ownership: leadership `project_lead`; sole authorship `not established`; people management `not established`
+- Contributions/collaboration: Adjusted checkout decorators and payment lifecycle/state handling. / Not recorded
+- Outcome/limits: Jared corrected several Solidus and Stripe checkout lifecycle boundaries: payment-method timing, paid-state gating, member-discount amounts, and card ownership before confirmation. The evidence establishes defensive behavior, not a quantified production outcome. / The evidence does not establish a quantified reduction in payment failures or a user-visible outcome.; safe attribution: Not recorded
+- Potential issue: ownership scope, outcome/causality
+- Preliminary disposition: **KEEP**
+- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
+- Confidence: mechanical preliminary screen; human review required for substantive changes.
+
+### Knowledge #20 — Dogly Solidus Order Concurrency Patch
+
+- ID / source ref: `20` / `consolidated:dogly-solidus-order-concurrency`
+- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
+- Evidence/source kind: `incident_story` / `repository_evidence` / `repository_and_git`
+- Current content: Jared added a narrow Solidus initializer patch for an order-locking mutex problem in production, limiting the change to the locking behavior that needed correction. User impact is not quantified.
+- Source/provenance: consolidated:dogly-solidus-order-concurrency
+- Capabilities/intents: Production debugging, concurrency, framework compatibility, risk-managed change
+- Important metadata: utility `missing`; confidence `repository_evidenced`; status `Shipped`
+- Ownership: leadership `project_lead`; sole authorship `not established`; people management `not established`
+- Contributions/collaboration: Diagnosed and implemented a narrow framework compatibility patch. / Not recorded
+- Outcome/limits: Jared added a narrow Solidus initializer patch for an order-locking mutex problem in production, limiting the change to the locking behavior that needed correction. User impact is not quantified. / No quantified incident frequency, order impact, or performance result is available.; safe attribution: Not recorded
+- Potential issue: ownership scope, outcome/causality, management/team scale
+- Preliminary disposition: **NEEDS_JARED_REVIEW**
+- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
+- Confidence: mechanical preliminary screen; human review required for substantive changes.
+
+### Knowledge #21 — Dogly Paperclip to ActiveStorage Migration Compatibility
+
+- ID / source ref: `21` / `consolidated:dogly-attachment-migration`
+- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
+- Evidence/source kind: `engineering_story` / `repository_evidence` / `repository_and_git`
+- Current content: Jared kept legacy Paperclip images working while new uploads moved to ActiveStorage, then patched Solidus rendering expectations during the transition so the migration could proceed incrementally.
+- Source/provenance: consolidated:dogly-attachment-migration
+- Capabilities/intents: Migration strategy, backward compatibility, Rails upgrades, Solidus, ActiveStorage
+- Important metadata: utility `missing`; confidence `repository_evidenced`; status `Shipped transition`
+- Ownership: leadership `project_lead`; sole authorship `not established`; people management `not established`
+- Contributions/collaboration: Designed incremental compatibility, updated image behavior, and patched Solidus attachment methods/rendering. / Not recorded
+- Outcome/limits: Jared kept legacy Paperclip images working while new uploads moved to ActiveStorage, then patched Solidus rendering expectations during the transition so the migration could proceed incrementally. / No measured migration completion date, performance result, or incident volume is established.; safe attribution: Not recorded
+- Potential issue: ownership scope, outcome/causality
+- Preliminary disposition: **KEEP**
+- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
+- Confidence: mechanical preliminary screen; human review required for substantive changes.
+
+### Knowledge #22 — Dogly Webpacker to esbuild Migration
+
+- ID / source ref: `22` / `consolidated:dogly-frontend-build-migration`
+- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
+- Evidence/source kind: `engineering_story` / `repository_evidence` / `repository_and_git`
+- Current content: Jared moved Dogly toward esbuild while retaining legacy JavaScript entry points, then repaired a billing interaction lost during the migration. The evidence supports compatibility work, not a measured build-speed improvement.
+- Source/provenance: consolidated:dogly-frontend-build-migration
+- Capabilities/intents: Frontend engineering, build systems, incremental migration, regression debugging
+- Important metadata: utility `missing`; confidence `repository_evidenced`; status `Shipped transition`
+- Ownership: leadership `project_lead`; sole authorship `not established`; people management `not established`
+- Contributions/collaboration: Migrated build configuration, preserved legacy entry points, and repaired a migration regression. / Not recorded
+- Outcome/limits: Jared moved Dogly toward esbuild while retaining legacy JavaScript entry points, then repaired a billing interaction lost during the migration. The evidence supports compatibility work, not a measured build-speed improvement. / The exact billing interaction and measured build/performance change are not established.; safe attribution: Not recorded
+- Potential issue: ownership scope, outcome/causality
+- Preliminary disposition: **KEEP**
+- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
+- Confidence: mechanical preliminary screen; human review required for substantive changes.
+
+### Knowledge #23 — Dogly ShipStation Export Refactoring and Query Performance
+
+- ID / source ref: `23` / `consolidated:dogly-shipstation-export`
+- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
+- Evidence/source kind: `performance_story` / `repository_evidence` / `repository_and_git`
+- Current content: Jared refactored Dogly's ShipStation XML export into a service, used targeted eager loading to address N+1 behavior, and corrected an address-field mapping. The code supports query and compatibility improvements, not a measured latency result.
+- Source/provenance: consolidated:dogly-shipstation-export
+- Capabilities/intents: Backend engineering, API/export integration, query performance, refactoring, debugging
+- Important metadata: utility `missing`; confidence `repository_evidenced`; status `Shipped`
+- Ownership: leadership `project_lead`; sole authorship `not established`; people management `not established`
+- Contributions/collaboration: Refactored export construction, changed XML generation, added eager loading, and corrected address mapping. / Not recorded
+- Outcome/limits: Jared refactored Dogly's ShipStation XML export into a service, used targeted eager loading to address N+1 behavior, and corrected an address-field mapping. The code supports query and compatibility improvements, not a measured latency result. / No measured latency, query-count, or external-rejection outcome is established.; safe attribution: Not recorded
+- Potential issue: ownership scope, outcome/causality
+- Preliminary disposition: **KEEP**
+- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
+- Confidence: mechanical preliminary screen; human review required for substantive changes.
+
+### Knowledge #24 — Dogly PostgreSQL Upgrade Job Workaround
+
+- ID / source ref: `24` / `consolidated:dogly-postgresql-job-workaround`
+- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
+- Evidence/source kind: `incident_story` / `repository_evidence` / `repository_and_git`
+- Current content: After a PostgreSQL upgrade, Jared changed selected delayed-job calls from perform_later to perform_now as a documented workaround and identified Sidekiq as the intended direction. The exact failure and durable follow-up are not established.
+- Source/provenance: consolidated:dogly-postgresql-job-workaround
+- Capabilities/intents: Incident debugging, database compatibility, ActiveJob, background jobs
+- Important metadata: utility `missing`; confidence `repository_evidenced`; status `Shipped workaround`
+- Ownership: leadership `project_lead`; sole authorship `not established`; people management `not established`
+- Contributions/collaboration: Implemented the synchronous workaround and documented the intended delayed-job direction. / Not recorded
+- Outcome/limits: After a PostgreSQL upgrade, Jared changed selected delayed-job calls from perform_later to perform_now as a documented workaround and identified Sidekiq as the intended direction. The exact failure and durable follow-up are not established. / Exact failure symptom, production impact, and durable replacement are unknown.; safe attribution: Not recorded
+- Potential issue: ownership scope, outcome/causality
+- Preliminary disposition: **KEEP**
+- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
+- Confidence: mechanical preliminary screen; human review required for substantive changes.
+
+### Knowledge #25 — Dogly Scout-Driven N+1 Remediation
+
+- ID / source ref: `25` / `consolidated:dogly-performance-diagnostics`
+- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
+- Evidence/source kind: `performance_story` / `repository_evidence` / `repository_and_git`
+- Current content: Jared traced Scout findings and redundant association access in topic-profile and ShipStation-related request paths, then adjusted eager loading and presenter/model access patterns. The evidence does not provide before/after latency or query counts.
+- Source/provenance: consolidated:dogly-performance-diagnostics
+- Capabilities/intents: Performance debugging, ORM, Scout APM, N+1 remediation
+- Important metadata: utility `missing`; confidence `repository_evidenced`; status `Shipped`
+- Ownership: leadership `project_lead`; sole authorship `not established`; people management `not established`
+- Contributions/collaboration: Used observability findings to trace and correct redundant association access. / Not recorded
+- Outcome/limits: Jared traced Scout findings and redundant association access in topic-profile and ShipStation-related request paths, then adjusted eager loading and presenter/model access patterns. The evidence does not provide before/after latency or query counts. / No measured latency, query-count, or throughput improvement is established.; safe attribution: Not recorded
+- Potential issue: ownership scope, outcome/causality
+- Preliminary disposition: **KEEP**
+- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
+- Confidence: mechanical preliminary screen; human review required for substantive changes.
+
+### Knowledge #26 — Dogly CI and Test Reliability
+
+- ID / source ref: `26` / `consolidated:dogly-ci-test-reliability`
+- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
+- Evidence/source kind: `engineering_story` / `repository_evidence` / `repository_and_git`
+- Current content: Jared corrected GitHub Actions PostgreSQL service configuration and added automated coverage for onboarding and agenda flows, improving the reliability of the verification path without claiming a defect-prevention rate.
+- Source/provenance: consolidated:dogly-ci-test-reliability
+- Capabilities/intents: CI/CD, PostgreSQL, test architecture, release confidence, debugging
+- Important metadata: utility `missing`; confidence `repository_evidenced`; status `Shipped`
+- Ownership: leadership `project_lead`; sole authorship `not established`; people management `not established`
+- Contributions/collaboration: Corrected CI environment configuration and added automated test workflow coverage. / Not recorded
+- Outcome/limits: Jared corrected GitHub Actions PostgreSQL service configuration and added automated coverage for onboarding and agenda flows, improving the reliability of the verification path without claiming a defect-prevention rate. / The prior CI failure details and measured reliability improvement are not documented.; safe attribution: Not recorded
+- Potential issue: ownership scope, outcome/causality
+- Preliminary disposition: **KEEP**
+- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
+- Confidence: mechanical preliminary screen; human review required for substantive changes.
+
+### Knowledge #27 — Dogly Recharge Webhook and Trial-Invitation Processing
+
+- ID / source ref: `27` / `consolidated:dogly-recharge-webhook-processing`
+- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
+- Evidence/source kind: `integration_story` / `repository_evidence` / `repository_and_git`
+- Current content: Jared built Recharge webhook processing, background jobs, reconciliation, and invitation sequencing so qualifying partner subscription purchases could enter Dogly's trial-invitation workflow instead of requiring a manual handoff.
+- Source/provenance: consolidated:dogly-recharge-webhook-processing
+- Capabilities/intents: Recharge, webhooks, background jobs, reconciliation, integrations
+- Important metadata: utility `missing`; confidence `repository_evidenced`; status `Shipped`
+- Ownership: leadership `project_lead`; sole authorship `not established`; people management `not established`
+- Contributions/collaboration: Implemented webhook handling, asynchronous processing, reconciliation, and invitation sequencing. / Not recorded
+- Outcome/limits: Jared built Recharge webhook processing, background jobs, reconciliation, and invitation sequencing so qualifying partner subscription purchases could enter Dogly's trial-invitation workflow instead of requiring a manual handoff. / No event volume, retry rate, or measured operational result is established.; safe attribution: Not recorded
+- Potential issue: ownership scope, outcome/causality
+- Preliminary disposition: **KEEP**
+- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
+- Confidence: mechanical preliminary screen; human review required for substantive changes.
+
+### Knowledge #28 — Dogly Paginated Linked-Product Management
+
+- ID / source ref: `28` / `consolidated:dogly-linked-product-pagination`
+- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
+- Evidence/source kind: `performance_story` / `repository_evidence` / `repository_and_git`
+- Current content: Jared added Pagy to bound the linked-product admin result set so the screen works through pages rather than attempting to load and render the entire catalog at once.
+- Source/provenance: consolidated:dogly-linked-product-pagination
+- Capabilities/intents: Performance, admin UX, query handling, Rails
+- Important metadata: utility `missing`; confidence `repository_evidenced`; status `Shipped`
+- Ownership: leadership `project_lead`; sole authorship `not established`; people management `not established`
+- Contributions/collaboration: Implemented bounded pagination for linked products. / Not recorded
+- Outcome/limits: Jared added Pagy to bound the linked-product admin result set so the screen works through pages rather than attempting to load and render the entire catalog at once. / No catalog size, latency, or operational-time metric is available.; safe attribution: Not recorded
+- Potential issue: ownership scope, outcome/causality
+- Preliminary disposition: **KEEP**
+- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
+- Confidence: mechanical preliminary screen; human review required for substantive changes.
+
+### Knowledge #29 — Dogly Free-Form Concern Recommendations
+
+- ID / source ref: `29` / `consolidated:dogly-free-form-recommendations`
+- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
+- Evidence/source kind: `product_story` / `repository_evidence` / `repository_and_git`
+- Current content: Jared built deterministic text-to-tag matching that connects a dog owner's free-form concern to Dogly's known problems and tags, which recommendation and product-query paths use to surface related results.
+- Source/provenance: consolidated:dogly-free-form-recommendations
+- Capabilities/intents: Product engineering, search/recommendation, deterministic matching, domain modeling, Rails
+- Important metadata: utility `missing`; confidence `repository_evidenced`; status `Shipped`
+- Ownership: leadership `project_lead`; sole authorship `not established`; people management `not established`
+- Contributions/collaboration: Designed and implemented deterministic matching and connected taxonomy relationships across recommendation/query paths. / Not recorded
+- Outcome/limits: Jared built deterministic text-to-tag matching that connects a dog owner's free-form concern to Dogly's known problems and tags, which recommendation and product-query paths use to surface related results. / No ranking-quality, conversion, or adoption measurement is available.; safe attribution: Not recorded
+- Potential issue: ownership scope, outcome/causality
+- Preliminary disposition: **KEEP**
+- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
+- Confidence: mechanical preliminary screen; human review required for substantive changes.
+
+### Knowledge #30 — Dogly Shopify/Solidus Catalog Reconciliation
+
+- ID / source ref: `30` / `consolidated:dogly-shopify-solidus-reconciliation`
+- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
+- Evidence/source kind: `integration_story` / `repository_evidence` / `repository_and_git`
+- Current content: Jared built an admin reconciliation flow that proposes exact SKU matches first, then normalized product-title matches, with bidirectional review and conflict checks for Shopify and Solidus variants.
+- Source/provenance: consolidated:dogly-shopify-solidus-reconciliation
+- Capabilities/intents: Shopify, Solidus, SKU reconciliation, catalog imports, APIs, data integrity
+- Important metadata: utility `missing`; confidence `repository_evidenced`; status `Shipped`
+- Ownership: leadership `project_lead`; sole authorship `not established`; people management `not established`
+- Contributions/collaboration: Designed and implemented matching, confidence handling, bidirectional reconciliation, and conflict checks. / Not recorded
+- Outcome/limits: Jared built an admin reconciliation flow that proposes exact SKU matches first, then normalized product-title matches, with bidirectional review and conflict checks for Shopify and Solidus variants. / No conflict-resolution rate, vendor cause, or operational-impact metric is established.; safe attribution: Not recorded
+- Potential issue: ownership scope, outcome/causality
+- Preliminary disposition: **KEEP**
+- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
+- Confidence: mechanical preliminary screen; human review required for substantive changes.
+
+### Knowledge #31 — Dogly Agenda product direction
+
+- ID / source ref: `31` / `story:dogly-agenda-product-direction`
 - Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
 - Evidence/source kind: `product_story` / `repository_evidence` / `direct_statement_from_jared`
 - Current content: Jared redirected a proposed Community direction toward an evidence-backed daily plan based on user need, explicit tradeoffs, user comparison, and post-launch engagement signals.
@@ -191,247 +531,9 @@ Preliminary dispositions are triage signals, not approvals for data mutation. Th
 - Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
 - Confidence: mechanical preliminary screen; human review required for substantive changes.
 
-### Knowledge #42 — Large engineering organization boundary
+### Knowledge #33 — J.Crew + Madewell Store Director, Columbus Circle NYC (2016–2018)
 
-- ID / source ref: `42` / `fact:large-engineering-organization-boundary`
-- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
-- Evidence/source kind: `career_context` / `repository_evidence` / `direct_statement_from_jared`
-- Current content: Large conventional engineering-team experience is a boundary; adjacent collaboration and organizational-scale experience are demonstrated.
-- Source/provenance: fact:large-engineering-organization-boundary
-- Capabilities/intents: organizational_scale; engineering_collaboration; stakeholder_alignment
-- Important metadata: utility `primary_recruiter_evidence`; confidence `jared_confirmed_recruiter_safe`; status `not recorded`
-- Ownership: leadership `not recorded`; sole authorship `not recorded`; people management `not recorded`
-- Contributions/collaboration: Not recorded / Not recorded
-- Outcome/limits: Not recorded / Sustained large engineering-organization experience is not established.; safe attribution: Do not equate retail organizational scale with engineering-team experience.
-- Potential issue: management/team scale
-- Preliminary disposition: **NEEDS_JARED_REVIEW**
-- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
-- Confidence: mechanical preliminary screen; human review required for substantive changes.
-
-### Knowledge #43 — Professional TypeScript experience boundary
-
-- ID / source ref: `43` / `fact:professional-typescript-boundary`
-- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
-- Evidence/source kind: `career_context` / `repository_evidence` / `direct_statement_from_jared`
-- Current content: Professional TypeScript depth is not established; a current learning trajectory is documented.
-- Source/provenance: fact:professional-typescript-boundary
-- Capabilities/intents: learning_new_technology; typescript; debugging
-- Important metadata: utility `primary_recruiter_evidence`; confidence `jared_confirmed_recruiter_safe`; status `not recorded`
-- Ownership: leadership `not recorded`; sole authorship `not recorded`; people management `not recorded`
-- Contributions/collaboration: Not recorded / Not recorded
-- Outcome/limits: Not recorded / Prolonged professional TypeScript experience is not established.; safe attribution: Do not infer TypeScript expertise from JavaScript or React evidence.
-- Potential issue: technology depth
-- Preliminary disposition: **NEEDS_JARED_REVIEW**
-- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
-- Confidence: mechanical preliminary screen; human review required for substantive changes.
-
-### Knowledge #44 — Technology-specific depth boundary
-
-- ID / source ref: `44` / `fact:technology-depth-boundary`
-- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
-- Evidence/source kind: `career_context` / `repository_evidence` / `direct_statement_from_jared`
-- Current content: Technology depth varies and should be evaluated by technology rather than inferred globally.
-- Source/provenance: fact:technology-depth-boundary
-- Capabilities/intents: learning_new_technology; react; typescript
-- Important metadata: utility `primary_recruiter_evidence`; confidence `jared_confirmed_recruiter_safe`; status `not recorded`
-- Ownership: leadership `not recorded`; sole authorship `not recorded`; people management `not recorded`
-- Contributions/collaboration: Not recorded / Not recorded
-- Outcome/limits: Not recorded / Depth varies by technology; individual technology evidence must stand on its own.; safe attribution: Not recorded
-- Potential issue: technology depth
-- Preliminary disposition: **NEEDS_JARED_REVIEW**
-- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
-- Confidence: mechanical preliminary screen; human review required for substantive changes.
-
-### Knowledge #45 — DoglyDaily technical debt and learning
-
-- ID / source ref: `45` / `story:doglydaily-technical-debt-learning`
-- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
-- Evidence/source kind: `product_story` / `repository_evidence` / `direct_statement_from_jared`
-- Current content: A technical-debt mistake led to a structural refactor and a clearer lesson about observability in scheduled systems.
-- Source/provenance: story:doglydaily-technical-debt-learning
-- Capabilities/intents: failure_learning; production_reliability; debugging; technical_ownership
-- Important metadata: utility `secondary_recruiter_evidence`; confidence `jared_confirmed_recruiter_safe`; status `not recorded`
-- Ownership: leadership `not recorded`; sole authorship `not recorded`; people management `not recorded`
-- Contributions/collaboration: Not recorded / Not recorded
-- Outcome/limits: Performance improved significantly; no numeric performance result is established. / No defensible numeric performance metric exists.; safe attribution: Do not present the improvement as quantified.
-- Potential issue: outcome/causality
-- Preliminary disposition: **KEEP**
-- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
-- Confidence: mechanical preliminary screen; human review required for substantive changes.
-
-### Knowledge #46 — J.Crew dress and swim decision
-
-- ID / source ref: `46` / `story:jcrew-dress-swim-decision`
-- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
-- Evidence/source kind: `product_story` / `repository_evidence` / `direct_statement_from_jared`
-- Current content: A candid commercial recommendation produced a strong reset, while Jared identifies a communication improvement to make today.
-- Source/provenance: story:jcrew-dress-swim-decision
-- Capabilities/intents: executive_communication; technical_disagreement; stakeholder_alignment; measurable_impact
-- Important metadata: utility `secondary_recruiter_evidence`; confidence `jared_confirmed_recruiter_safe`; status `not recorded`
-- Ownership: leadership `not recorded`; sole authorship `not recorded`; people management `not recorded`
-- Contributions/collaboration: Not recorded / Not recorded
-- Outcome/limits: Dress approximately $12,000; swim approximately $1,500 in secondary placement after the reset. / The sales result does not prove the communication process was flawless.; safe attribution: Attribute the sales observations to the post-reset week, not to flawless communication.
-- Potential issue: outcome/causality, management/team scale, planned versus observed
-- Preliminary disposition: **KEEP**
-- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
-- Confidence: mechanical preliminary screen; human review required for substantive changes.
-
-### Knowledge #47 — J.Crew crisis leadership feedback
-
-- ID / source ref: `47` / `story:jcrew-crisis-leadership-feedback`
-- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
-- Evidence/source kind: `product_story` / `repository_evidence` / `direct_statement_from_jared`
-- Current content: Feedback changed Jared's crisis-management style toward calibrated autonomy.
-- Source/provenance: story:jcrew-crisis-leadership-feedback
-- Capabilities/intents: feedback_coachability; mentorship; people_development; leadership
-- Important metadata: utility `secondary_recruiter_evidence`; confidence `jared_confirmed_recruiter_safe`; status `not recorded`
-- Ownership: leadership `not recorded`; sole authorship `not recorded`; people management `not recorded`
-- Contributions/collaboration: Not recorded / Not recorded
-- Outcome/limits: The manager led the team meeting and the team accomplished the training objective. / Not recorded; safe attribution: Jared supported the manager's development; do not claim sole causation.
-- Potential issue: ownership scope, outcome/causality, management/team scale
-- Preliminary disposition: **KEEP**
-- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
-- Confidence: mechanical preliminary screen; human review required for substantive changes.
-
-### Knowledge #48 — Anthropologie succession and mentorship
-
-- ID / source ref: `48` / `story:anthropologie-succession-mentorship`
-- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
-- Evidence/source kind: `product_story` / `repository_evidence` / `direct_statement_from_jared`
-- Current content: Jared used succession-oriented development to build readiness behind each promotion.
-- Source/provenance: story:anthropologie-succession-mentorship
-- Capabilities/intents: mentorship; people_development; organizational_scale; leadership
-- Important metadata: utility `primary_recruiter_evidence`; confidence `jared_confirmed_recruiter_safe`; status `not recorded`
-- Ownership: leadership `not recorded`; sole authorship `not recorded`; people management `not recorded`
-- Contributions/collaboration: Not recorded / Not recorded
-- Outcome/limits: The manager was promoted into the role after her supervisor advanced. / Not recorded; safe attribution: Do not claim Jared alone caused these people's success.
-- Potential issue: outcome/causality, management/team scale, technology depth
-- Preliminary disposition: **NEEDS_JARED_REVIEW**
-- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
-- Confidence: mechanical preliminary screen; human review required for substantive changes.
-
-### Knowledge #49 — Dogly pre-accelerator prioritization
-
-- ID / source ref: `49` / `story:dogly-pre-accelerator-prioritization`
-- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
-- Evidence/source kind: `product_story` / `repository_evidence` / `direct_statement_from_jared`
-- Current content: Prioritized partly by expected requirement stability and half-life, not urgency alone.
-- Source/provenance: story:dogly-pre-accelerator-prioritization
-- Capabilities/intents: prioritization; product_judgment; stakeholder_alignment
-- Important metadata: utility `primary_recruiter_evidence`; confidence `jared_confirmed_recruiter_safe`; status `not recorded`
-- Ownership: leadership `not recorded`; sole authorship `not recorded`; people management `not recorded`
-- Contributions/collaboration: Not recorded / Not recorded
-- Outcome/limits: Aesthetic work aligned with accelerator discovery and avoided multiple aesthetic passes. / Not recorded; safe attribution: Not recorded
-- Potential issue: outcome/causality, technology depth, planned versus observed
-- Preliminary disposition: **NEEDS_JARED_REVIEW**
-- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
-- Confidence: mechanical preliminary screen; human review required for substantive changes.
-
-### Knowledge #50 — DoglyDaily three-send UX
-
-- ID / source ref: `50` / `story:doglydaily-three-send-ux`
-- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
-- Evidence/source kind: `product_story` / `repository_evidence` / `direct_statement_from_jared`
-- Current content: A shipped UX treatment has a defined measurement plan, not an asserted result.
-- Source/provenance: story:doglydaily-three-send-ux
-- Capabilities/intents: product_judgment; ambiguity; measurable_impact
-- Important metadata: utility `secondary_recruiter_evidence`; confidence `jared_confirmed_recruiter_safe`; status `not recorded`
-- Ownership: leadership `not recorded`; sole authorship `not recorded`; people management `not recorded`
-- Contributions/collaboration: Not recorded / Not recorded
-- Outcome/limits: Not recorded / No outcome claim is established.; safe attribution: Not recorded
-- Potential issue: outcome/causality, planned versus observed
-- Preliminary disposition: **NEEDS_JARED_REVIEW**
-- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
-- Confidence: mechanical preliminary screen; human review required for substantive changes.
-
-### Knowledge #51 — Dogly engineering collaboration
-
-- ID / source ref: `51` / `story:dogly-engineering-collaboration`
-- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
-- Evidence/source kind: `product_story` / `repository_evidence` / `direct_statement_from_jared`
-- Current content: Direct professional engineer-to-engineer collaboration is demonstrated alongside a genuine larger-team boundary.
-- Source/provenance: story:dogly-engineering-collaboration
-- Capabilities/intents: engineering_collaboration; learning_new_technology; technical_ownership; react
-- Important metadata: utility `primary_recruiter_evidence`; confidence `jared_confirmed_recruiter_safe`; status `not recorded`
-- Ownership: leadership `not recorded`; sole authorship `not recorded`; people management `not recorded`
-- Contributions/collaboration: Not recorded / Not recorded
-- Outcome/limits: Not recorded / Most later engineering work was highly autonomous; sustained larger-team engineering experience is not established.; safe attribution: Do not infer TypeScript expertise from the React example.
-- Potential issue: management/team scale, technology depth
-- Preliminary disposition: **NEEDS_JARED_REVIEW**
-- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
-- Confidence: mechanical preliminary screen; human review required for substantive changes.
-
-### Knowledge #52 — Stripe learning and technical ramp
-
-- ID / source ref: `52` / `story:stripe-learning-ramp`
-- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
-- Evidence/source kind: `product_story` / `repository_evidence` / `direct_statement_from_jared`
-- Current content: Structured research and primary documentation closed implementation gaps during a successful unfamiliar integration.
-- Source/provenance: story:stripe-learning-ramp
-- Capabilities/intents: learning_new_technology; technical_ownership; integration
-- Important metadata: utility `primary_recruiter_evidence`; confidence `jared_confirmed_recruiter_safe`; status `not recorded`
-- Ownership: leadership `not recorded`; sole authorship `not recorded`; people management `not recorded`
-- Contributions/collaboration: Not recorded / Not recorded
-- Outcome/limits: Jared successfully implemented the subscription integration. / Not recorded; safe attribution: Not recorded
-- Potential issue: outcome/causality
-- Preliminary disposition: **KEEP**
-- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
-- Confidence: mechanical preliminary screen; human review required for substantive changes.
-
-### Knowledge #53 — Dogly full React migration disagreement
-
-- ID / source ref: `53` / `story:dogly-react-migration-disagreement`
-- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
-- Evidence/source kind: `product_story` / `repository_evidence` / `direct_statement_from_jared`
-- Current content: A technical disagreement made opportunity cost visible without treating either framework as universally correct.
-- Source/provenance: story:dogly-react-migration-disagreement
-- Capabilities/intents: technical_disagreement; prioritization; stakeholder_alignment; technical_ownership; rails; react
-- Important metadata: utility `primary_recruiter_evidence`; confidence `jared_confirmed_recruiter_safe`; status `not recorded`
-- Ownership: leadership `not recorded`; sole authorship `not recorded`; people management `not recorded`
-- Contributions/collaboration: Not recorded / Not recorded
-- Outcome/limits: Not recorded / Not recorded; safe attribution: Do not frame this as Rails-good or React-bad.
-- Potential issue: outcome/causality, planned versus observed
-- Preliminary disposition: **KEEP**
-- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
-- Confidence: mechanical preliminary screen; human review required for substantive changes.
-
-### Knowledge #54 — Daily Agenda simplification
-
-- ID / source ref: `54` / `story:dogly-agenda-simplification`
-- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
-- Evidence/source kind: `product_story` / `repository_evidence` / `direct_statement_from_jared`
-- Current content: A measured 15% task-completion increase belongs to the simplification redesign, not the separate wrap-up feature.
-- Source/provenance: story:dogly-agenda-simplification
-- Capabilities/intents: product_judgment; measurable_impact; failure_learning; user_research
-- Important metadata: utility `primary_recruiter_evidence`; confidence `jared_confirmed_recruiter_safe`; status `not recorded`
-- Ownership: leadership `not recorded`; sole authorship `not recorded`; people management `not recorded`
-- Contributions/collaboration: Not recorded / Not recorded
-- Outcome/limits: Daily Agenda task completion increased 15% after the simplification redesign. / Not recorded; safe attribution: Do not attach the 15% result to the separate wrap-up/follow feature.
-- Potential issue: outcome/causality
-- Preliminary disposition: **NEEDS_JARED_REVIEW**
-- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
-- Confidence: mechanical preliminary screen; human review required for substantive changes.
-
-### Knowledge #55 — Daily Agenda completion-metric alignment
-
-- ID / source ref: `55` / `story:dogly-agenda-completion-alignment`
-- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
-- Evidence/source kind: `product_story` / `repository_evidence` / `direct_statement_from_jared`
-- Current content: Resolved a hidden stakeholder misunderstanding to improve decision quality.
-- Source/provenance: story:dogly-agenda-completion-alignment
-- Capabilities/intents: stakeholder_alignment; influence_without_authority; executive_communication; product_judgment
-- Important metadata: utility `primary_recruiter_evidence`; confidence `jared_confirmed_recruiter_safe`; status `not recorded`
-- Ownership: leadership `not recorded`; sole authorship `not recorded`; people management `not recorded`
-- Contributions/collaboration: Not recorded / Not recorded
-- Outcome/limits: The team implemented guide-level completion as the default. / Not recorded; safe attribution: This demonstrates decision-quality intervention, not merely advocacy for Jared's preferred feature.
-- Potential issue: outcome/causality, management/team scale
-- Preliminary disposition: **KEEP**
-- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
-- Confidence: mechanical preliminary screen; human review required for substantive changes.
-
-### Knowledge #56 — J.Crew + Madewell Store Director, Columbus Circle NYC (2016–2018)
-
-- ID / source ref: `56` / `career:jcrew-store-director-columbus-circle`
+- ID / source ref: `33` / `career:jcrew-store-director-columbus-circle`
 - Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
 - Evidence/source kind: `leadership_story` / `repository_evidence` / `direct_statement_from_jared`
 - Current content: Large-store leadership, team feedback, concept launch, and measurable commercial and people outcomes.
@@ -446,9 +548,9 @@ Preliminary dispositions are triage signals, not approvals for data mutation. Th
 - Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
 - Confidence: mechanical preliminary screen; human review required for substantive changes.
 
-### Knowledge #57 — J.Crew Associate Store Manager, Columbus Circle NYC (2015–2016)
+### Knowledge #34 — J.Crew Associate Store Manager, Columbus Circle NYC (2015–2016)
 
-- ID / source ref: `57` / `career:jcrew-associate-store-manager-columbus-circle`
+- ID / source ref: `34` / `career:jcrew-associate-store-manager-columbus-circle`
 - Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
 - Evidence/source kind: `leadership_story` / `repository_evidence` / `direct_statement_from_jared`
 - Current content: Operational systems adoption, SaaS evaluation, and coaching translated into measurable sales improvement.
@@ -463,9 +565,9 @@ Preliminary dispositions are triage signals, not approvals for data mutation. Th
 - Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
 - Confidence: mechanical preliminary screen; human review required for substantive changes.
 
-### Knowledge #58 — J.Crew Store Director, Pentagon City (2014–2015)
+### Knowledge #35 — J.Crew Store Director, Pentagon City (2014–2015)
 
-- ID / source ref: `58` / `career:jcrew-store-director-pentagon-city`
+- ID / source ref: `35` / `career:jcrew-store-director-pentagon-city`
 - Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
 - Evidence/source kind: `leadership_story` / `repository_evidence` / `direct_statement_from_jared`
 - Current content: Turnaround leadership extended into regional training, talent development, and partnership with a central office—working across organizational levels.
@@ -480,9 +582,9 @@ Preliminary dispositions are triage signals, not approvals for data mutation. Th
 - Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
 - Confidence: mechanical preliminary screen; human review required for substantive changes.
 
-### Knowledge #59 — J.Crew Store Director, F Street Washington DC (2013–2014)
+### Knowledge #36 — J.Crew Store Director, F Street Washington DC (2013–2014)
 
-- ID / source ref: `59` / `career:jcrew-store-director-f-street`
+- ID / source ref: `36` / `career:jcrew-store-director-f-street`
 - Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
 - Evidence/source kind: `leadership_story` / `repository_evidence` / `direct_statement_from_jared`
 - Current content: Market-level leadership combined customer conversion, training, software rollout, and complex opening/relocation execution.
@@ -497,9 +599,9 @@ Preliminary dispositions are triage signals, not approvals for data mutation. Th
 - Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
 - Confidence: mechanical preliminary screen; human review required for substantive changes.
 
-### Knowledge #60 — URBN General Manager, Urban Outfitters Georgetown (2012–2013)
+### Knowledge #37 — URBN General Manager, Urban Outfitters Georgetown (2012–2013)
 
-- ID / source ref: `60` / `career:urbn-general-manager-georgetown`
+- ID / source ref: `37` / `career:urbn-general-manager-georgetown`
 - Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
 - Evidence/source kind: `leadership_story` / `repository_evidence` / `direct_statement_from_jared`
 - Current content: Large-scale operations combined executive-facing coordination, prototyping, and adoption of communication tools.
@@ -514,9 +616,9 @@ Preliminary dispositions are triage signals, not approvals for data mutation. Th
 - Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
 - Confidence: mechanical preliminary screen; human review required for substantive changes.
 
-### Knowledge #61 — URBN Store Manager, Anthropologie DC/MD (2009–2012)
+### Knowledge #38 — URBN Store Manager, Anthropologie DC/MD (2009–2012)
 
-- ID / source ref: `61` / `career:urbn-store-manager-anthropologie`
+- ID / source ref: `38` / `career:urbn-store-manager-anthropologie`
 - Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
 - Evidence/source kind: `leadership_story` / `repository_evidence` / `direct_statement_from_jared`
 - Current content: Multi-stakeholder store leadership combined mentorship, experimentation, event execution, and change management.
@@ -531,9 +633,9 @@ Preliminary dispositions are triage signals, not approvals for data mutation. Th
 - Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
 - Confidence: mechanical preliminary screen; human review required for substantive changes.
 
-### Knowledge #62 — URBN People & Operations Manager, Anthropologie (2008–2009)
+### Knowledge #39 — URBN People & Operations Manager, Anthropologie (2008–2009)
 
-- ID / source ref: `62` / `career:urbn-people-operations-manager-anthropologie`
+- ID / source ref: `39` / `career:urbn-people-operations-manager-anthropologie`
 - Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
 - Evidence/source kind: `leadership_story` / `repository_evidence` / `direct_statement_from_jared`
 - Current content: People operations and process control produced a measurable audit improvement while balancing labor constraints.
@@ -548,9 +650,9 @@ Preliminary dispositions are triage signals, not approvals for data mutation. Th
 - Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
 - Confidence: mechanical preliminary screen; human review required for substantive changes.
 
-### Knowledge #63 — URBN Senior Merchandiser, Urban Outfitters (2001–2008)
+### Knowledge #40 — URBN Senior Merchandiser, Urban Outfitters (2001–2008)
 
-- ID / source ref: `63` / `career:urbn-senior-merchandiser`
+- ID / source ref: `40` / `career:urbn-senior-merchandiser`
 - Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
 - Evidence/source kind: `leadership_story` / `repository_evidence` / `direct_statement_from_jared`
 - Current content: Measured process improvement across repeated store openings.
@@ -565,9 +667,247 @@ Preliminary dispositions are triage signals, not approvals for data mutation. Th
 - Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
 - Confidence: mechanical preliminary screen; human review required for substantive changes.
 
-### Knowledge #65 — Dogly early production bot-traffic investigation
+### Knowledge #41 — Large engineering organization boundary
 
-- ID / source ref: `65` / `story:dogly-production-incident-2022`
+- ID / source ref: `41` / `fact:large-engineering-organization-boundary`
+- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
+- Evidence/source kind: `career_context` / `repository_evidence` / `direct_statement_from_jared`
+- Current content: Large conventional engineering-team experience is a boundary; adjacent collaboration and organizational-scale experience are demonstrated.
+- Source/provenance: fact:large-engineering-organization-boundary
+- Capabilities/intents: organizational_scale; engineering_collaboration; stakeholder_alignment
+- Important metadata: utility `primary_recruiter_evidence`; confidence `jared_confirmed_recruiter_safe`; status `not recorded`
+- Ownership: leadership `not recorded`; sole authorship `not recorded`; people management `not recorded`
+- Contributions/collaboration: Not recorded / Not recorded
+- Outcome/limits: Not recorded / Sustained large engineering-organization experience is not established.; safe attribution: Do not equate retail organizational scale with engineering-team experience.
+- Potential issue: management/team scale
+- Preliminary disposition: **NEEDS_JARED_REVIEW**
+- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
+- Confidence: mechanical preliminary screen; human review required for substantive changes.
+
+### Knowledge #42 — Professional TypeScript experience boundary
+
+- ID / source ref: `42` / `fact:professional-typescript-boundary`
+- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
+- Evidence/source kind: `career_context` / `repository_evidence` / `direct_statement_from_jared`
+- Current content: Professional TypeScript depth is not established; a current learning trajectory is documented.
+- Source/provenance: fact:professional-typescript-boundary
+- Capabilities/intents: learning_new_technology; typescript; debugging
+- Important metadata: utility `primary_recruiter_evidence`; confidence `jared_confirmed_recruiter_safe`; status `not recorded`
+- Ownership: leadership `not recorded`; sole authorship `not recorded`; people management `not recorded`
+- Contributions/collaboration: Not recorded / Not recorded
+- Outcome/limits: Not recorded / Prolonged professional TypeScript experience is not established.; safe attribution: Do not infer TypeScript expertise from JavaScript or React evidence.
+- Potential issue: technology depth
+- Preliminary disposition: **NEEDS_JARED_REVIEW**
+- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
+- Confidence: mechanical preliminary screen; human review required for substantive changes.
+
+### Knowledge #43 — Technology-specific depth boundary
+
+- ID / source ref: `43` / `fact:technology-depth-boundary`
+- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
+- Evidence/source kind: `career_context` / `repository_evidence` / `direct_statement_from_jared`
+- Current content: Technology depth varies and should be evaluated by technology rather than inferred globally.
+- Source/provenance: fact:technology-depth-boundary
+- Capabilities/intents: learning_new_technology; react; typescript
+- Important metadata: utility `primary_recruiter_evidence`; confidence `jared_confirmed_recruiter_safe`; status `not recorded`
+- Ownership: leadership `not recorded`; sole authorship `not recorded`; people management `not recorded`
+- Contributions/collaboration: Not recorded / Not recorded
+- Outcome/limits: Not recorded / Depth varies by technology; individual technology evidence must stand on its own.; safe attribution: Not recorded
+- Potential issue: technology depth
+- Preliminary disposition: **NEEDS_JARED_REVIEW**
+- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
+- Confidence: mechanical preliminary screen; human review required for substantive changes.
+
+### Knowledge #44 — DoglyDaily technical debt and learning
+
+- ID / source ref: `44` / `story:doglydaily-technical-debt-learning`
+- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
+- Evidence/source kind: `product_story` / `repository_evidence` / `direct_statement_from_jared`
+- Current content: A technical-debt mistake led to a structural refactor and a clearer lesson about observability in scheduled systems.
+- Source/provenance: story:doglydaily-technical-debt-learning
+- Capabilities/intents: failure_learning; production_reliability; debugging; technical_ownership
+- Important metadata: utility `secondary_recruiter_evidence`; confidence `jared_confirmed_recruiter_safe`; status `not recorded`
+- Ownership: leadership `not recorded`; sole authorship `not recorded`; people management `not recorded`
+- Contributions/collaboration: Not recorded / Not recorded
+- Outcome/limits: Performance improved significantly; no numeric performance result is established. / No defensible numeric performance metric exists.; safe attribution: Do not present the improvement as quantified.
+- Potential issue: outcome/causality
+- Preliminary disposition: **KEEP**
+- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
+- Confidence: mechanical preliminary screen; human review required for substantive changes.
+
+### Knowledge #45 — J.Crew dress and swim decision
+
+- ID / source ref: `45` / `story:jcrew-dress-swim-decision`
+- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
+- Evidence/source kind: `product_story` / `repository_evidence` / `direct_statement_from_jared`
+- Current content: A candid commercial recommendation produced a strong reset, while Jared identifies a communication improvement to make today.
+- Source/provenance: story:jcrew-dress-swim-decision
+- Capabilities/intents: executive_communication; technical_disagreement; stakeholder_alignment; measurable_impact
+- Important metadata: utility `secondary_recruiter_evidence`; confidence `jared_confirmed_recruiter_safe`; status `not recorded`
+- Ownership: leadership `not recorded`; sole authorship `not recorded`; people management `not recorded`
+- Contributions/collaboration: Not recorded / Not recorded
+- Outcome/limits: Dress approximately $12,000; swim approximately $1,500 in secondary placement after the reset. / The sales result does not prove the communication process was flawless.; safe attribution: Attribute the sales observations to the post-reset week, not to flawless communication.
+- Potential issue: outcome/causality, management/team scale, planned versus observed
+- Preliminary disposition: **KEEP**
+- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
+- Confidence: mechanical preliminary screen; human review required for substantive changes.
+
+### Knowledge #46 — J.Crew crisis leadership feedback
+
+- ID / source ref: `46` / `story:jcrew-crisis-leadership-feedback`
+- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
+- Evidence/source kind: `product_story` / `repository_evidence` / `direct_statement_from_jared`
+- Current content: Feedback changed Jared's crisis-management style toward calibrated autonomy.
+- Source/provenance: story:jcrew-crisis-leadership-feedback
+- Capabilities/intents: feedback_coachability; mentorship; people_development; leadership
+- Important metadata: utility `secondary_recruiter_evidence`; confidence `jared_confirmed_recruiter_safe`; status `not recorded`
+- Ownership: leadership `not recorded`; sole authorship `not recorded`; people management `not recorded`
+- Contributions/collaboration: Not recorded / Not recorded
+- Outcome/limits: The manager led the team meeting and the team accomplished the training objective. / Not recorded; safe attribution: Jared supported the manager's development; do not claim sole causation.
+- Potential issue: ownership scope, outcome/causality, management/team scale
+- Preliminary disposition: **KEEP**
+- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
+- Confidence: mechanical preliminary screen; human review required for substantive changes.
+
+### Knowledge #47 — Anthropologie succession and mentorship
+
+- ID / source ref: `47` / `story:anthropologie-succession-mentorship`
+- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
+- Evidence/source kind: `product_story` / `repository_evidence` / `direct_statement_from_jared`
+- Current content: Jared used succession-oriented development to build readiness behind each promotion.
+- Source/provenance: story:anthropologie-succession-mentorship
+- Capabilities/intents: mentorship; people_development; organizational_scale; leadership
+- Important metadata: utility `primary_recruiter_evidence`; confidence `jared_confirmed_recruiter_safe`; status `not recorded`
+- Ownership: leadership `not recorded`; sole authorship `not recorded`; people management `not recorded`
+- Contributions/collaboration: Not recorded / Not recorded
+- Outcome/limits: The manager was promoted into the role after her supervisor advanced. / Not recorded; safe attribution: Do not claim Jared alone caused these people's success.
+- Potential issue: outcome/causality, management/team scale, technology depth
+- Preliminary disposition: **NEEDS_JARED_REVIEW**
+- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
+- Confidence: mechanical preliminary screen; human review required for substantive changes.
+
+### Knowledge #48 — Dogly pre-accelerator prioritization
+
+- ID / source ref: `48` / `story:dogly-pre-accelerator-prioritization`
+- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
+- Evidence/source kind: `product_story` / `repository_evidence` / `direct_statement_from_jared`
+- Current content: Prioritized partly by expected requirement stability and half-life, not urgency alone.
+- Source/provenance: story:dogly-pre-accelerator-prioritization
+- Capabilities/intents: prioritization; product_judgment; stakeholder_alignment
+- Important metadata: utility `primary_recruiter_evidence`; confidence `jared_confirmed_recruiter_safe`; status `not recorded`
+- Ownership: leadership `not recorded`; sole authorship `not recorded`; people management `not recorded`
+- Contributions/collaboration: Not recorded / Not recorded
+- Outcome/limits: Aesthetic work aligned with accelerator discovery and avoided multiple aesthetic passes. / Not recorded; safe attribution: Not recorded
+- Potential issue: outcome/causality, technology depth, planned versus observed
+- Preliminary disposition: **NEEDS_JARED_REVIEW**
+- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
+- Confidence: mechanical preliminary screen; human review required for substantive changes.
+
+### Knowledge #49 — DoglyDaily three-send UX
+
+- ID / source ref: `49` / `story:doglydaily-three-send-ux`
+- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
+- Evidence/source kind: `product_story` / `repository_evidence` / `direct_statement_from_jared`
+- Current content: A shipped UX treatment has a defined measurement plan, not an asserted result.
+- Source/provenance: story:doglydaily-three-send-ux
+- Capabilities/intents: product_judgment; ambiguity; measurable_impact
+- Important metadata: utility `secondary_recruiter_evidence`; confidence `jared_confirmed_recruiter_safe`; status `not recorded`
+- Ownership: leadership `not recorded`; sole authorship `not recorded`; people management `not recorded`
+- Contributions/collaboration: Not recorded / Not recorded
+- Outcome/limits: Not recorded / No outcome claim is established.; safe attribution: Not recorded
+- Potential issue: outcome/causality, planned versus observed
+- Preliminary disposition: **NEEDS_JARED_REVIEW**
+- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
+- Confidence: mechanical preliminary screen; human review required for substantive changes.
+
+### Knowledge #50 — Dogly engineering collaboration
+
+- ID / source ref: `50` / `story:dogly-engineering-collaboration`
+- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
+- Evidence/source kind: `product_story` / `repository_evidence` / `direct_statement_from_jared`
+- Current content: Direct professional engineer-to-engineer collaboration is demonstrated alongside a genuine larger-team boundary.
+- Source/provenance: story:dogly-engineering-collaboration
+- Capabilities/intents: engineering_collaboration; learning_new_technology; technical_ownership; react
+- Important metadata: utility `primary_recruiter_evidence`; confidence `jared_confirmed_recruiter_safe`; status `not recorded`
+- Ownership: leadership `not recorded`; sole authorship `not recorded`; people management `not recorded`
+- Contributions/collaboration: Not recorded / Not recorded
+- Outcome/limits: Not recorded / Most later engineering work was highly autonomous; sustained larger-team engineering experience is not established.; safe attribution: Do not infer TypeScript expertise from the React example.
+- Potential issue: management/team scale, technology depth
+- Preliminary disposition: **NEEDS_JARED_REVIEW**
+- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
+- Confidence: mechanical preliminary screen; human review required for substantive changes.
+
+### Knowledge #51 — Stripe learning and technical ramp
+
+- ID / source ref: `51` / `story:stripe-learning-ramp`
+- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
+- Evidence/source kind: `product_story` / `repository_evidence` / `direct_statement_from_jared`
+- Current content: Structured research and primary documentation closed implementation gaps during a successful unfamiliar integration.
+- Source/provenance: story:stripe-learning-ramp
+- Capabilities/intents: learning_new_technology; technical_ownership; integration
+- Important metadata: utility `primary_recruiter_evidence`; confidence `jared_confirmed_recruiter_safe`; status `not recorded`
+- Ownership: leadership `not recorded`; sole authorship `not recorded`; people management `not recorded`
+- Contributions/collaboration: Not recorded / Not recorded
+- Outcome/limits: Jared successfully implemented the subscription integration. / Not recorded; safe attribution: Not recorded
+- Potential issue: outcome/causality
+- Preliminary disposition: **KEEP**
+- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
+- Confidence: mechanical preliminary screen; human review required for substantive changes.
+
+### Knowledge #52 — Dogly full React migration disagreement
+
+- ID / source ref: `52` / `story:dogly-react-migration-disagreement`
+- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
+- Evidence/source kind: `product_story` / `repository_evidence` / `direct_statement_from_jared`
+- Current content: A technical disagreement made opportunity cost visible without treating either framework as universally correct.
+- Source/provenance: story:dogly-react-migration-disagreement
+- Capabilities/intents: technical_disagreement; prioritization; stakeholder_alignment; technical_ownership; rails; react
+- Important metadata: utility `primary_recruiter_evidence`; confidence `jared_confirmed_recruiter_safe`; status `not recorded`
+- Ownership: leadership `not recorded`; sole authorship `not recorded`; people management `not recorded`
+- Contributions/collaboration: Not recorded / Not recorded
+- Outcome/limits: Not recorded / Not recorded; safe attribution: Do not frame this as Rails-good or React-bad.
+- Potential issue: outcome/causality, planned versus observed
+- Preliminary disposition: **KEEP**
+- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
+- Confidence: mechanical preliminary screen; human review required for substantive changes.
+
+### Knowledge #53 — Daily Agenda simplification
+
+- ID / source ref: `53` / `story:dogly-agenda-simplification`
+- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
+- Evidence/source kind: `product_story` / `repository_evidence` / `direct_statement_from_jared`
+- Current content: A measured 15% task-completion increase belongs to the simplification redesign, not the separate wrap-up feature.
+- Source/provenance: story:dogly-agenda-simplification
+- Capabilities/intents: product_judgment; measurable_impact; failure_learning; user_research
+- Important metadata: utility `primary_recruiter_evidence`; confidence `jared_confirmed_recruiter_safe`; status `not recorded`
+- Ownership: leadership `not recorded`; sole authorship `not recorded`; people management `not recorded`
+- Contributions/collaboration: Not recorded / Not recorded
+- Outcome/limits: Daily Agenda task completion increased 15% after the simplification redesign. / Not recorded; safe attribution: Do not attach the 15% result to the separate wrap-up/follow feature.
+- Potential issue: outcome/causality
+- Preliminary disposition: **NEEDS_JARED_REVIEW**
+- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
+- Confidence: mechanical preliminary screen; human review required for substantive changes.
+
+### Knowledge #54 — Daily Agenda completion-metric alignment
+
+- ID / source ref: `54` / `story:dogly-agenda-completion-alignment`
+- Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
+- Evidence/source kind: `product_story` / `repository_evidence` / `direct_statement_from_jared`
+- Current content: Resolved a hidden stakeholder misunderstanding to improve decision quality.
+- Source/provenance: story:dogly-agenda-completion-alignment
+- Capabilities/intents: stakeholder_alignment; influence_without_authority; executive_communication; product_judgment
+- Important metadata: utility `primary_recruiter_evidence`; confidence `jared_confirmed_recruiter_safe`; status `not recorded`
+- Ownership: leadership `not recorded`; sole authorship `not recorded`; people management `not recorded`
+- Contributions/collaboration: Not recorded / Not recorded
+- Outcome/limits: The team implemented guide-level completion as the default. / Not recorded; safe attribution: This demonstrates decision-quality intervention, not merely advocacy for Jared's preferred feature.
+- Potential issue: outcome/causality, management/team scale
+- Preliminary disposition: **KEEP**
+- Recommended action: retain provisionally; resolve flagged scope or attribution questions before substantive rewrite.
+- Confidence: mechanical preliminary screen; human review required for substantive changes.
+
+### Knowledge #56 — Dogly early production bot-traffic investigation
+
+- ID / source ref: `56` / `story:dogly-production-incident-2022`
 - Current state: `approved`; visibility `recruiter_visible`; retrievable `true`
 - Evidence/source kind: `incident_story` / `jared_confirmed` / `direct_statement_from_jared`
 - Current content: Around 2022, Jared investigated high-frequency automated traffic at Dogly, implemented layered bot defenses, and observed the immediate activity stop; scale, compromise, and individual-defense causality remain bounded.

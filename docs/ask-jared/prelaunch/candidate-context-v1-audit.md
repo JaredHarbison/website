@@ -1,6 +1,6 @@
 # Candidate Context v1 audit
 
-Generated 2026-09-06T02:40:00Z. Starting records: 26. These records are private planning guidance, not recruiter evidence. The v1 YAML predates explicit approval fields and is treated as approved legacy planning data; new v2 records require explicit `approval_status: approved`.
+Generated 2026-09-06T14:01:16Z. Starting records: 26. These records are private planning guidance, not recruiter evidence. The v1 YAML predates explicit approval fields and is treated as approved legacy planning data; new v2 records require explicit `approval_status: approved`.
 
 ### `positioning.engineering_identity`
 

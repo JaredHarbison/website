@@ -93,6 +93,7 @@ kind = entries.group_by { |e| e.metadata["source_kind"] || "missing" }.transform
 types = entries.group_by(&:entry_type).transform_values(&:size)
 utility = entries.group_by { |e| ev(e)["recruiter_utility"] || "missing" }.transform_values(&:size)
 internal = entries.find { |e| e.visibility == "internal" }
+excluded = entries.reject { |e| e.approval_status == "approved" && e.visibility == "recruiter_visible" }
 File.write(out.join("count-reconciliation.md"), <<~MD)
   # Ask Jared knowledge count reconciliation
 
@@ -113,14 +114,12 @@ File.write(out.join("count-reconciliation.md"), <<~MD)
   | Stale embeddings | #{entries.count { |e| e.embedding.present? && e.embedding_model != AskJared::EmbeddingService::MODEL }} |
   | Candidate Context v1 records | 26 |
 
-  ## 34 vs approximately 54
+  ## Historical count reconciliation
 
-  The exact current recruiter scope is **34**: 35 total rows exist, all approved; 34 are
-  `visibility=recruiter_visible` and one is `visibility=internal`. The internal row is
-  `#{internal&.source_reference}`, with recruiter utility `#{internal && ev(internal)["recruiter_utility"]}`;
-  it is excluded from retrieval. The earlier approximately-54 number was not the current
-  `KnowledgeEntry.recruiter_retrievable` scope and appears to have combined broader inventory or
-  legacy concepts with recruiter records.
+  The exact current recruiter scope is **#{recruiter.length}** out of #{entries.length} total rows.
+  The earlier approximate count of 54 was the production recruiter scope; the prior local count of
+  34 came from a stale 35-row SQLite snapshot. The two excluded records are listed below with their
+  exact lifecycle and visibility scopes.
 
   ## Breakdowns
 
@@ -135,8 +134,7 @@ File.write(out.join("count-reconciliation.md"), <<~MD)
 
   ## Excluded records
 
-  - `#{internal&.source_reference}` is excluded because approval is `approved` but visibility is `internal` and utility is `archive_only`.
-  - No records are excluded for approval, duplicate-reference, or stale-embedding reasons.
+  #{excluded.map { |e| "- `#{e.source_reference}` (ID #{e.id}) is excluded because approval is `#{e.approval_status}` and visibility is `#{e.visibility}`; utility is `#{ev(e)["recruiter_utility"] || "missing"}." }.join("\n  ")}
 MD
 
 categories = {
