@@ -3,6 +3,7 @@ module AskJared
     ROLE_POLICIES = {
       "characterization" => { roles: %w[direct_fact action], sources: %w[case-study:dogly-product-design case-study:dogly-partner-applications story:dogly-react-migration-disagreement story:dogly-engineering-collaboration], max: 3 },
       "candidacy" => { roles: %w[direct_fact action], max: 2 },
+      "ownership" => { sources: %w[story:stripe-learning-ramp story:dogly-engineering-collaboration], preferred_roles: %w[process direct_fact], max: 2 },
       "rails" => { roles: %w[direct_fact action], max: 2 },
       "react" => { sources: %w[story:dogly-engineering-collaboration story:dogly-react-migration-disagreement], max: 2 },
       "product" => { sources: %w[case-study:dogly-product-design story:dogly-agenda-product-direction story:dogly-pre-accelerator-prioritization story:dogly-react-migration-disagreement], max: 2 },

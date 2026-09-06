@@ -5,6 +5,7 @@ module AskJared
     INTENT_SPECS = {
       "characterization" => { terms: [ "rails", "react", "full-stack", "engineering", "technical ownership", "product design" ], kinds: %w[demonstrated] },
       "candidacy" => { terms: [ "rails", "react", "engineering", "technical ownership", "product judgment", "measurable impact", "collaboration" ], kinds: %w[demonstrated] },
+      "ownership" => { terms: [ "technical ownership", "integration", "end-to-end", "end to end" ], kinds: %w[demonstrated] },
       "rails" => { terms: [ /\Arails\z/ ], kinds: %w[demonstrated] },
       "react" => { terms: [ /\Areact\z/ ], kinds: %w[demonstrated] },
       "product" => { terms: [ "product judgment", "prioritization", "tradeoff analysis", "user research", "user research synthesis", "ux" ], kinds: %w[demonstrated] },
@@ -44,7 +45,8 @@ module AskJared
       [ "product", /\bproduct judgment|product thinking|product direction|product decision|user problem|\bux\b/i ],
       [ "characterization", /\bwhat kind of engineer|engineering profile|engineer is Jared/i ],
       [ "candidacy", /\bwhy (?:should|would) .*interview|why hire|case for Jared|recommend Jared/i ],
-      [ "characterization", /\bstrongest qualities|biggest strengths|what stands out|especially good at/i ]
+      [ "characterization", /\bstrongest qualities|biggest strengths|what stands out|especially good at/i ],
+      [ "ownership", /\bwhat has .* owned|\bowned .* end[- ]to[- ]end|\btechnical ownership\b/i ]
     ].freeze
 
     INTENT_SOURCE_BOOSTS = {
