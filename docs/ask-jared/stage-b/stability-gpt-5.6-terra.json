@@ -1,0 +1,483 @@
+{
+  "version": 1,
+  "results": {
+    "candidate-context-v2:gpt-5.6-terra:Q01-stability-1": {
+      "status": "completed",
+      "answer_status": "answer",
+      "answer": "Jared is an engineer who works within mature product environments while shaping coherent user experiences across content, community, subscriptions, onboarding, guidance, and commerce. At Dogly, he designed a resumable partner application and transparent review workflow inside a mature Rails marketplace without forcing a platform rewrite. Before a Stripe integration, he identified implementation-level gaps around subscriptions, webhooks, concurrency, idempotency, and rate limiting; he researched the design, wrote an implementation plan, used Stripe documentation and technical material, and implemented the subscription integration. His estimate that this represented roughly 15% of his time is his own estimate rather than a hard metric. In a technical disagreement, he made opportunity cost visible without presenting either framework as universally correct.",
+      "evidence_ids": [
+        "34",
+        "31",
+        "52",
+        "53"
+      ],
+      "validation": "passed",
+      "reported_model": "gpt-5.6-terra",
+      "input_tokens": 677,
+      "output_tokens": 198,
+      "estimated_cost_cents": null,
+      "latency_ms": 3478,
+      "attempts": 1,
+      "case_id": "Q01-stability-1",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:12:52Z"
+    },
+    "candidate-context-v2:gpt-5.6-terra:Q01-stability-2": {
+      "status": "completed",
+      "answer_status": "answer",
+      "answer": "Jared has designed a resumable partner application and transparent review workflow within a mature Rails marketplace without requiring a platform rewrite, and built a coherent, image-led product language across six years of expert content, community, subscriptions, onboarding, daily guidance, and commerce. Before Dogly’s Stripe integration, he had not built a third-party integration and had implementation-level gaps in subscriptions, webhooks, concurrency, idempotency, and rate limiting; he researched the design, wrote an implementation plan, identified gaps, used Stripe documentation and technical material, and implemented the subscription integration. His estimate of roughly 15% is his own estimate rather than a hard metric. In a technical disagreement, he made opportunity cost visible without presenting either framework as universally correct.",
+      "evidence_ids": [
+        "34",
+        "31",
+        "52",
+        "53"
+      ],
+      "validation": "passed",
+      "reported_model": "gpt-5.6-terra",
+      "input_tokens": 677,
+      "output_tokens": 376,
+      "estimated_cost_cents": null,
+      "latency_ms": 5633,
+      "attempts": 1,
+      "case_id": "Q01-stability-2",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:12:58Z"
+    },
+    "candidate-context-v2:gpt-5.6-terra:Q01-stability-3": {
+      "status": "completed",
+      "answer_status": "answer",
+      "answer": "Jared is an engineer who works within mature product environments while shaping coherent user experiences across content, community, subscriptions, onboarding, guidance, and commerce. At Dogly, this included designing a resumable partner application and transparent review workflow inside a mature Rails marketplace without requiring a platform rewrite. When approaching Dogly’s Stripe integration, he researched the design, wrote an implementation plan, identified gaps, and used Stripe documentation and technical material to implement subscriptions; he estimates the learning ramp at roughly 15% of the work, though that is his own estimate rather than a hard metric. In technical disagreements, he has made opportunity cost visible without presenting either framework as universally correct.",
+      "evidence_ids": [
+        "34",
+        "31",
+        "52",
+        "53"
+      ],
+      "validation": "passed",
+      "reported_model": "gpt-5.6-terra",
+      "input_tokens": 677,
+      "output_tokens": 192,
+      "estimated_cost_cents": null,
+      "latency_ms": 4092,
+      "attempts": 1,
+      "case_id": "Q01-stability-3",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:13:02Z"
+    },
+    "candidate-context-v2:gpt-5.6-terra:Q04-stability-1": {
+      "status": "completed",
+      "answer_status": "answer",
+      "answer": "Jared brings a product-focused approach to frontend and UX decisions, balancing technical tradeoffs, roadmap priorities, and user experience. At Dogly, he pushed back on broader React adoption for relatively static authentication flows, documenting dependencies and time cost while recognizing the consistency benefit. He also iterated on Daily Agenda’s UX by simplifying the experience and prioritizing core actions; task completion increased 15%, and a later wrap-up observed new follows without a quantified conversion metric.",
+      "evidence_ids": [
+        "53",
+        "54"
+      ],
+      "validation": "passed",
+      "reported_model": "gpt-5.6-terra",
+      "input_tokens": 644,
+      "output_tokens": 124,
+      "estimated_cost_cents": null,
+      "latency_ms": 3416,
+      "attempts": 1,
+      "case_id": "Q04-stability-1",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:13:06Z"
+    },
+    "candidate-context-v2:gpt-5.6-terra:Q04-stability-2": {
+      "status": "completed",
+      "answer_status": "answer",
+      "answer": "Jared has documented thoughtful product and technical judgment, balancing consistency goals against security, SEO, downstream migration work, and revenue-generating roadmap priorities. At Dogly, he documented the dependencies and time cost of broader React adoption while acknowledging its consistency benefit, and he pushed back on using React for relatively static authentication pages that Rails already handled securely. He also documented an iterative approach to UX simplification. For Daily Agenda, he revisited the simplification hypothesis, removed the hero, surfaced the product’s purpose earlier, presented categories sequentially, and moved secondary functions behind buttons; task completion increased 15%. A later wrap-up also observed new follows, though it did not quantify conversion.",
+      "evidence_ids": [
+        "53",
+        "54"
+      ],
+      "validation": "passed",
+      "reported_model": "gpt-5.6-terra",
+      "input_tokens": 644,
+      "output_tokens": 174,
+      "estimated_cost_cents": null,
+      "latency_ms": 3646,
+      "attempts": 1,
+      "case_id": "Q04-stability-2",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:13:09Z"
+    },
+    "candidate-context-v2:gpt-5.6-terra:Q04-stability-3": {
+      "status": "completed",
+      "answer_status": "answer",
+      "answer": "Jared has documented product judgment across technical prioritization and UX simplification. At Dogly, he pushed back on broader React adoption for relatively static authentication flows, documenting the security, server-side-rendering, migration-dependency, time-cost, and roadmap-priority considerations while acknowledging the consistency benefit. He also iterated on Daily Agenda by simplifying the experience and restructuring its content flow, which increased task completion by 15%; a later wrap-up observed new follows, though no conversion metric was quantified.",
+      "evidence_ids": [
+        "53",
+        "54"
+      ],
+      "validation": "passed",
+      "reported_model": "gpt-5.6-terra",
+      "input_tokens": 644,
+      "output_tokens": 131,
+      "estimated_cost_cents": null,
+      "latency_ms": 3578,
+      "attempts": 1,
+      "case_id": "Q04-stability-3",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:13:13Z"
+    },
+    "candidate-context-v2:gpt-5.6-terra:Q07-stability-1": {
+      "status": "completed",
+      "answer_status": "answer",
+      "answer": "Jared has influenced product prioritization by weighing foundational risk, reuse, requirement stability, and the risk of throwaway work. Before an accelerator, he prioritized dependency upgrades, followed by email notifications and expert profiles, with aesthetic redesign later so discovery could begin without requiring multiple aesthetic passes.\n\nHe also pushed back on expanding React to relatively static authentication pages, documenting the downstream migration work and time cost. His view was that Rails already handled those flows securely, server-side rendering was already limited for SEO, and revenue-generating roadmap work took priority, while recognizing the consistency benefit of broader React use.",
+      "evidence_ids": [
+        "49",
+        "53"
+      ],
+      "validation": "passed",
+      "reported_model": "gpt-5.6-terra",
+      "input_tokens": 637,
+      "output_tokens": 155,
+      "estimated_cost_cents": null,
+      "latency_ms": 3484,
+      "attempts": 1,
+      "case_id": "Q07-stability-1",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:13:16Z"
+    },
+    "candidate-context-v2:gpt-5.6-terra:Q07-stability-2": {
+      "status": "completed",
+      "answer_status": "answer",
+      "answer": "Jared has influenced product prioritization by weighing foundational risk, reuse, requirement stability, and the risk of throwaway work. Before an accelerator, he prioritized dependency upgrades first, followed by email notifications, expert profiles, and then aesthetic redesign; the aesthetic work began after discovery started to avoid multiple aesthetic passes.\n\nHe also influenced scope decisions around a proposed broader React migration. When a frontend engineer advocated using React for relatively static authentication pages, Jared documented the downstream dependencies and time cost, noting the consistency benefit while pointing to Rails’ existing secure handling, limited SEO and server-side rendering, and the priority of revenue-generating roadmap work.",
+      "evidence_ids": [
+        "49",
+        "53"
+      ],
+      "validation": "passed",
+      "reported_model": "gpt-5.6-terra",
+      "input_tokens": 637,
+      "output_tokens": 163,
+      "estimated_cost_cents": null,
+      "latency_ms": 3244,
+      "attempts": 1,
+      "case_id": "Q07-stability-2",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:13:20Z"
+    },
+    "candidate-context-v2:gpt-5.6-terra:Q07-stability-3": {
+      "status": "completed",
+      "answer_status": "answer",
+      "answer": "Jared has influenced product prioritization and scope decisions, not only implementation. Before an accelerator, he prioritized dependency upgrades, then email notifications, expert profiles, and aesthetic redesign by weighing foundational risk, reuse, requirement stability, and the risk of throwaway work; the aesthetic work began after discovery to avoid multiple design passes.\n\nHe also pushed back on broader React adoption for relatively static authentication pages. He documented the downstream dependencies and time cost, noting that Rails already handled the flows securely, server-side rendering was already limited, and revenue-generating roadmap work took priority, while acknowledging the consistency benefit.",
+      "evidence_ids": [
+        "49",
+        "53"
+      ],
+      "validation": "passed",
+      "reported_model": "gpt-5.6-terra",
+      "input_tokens": 637,
+      "output_tokens": 156,
+      "estimated_cost_cents": null,
+      "latency_ms": 2996,
+      "attempts": 1,
+      "case_id": "Q07-stability-3",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:13:23Z"
+    },
+    "candidate-context-v2:gpt-5.6-terra:Q16-stability-1": {
+      "status": "completed",
+      "answer_status": "answer",
+      "answer": "When users were confused by the same unfinished guide arriving three days in a row, Jared proposed differentiated imagery, explicit progression language, an Ignore action, and a final restart explanation. The treatment was planned to ship Friday, with measurement planned around explicit resolution through completion or Ignore rather than passive automatic ignore.",
+      "evidence_ids": [
+        "50"
+      ],
+      "validation": "passed",
+      "reported_model": "gpt-5.6-terra",
+      "input_tokens": 481,
+      "output_tokens": 96,
+      "estimated_cost_cents": null,
+      "latency_ms": 3967,
+      "attempts": 1,
+      "case_id": "Q16-stability-1",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:13:27Z"
+    },
+    "candidate-context-v2:gpt-5.6-terra:Q16-stability-2": {
+      "status": "completed",
+      "answer_status": "answer",
+      "answer": "In one case, users were confused by the same unfinished guide arriving three days in a row. Jared proposed differentiated imagery, explicit progression language, an Ignore action, and a final restart explanation. Planned measurement focuses on explicit resolution through completion or Ignore rather than passive automatic ignore, with no outcome established.",
+      "evidence_ids": [
+        "50"
+      ],
+      "validation": "passed",
+      "reported_model": "gpt-5.6-terra",
+      "input_tokens": 481,
+      "output_tokens": 89,
+      "estimated_cost_cents": null,
+      "latency_ms": 5959,
+      "attempts": 1,
+      "case_id": "Q16-stability-2",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:13:32Z"
+    },
+    "candidate-context-v2:gpt-5.6-terra:Q16-stability-3": {
+      "status": "completed",
+      "answer_status": "answer",
+      "answer": "When users were confused by the same unfinished guide arriving three days in a row, Jared proposed differentiated imagery, explicit progression language, an Ignore action, and a final restart explanation. The planned measurement was explicit resolution through completion or Ignore rather than passive automatic ignore; no outcome is established.",
+      "evidence_ids": [
+        "50"
+      ],
+      "validation": "passed",
+      "reported_model": "gpt-5.6-terra",
+      "input_tokens": 481,
+      "output_tokens": 89,
+      "estimated_cost_cents": null,
+      "latency_ms": 4816,
+      "attempts": 1,
+      "case_id": "Q16-stability-3",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:13:37Z"
+    },
+    "candidate-context-v2:gpt-5.6-terra:Q25-stability-1": {
+      "status": "completed",
+      "answer_status": "answer",
+      "answer": "Jared’s TypeScript is newer territory for Jared, though he has a documented current learning trajectory. His technology depth varies and is best considered specifically by technology rather than inferred globally.",
+      "evidence_ids": [
+        "43",
+        "44"
+      ],
+      "validation": "passed",
+      "reported_model": "gpt-5.6-terra",
+      "input_tokens": 620,
+      "output_tokens": 100,
+      "estimated_cost_cents": null,
+      "latency_ms": 2965,
+      "attempts": 1,
+      "case_id": "Q25-stability-1",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:13:40Z"
+    },
+    "candidate-context-v2:gpt-5.6-terra:Q25-stability-2": {
+      "status": "completed",
+      "answer_status": "answer",
+      "answer": "Jared’s TypeScript is newer territory for Jared, though he has a documented current learning trajectory. Technology depth varies, so TypeScript is best considered specifically directly rather than inferred from his broader experience.",
+      "evidence_ids": [
+        "43",
+        "44"
+      ],
+      "validation": "passed",
+      "reported_model": "gpt-5.6-terra",
+      "input_tokens": 620,
+      "output_tokens": 71,
+      "estimated_cost_cents": null,
+      "latency_ms": 2967,
+      "attempts": 1,
+      "case_id": "Q25-stability-2",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:13:43Z"
+    },
+    "candidate-context-v2:gpt-5.6-terra:Q25-stability-3": {
+      "status": "completed",
+      "answer_status": "answer",
+      "answer": "Jared’s TypeScript is newer territory for Jared, though a current learning trajectory is documented. His depth varies by technology and is best considered specifically on a technology-by-technology basis rather than inferred globally.",
+      "evidence_ids": [
+        "43",
+        "44"
+      ],
+      "validation": "passed",
+      "reported_model": "gpt-5.6-terra",
+      "input_tokens": 620,
+      "output_tokens": 72,
+      "estimated_cost_cents": null,
+      "latency_ms": 2435,
+      "attempts": 1,
+      "case_id": "Q25-stability-3",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:13:46Z"
+    },
+    "candidate-context-v2:gpt-5.6-terra:Q26-stability-1": {
+      "status": "completed",
+      "answer_status": "answer",
+      "answer": "A hiring manager can consider Jared’s depth by technology rather than infer it globally, and sustained experience on a large conventional engineering team remains a newer context. In Dogly, Jared began focused on backend work before becoming full-stack, using code review and senior guidance while independently building an MVP React frontend with documentation and targeted help; later work became highly autonomous.",
+      "evidence_ids": [
+        "51",
+        "42",
+        "44"
+      ],
+      "validation": "passed",
+      "reported_model": "gpt-5.6-terra",
+      "input_tokens": 686,
+      "output_tokens": 105,
+      "estimated_cost_cents": null,
+      "latency_ms": 2988,
+      "attempts": 1,
+      "case_id": "Q26-stability-1",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:13:49Z"
+    },
+    "candidate-context-v2:gpt-5.6-terra:Q26-stability-2": {
+      "status": "completed",
+      "answer_status": "answer",
+      "answer": "A hiring manager can consider Jared’s experience by context: sustained work on larger conventional engineering teams remains relatively new, although he has documented adjacent collaboration and organizational-scale experience. At Dogly, he began focused on backend work before becoming full-stack, using code review, senior guidance, documentation, and targeted help to independently implement an MVP React frontend; later work became highly autonomous. His technology depth also varies by domain and should be assessed technology by technology rather than inferred broadly.",
+      "evidence_ids": [
+        "51",
+        "42",
+        "44"
+      ],
+      "validation": "passed",
+      "reported_model": "gpt-5.6-terra",
+      "input_tokens": 686,
+      "output_tokens": 143,
+      "estimated_cost_cents": null,
+      "latency_ms": 2967,
+      "attempts": 1,
+      "case_id": "Q26-stability-2",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:13:52Z"
+    },
+    "candidate-context-v2:gpt-5.6-terra:Q26-stability-3": {
+      "status": "completed",
+      "answer_status": "answer",
+      "answer": "The main gap to evaluate is sustained experience in a large, conventional engineering organization, which remains newer context for Jared. At Dogly, he began focused on backend work and became full-stack, using code review and senior guidance while independently building an MVP React frontend with documentation and targeted help; later work became highly autonomous. His depth also varies by technology, so it is best assessed technology by technology rather than assumed uniformly.",
+      "evidence_ids": [
+        "51",
+        "42",
+        "44"
+      ],
+      "validation": "passed",
+      "reported_model": "gpt-5.6-terra",
+      "input_tokens": 686,
+      "output_tokens": 118,
+      "estimated_cost_cents": null,
+      "latency_ms": 2865,
+      "attempts": 1,
+      "case_id": "Q26-stability-3",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:13:54Z"
+    },
+    "candidate-context-v2:gpt-5.6-terra:Q28-stability-1": {
+      "status": "completed",
+      "answer_status": "answer",
+      "answer": "Jared has worked directly with other engineers, but sustained experience on a large, conventional engineering team is still new context. At Dogly, he collaborated with a senior engineer and a frontend engineer/designer, using code review and senior guidance while initially focusing on backend work before becoming full-stack. He independently implemented an MVP React frontend with documentation and targeted help, and later shared work by retaining migrations and routing while the frontend engineer implemented bounded controller actions; later work became highly autonomous.",
+      "evidence_ids": [
+        "51",
+        "42"
+      ],
+      "validation": "passed",
+      "reported_model": "gpt-5.6-terra",
+      "input_tokens": 661,
+      "output_tokens": 130,
+      "estimated_cost_cents": null,
+      "latency_ms": 3152,
+      "attempts": 1,
+      "case_id": "Q28-stability-1",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:13:58Z"
+    },
+    "candidate-context-v2:gpt-5.6-terra:Q28-stability-2": {
+      "status": "completed",
+      "answer_status": "answer",
+      "answer": "Jared has direct engineer-to-engineer collaboration experience, while large conventional engineering-team experience remains a new context. At Dogly, he worked alongside a senior engineer and a frontend engineer/designer, using code review and senior guidance as he moved from backend focus to full-stack work. He independently implemented an MVP React frontend with documentation and targeted help, and later retained migrations and routing while the frontend engineer implemented bounded controller actions; later work became highly autonomous.",
+      "evidence_ids": [
+        "51",
+        "42"
+      ],
+      "validation": "passed",
+      "reported_model": "gpt-5.6-terra",
+      "input_tokens": 661,
+      "output_tokens": 155,
+      "estimated_cost_cents": null,
+      "latency_ms": 7291,
+      "attempts": 1,
+      "case_id": "Q28-stability-2",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:14:05Z"
+    },
+    "candidate-context-v2:gpt-5.6-terra:Q28-stability-3": {
+      "status": "completed",
+      "answer_status": "answer",
+      "answer": "Large conventional engineering-team experience remains new context, while Jared has documented direct engineer-to-engineer collaboration and adjacent organizational-scale experience. At Dogly, he worked with a senior engineer and a frontend engineer/designer, using code review and senior guidance as he moved from backend-focused work into full-stack work. He independently implemented an MVP React frontend with documentation and targeted help, and later retained migrations and routing while the frontend engineer implemented bounded controller actions; later work was highly autonomous.",
+      "evidence_ids": [
+        "51",
+        "42"
+      ],
+      "validation": "passed",
+      "reported_model": "gpt-5.6-terra",
+      "input_tokens": 661,
+      "output_tokens": 121,
+      "estimated_cost_cents": null,
+      "latency_ms": 5837,
+      "attempts": 1,
+      "case_id": "Q28-stability-3",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:14:11Z"
+    },
+    "candidate-context-v2:gpt-5.6-terra:Q34-stability-1": {
+      "status": "completed",
+      "answer_status": "insufficient_information",
+      "answer": "I don’t have enough information to answer that confidently.",
+      "evidence_ids": [],
+      "validation": "passed",
+      "reported_model": "gpt-4o-mini",
+      "input_tokens": 1117,
+      "output_tokens": 114,
+      "estimated_cost_cents": 0,
+      "latency_ms": 3394,
+      "attempts": 1,
+      "case_id": "Q34-stability-1",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:14:14Z"
+    },
+    "candidate-context-v2:gpt-5.6-terra:Q34-stability-2": {
+      "status": "completed",
+      "answer_status": "insufficient_information",
+      "answer": "I don’t have enough information to answer that confidently.",
+      "evidence_ids": [],
+      "validation": "passed",
+      "reported_model": "gpt-4o-mini",
+      "input_tokens": 1117,
+      "output_tokens": 99,
+      "estimated_cost_cents": 0,
+      "latency_ms": 3043,
+      "attempts": 1,
+      "case_id": "Q34-stability-2",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:14:17Z"
+    },
+    "candidate-context-v2:gpt-5.6-terra:Q34-stability-3": {
+      "status": "completed",
+      "answer_status": "insufficient_information",
+      "answer": "I don’t have enough information to answer that confidently.",
+      "evidence_ids": [],
+      "validation": "passed",
+      "reported_model": "gpt-4o-mini",
+      "input_tokens": 1117,
+      "output_tokens": 112,
+      "estimated_cost_cents": 0,
+      "latency_ms": 2701,
+      "attempts": 1,
+      "case_id": "Q34-stability-3",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:14:20Z"
+    }
+  },
+  "updated_at": "2026-09-07T01:14:20Z"
+}

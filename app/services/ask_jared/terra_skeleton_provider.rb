@@ -5,7 +5,8 @@ require "uri"
 module AskJared
   class TerraSkeletonProvider
     ENDPOINT = URI("https://api.openai.com/v1/chat/completions")
-    MODEL = "gpt-5.6-terra"
+    MODEL = "gpt-5.6-sol"
+    REQUEST_TIMEOUT_SECONDS = 45
     RESPONSE_SCHEMA = {
       type: "json_schema",
       json_schema: {
@@ -47,13 +48,25 @@ module AskJared
         user[:repair] = "Previous realization failed validation: #{repair[:violations].join('; ')}. Rewrite only the affected segments. Return role_refs for every segment and use no facts outside the skeleton. Previous response: #{repair[:response].to_json}"
       end
       body = { model: @model, max_completion_tokens: 500, response_format: RESPONSE_SCHEMA, messages: [ { role: "system", content: system_prompt }, { role: "user", content: JSON.generate(user) } ] }
-      response = @http.post(ENDPOINT, JSON.generate(body), { "Authorization" => "Bearer #{@api_key}", "Content-Type" => "application/json" })
+      response = post(body)
       raise OpenAiProvider::ProviderError, "OpenAI request failed" unless response.is_a?(Net::HTTPSuccess)
 
       parsed = JSON.parse(response.body)
       JSON.parse(parsed.dig("choices", 0, "message", "content")).merge("__telemetry" => telemetry(parsed))
     rescue JSON::ParserError, KeyError, TypeError
       raise OpenAiProvider::ProviderError, "OpenAI returned malformed structured output"
+    end
+
+    def post(body)
+      headers = { "Authorization" => "Bearer #{@api_key}", "Content-Type" => "application/json" }
+      return @http.post(ENDPOINT, JSON.generate(body), headers) unless @http == Net::HTTP
+
+      client = Net::HTTP.new(ENDPOINT.host, ENDPOINT.port)
+      client.use_ssl = true
+      client.open_timeout = REQUEST_TIMEOUT_SECONDS
+      client.read_timeout = REQUEST_TIMEOUT_SECONDS
+      client.write_timeout = REQUEST_TIMEOUT_SECONDS if client.respond_to?(:write_timeout=)
+      client.post(ENDPOINT.request_uri, JSON.generate(body), headers)
     end
 
     def telemetry(body)

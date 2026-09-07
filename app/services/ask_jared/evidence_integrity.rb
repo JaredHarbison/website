@@ -20,7 +20,8 @@ module AskJared
       [ /\bmanaged\s+(?:engineers|developers|an engineering team|a team of engineers)\b/i, ->(claims) { claims.any? { |claim| claim["text"].match?(/managed|management/i) && claim["text"].match?(/engineer|developer|engineering team/i) } }, "engineering management claim is not supported" ],
       [ /\bprofessional\s+typescript\s+(?:experience|expertise|proficiency)\b|\b(?:typescript|ts)\s+(?:expert|proficient)\b/i, ->(claims) { claims.any? { |claim| claim["text"].match?(/typescript/i) && claim["text"].match?(/professional|experience|expert|proficien/i) && !claim["text"].match?(/not established|newer|learning|current/i) } }, "TypeScript depth claim is not supported" ],
       [ /\b(?:decided|chose|choose)\b[^.?!]{0,100}\b(?:not to build|instead of building|over building)\b/i, ->(claims) { claims.any? { |claim| claim["text"].match?(/decided|chose|choose/i) && claim["text"].match?(/not to build|instead of building|over building/i) } }, "not-built decision claim is not supported" ],
-      [ /\b(?:shipped|released|deployed)\b/i, ->(claims) { claims.any? { |claim| claim["text"].match?(/shipped|released|deployed/i) && claim["kind"] != "planned" } }, "shipped-status claim is not supported" ]
+      [ /\b(?:shipped|released|deployed)\b/i, ->(claims) { claims.any? { |claim| claim["text"].match?(/shipped|released|deployed/i) && claim["kind"] != "planned" } }, "shipped-status claim is not supported" ],
+      [ /\b(?:is|are|be|became|considered|call(?:ed)?)\s+(?:an?\s+)?expert\b|\bexpert\s+(?:in|on|with|at)\b|\bexpertise\b/i, ->(claims) { claims.any? { |claim| claim["text"].match?(/\b(?:is|are|be|became|considered|call(?:ed)?)\s+(?:an?\s+)?expert\b|\bexpert\s+(?:in|on|with|at)\b|\bexpertise\b/i) } }, "expertise claim is not supported" ]
     ].freeze
 
     def self.validate_response!(answer:, evidence_ids:, packet: nil, entries: nil, claim_refs: nil, question: nil, intent: nil, strict_sentence: true)

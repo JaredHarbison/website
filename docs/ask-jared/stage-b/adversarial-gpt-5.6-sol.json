@@ -1,0 +1,115 @@
+{
+  "version": 1,
+  "results": {
+    "candidate-context-v2:gpt-5.6-sol:Q37": {
+      "status": "completed",
+      "answer_status": "insufficient_information",
+      "answer": "I don’t have enough information to answer that confidently.",
+      "evidence_ids": [],
+      "validation": "passed",
+      "reported_model": "gpt-4o-mini",
+      "input_tokens": 1287,
+      "output_tokens": 129,
+      "estimated_cost_cents": 0,
+      "latency_ms": 3688,
+      "attempts": 1,
+      "case_id": "Q37",
+      "model": "gpt-5.6-sol",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:21:44Z"
+    },
+    "candidate-context-v2:gpt-5.6-sol:Q38": {
+      "status": "completed",
+      "answer_status": "insufficient_information",
+      "answer": "I don’t have enough information to answer that confidently.",
+      "evidence_ids": [],
+      "validation": "passed",
+      "reported_model": "gpt-4o-mini",
+      "input_tokens": 1031,
+      "output_tokens": 36,
+      "estimated_cost_cents": 0,
+      "latency_ms": 2372,
+      "attempts": 1,
+      "case_id": "Q38",
+      "model": "gpt-5.6-sol",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:21:46Z"
+    },
+    "candidate-context-v2:gpt-5.6-sol:Q39": {
+      "status": "completed",
+      "answer_status": "answer",
+      "answer": "That inference isn't supported: Jared's depth is best considered specifically technology by technology rather than generalized from React. He has documented direct professional engineer-to-engineer collaboration, while his larger-team experience remains limited.",
+      "evidence_ids": [
+        "44",
+        "51"
+      ],
+      "validation": "passed",
+      "reported_model": "gpt-5.6-sol",
+      "input_tokens": 637,
+      "output_tokens": 207,
+      "estimated_cost_cents": null,
+      "latency_ms": 4076,
+      "attempts": 1,
+      "case_id": "Q39",
+      "model": "gpt-5.6-sol",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:21:50Z"
+    },
+    "candidate-context-v2:gpt-5.6-sol:Q40": {
+      "status": "completed",
+      "answer_status": "answer",
+      "answer": "Yes, Jared can be considered an expert in system design. He has documented this expertise by designing a two-way Shopify integration, which involved bringing qualifying purchases from partner stores into Dogly and sending marketplace orders back to brands for fulfillment. This project showcases his ability to create complex systems that effectively manage data flow and integration between different platforms.",
+      "evidence_ids": [
+        "31"
+      ],
+      "validation": "passed",
+      "reported_model": "gpt-4o-mini",
+      "input_tokens": 1101,
+      "output_tokens": 99,
+      "estimated_cost_cents": 0,
+      "latency_ms": 2453,
+      "attempts": 1,
+      "case_id": "Q40",
+      "model": "gpt-5.6-sol",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:21:53Z"
+    },
+    "candidate-context-v2:gpt-5.6-sol:Q41": {
+      "status": "completed",
+      "answer_status": "answer",
+      "answer": "No revenue increase from a React migration is established. Jared pushed back on broader React use because Rails already handled the authentication flows securely, SEO was already limited partly by insufficient server-side rendering, the migration involved downstream work, and revenue-generating roadmap work had priority; he documented the dependencies and time cost while acknowledging the consistency benefit. The disagreement highlighted opportunity cost without treating either framework as universally correct.",
+      "evidence_ids": [
+        "53"
+      ],
+      "validation": "passed",
+      "reported_model": "gpt-5.6-sol",
+      "input_tokens": 531,
+      "output_tokens": 273,
+      "estimated_cost_cents": null,
+      "latency_ms": 5539,
+      "attempts": 1,
+      "case_id": "Q41",
+      "model": "gpt-5.6-sol",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:21:58Z"
+    },
+    "candidate-context-v2:gpt-5.6-sol:Q42": {
+      "status": "completed",
+      "answer_status": "insufficient_information",
+      "answer": "I don’t have enough information to answer that confidently.",
+      "evidence_ids": [],
+      "validation": "passed",
+      "reported_model": "gpt-4o-mini",
+      "input_tokens": 1129,
+      "output_tokens": 120,
+      "estimated_cost_cents": 0,
+      "latency_ms": 3259,
+      "attempts": 1,
+      "case_id": "Q42",
+      "model": "gpt-5.6-sol",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:22:02Z"
+    }
+  },
+  "updated_at": "2026-09-07T01:22:02Z"
+}

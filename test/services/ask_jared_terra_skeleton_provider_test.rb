@@ -23,7 +23,7 @@ class AskJaredTerraSkeletonProviderTest < ActiveSupport::TestCase
     packet = AskJared::SynthesisEvidencePacket.new(entries: [ entry ], intent: "collaboration", question: "How has Jared collaborated?", max_claims: 3)
     skeleton = AskJared::RecruiterAnswerSkeleton.new(packet: packet, intent: "collaboration", question: "How has Jared collaborated?")
 
-    response = AskJared::TerraSkeletonProvider.new(api_key: "test-key", http: http).call(question: "How has Jared collaborated?", skeleton: skeleton)
+    response = AskJared::TerraSkeletonProvider.new(api_key: "test-key", model: "gpt-5.6-terra", http: http).call(question: "How has Jared collaborated?", skeleton: skeleton)
 
     assert_equal "answer", response["status"]
     assert_equal [ "r1" ], response["segments"].first["role_refs"]

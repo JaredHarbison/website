@@ -1,0 +1,115 @@
+{
+  "version": 1,
+  "results": {
+    "candidate-context-v2:gpt-5.6-terra:Q37": {
+      "status": "completed",
+      "answer_status": "insufficient_information",
+      "answer": "I don’t have enough information to answer that confidently.",
+      "evidence_ids": [],
+      "validation": "passed",
+      "reported_model": "gpt-4o-mini",
+      "input_tokens": 1287,
+      "output_tokens": 125,
+      "estimated_cost_cents": 0,
+      "latency_ms": 3441,
+      "attempts": 1,
+      "case_id": "Q37",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:14:23Z"
+    },
+    "candidate-context-v2:gpt-5.6-terra:Q38": {
+      "status": "completed",
+      "answer_status": "insufficient_information",
+      "answer": "I don’t have enough information to answer that confidently.",
+      "evidence_ids": [],
+      "validation": "passed",
+      "reported_model": "gpt-4o-mini",
+      "input_tokens": 1031,
+      "output_tokens": 36,
+      "estimated_cost_cents": 0,
+      "latency_ms": 2145,
+      "attempts": 1,
+      "case_id": "Q38",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:14:26Z"
+    },
+    "candidate-context-v2:gpt-5.6-terra:Q39": {
+      "status": "completed",
+      "answer_status": "answer",
+      "answer": "I wouldn’t assume TypeScript would be trivial based on React alone; technology depth varies and is best considered specifically by technology rather than inferred globally. Jared has documented direct professional engineer-to-engineer collaboration, alongside a genuine limitation around larger-team experience.",
+      "evidence_ids": [
+        "44",
+        "51"
+      ],
+      "validation": "passed",
+      "reported_model": "gpt-5.6-terra",
+      "input_tokens": 637,
+      "output_tokens": 87,
+      "estimated_cost_cents": null,
+      "latency_ms": 2764,
+      "attempts": 1,
+      "case_id": "Q39",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:14:28Z"
+    },
+    "candidate-context-v2:gpt-5.6-terra:Q40": {
+      "status": "completed",
+      "answer_status": "answer",
+      "answer": "Yes, Jared can be considered an expert in system design. He has documented this expertise by designing a two-way Shopify integration, which involved bringing qualifying purchases from partner stores into Dogly and sending marketplace orders back to brands for fulfillment. This project showcases his ability to create complex systems that effectively manage data flow and integration between different platforms.",
+      "evidence_ids": [
+        "31"
+      ],
+      "validation": "passed",
+      "reported_model": "gpt-4o-mini",
+      "input_tokens": 1101,
+      "output_tokens": 99,
+      "estimated_cost_cents": 0,
+      "latency_ms": 2149,
+      "attempts": 1,
+      "case_id": "Q40",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:14:30Z"
+    },
+    "candidate-context-v2:gpt-5.6-terra:Q41": {
+      "status": "completed",
+      "answer_status": "answer",
+      "answer": "Jared did not present the React migration as having increased revenue. In a discussion about broader React use for relatively static authentication pages, he noted that Rails already handled those flows securely, server-side rendering limitations already constrained SEO, and the migration would require downstream work while revenue-generating roadmap work had priority. He documented the dependencies and time cost, while acknowledging the consistency benefit; the disagreement made the opportunity cost visible without treating either framework as universally correct.",
+      "evidence_ids": [
+        "53"
+      ],
+      "validation": "passed",
+      "reported_model": "gpt-5.6-terra",
+      "input_tokens": 531,
+      "output_tokens": 121,
+      "estimated_cost_cents": null,
+      "latency_ms": 2669,
+      "attempts": 1,
+      "case_id": "Q41",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:14:33Z"
+    },
+    "candidate-context-v2:gpt-5.6-terra:Q42": {
+      "status": "completed",
+      "answer_status": "insufficient_information",
+      "answer": "I don’t have enough information to answer that confidently.",
+      "evidence_ids": [],
+      "validation": "passed",
+      "reported_model": "gpt-4o-mini",
+      "input_tokens": 1129,
+      "output_tokens": 133,
+      "estimated_cost_cents": 0,
+      "latency_ms": 3369,
+      "attempts": 1,
+      "case_id": "Q42",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:14:36Z"
+    }
+  },
+  "updated_at": "2026-09-07T01:14:36Z"
+}

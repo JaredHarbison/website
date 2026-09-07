@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "results": {
+    "candidate-context-v2:gpt-5.6-terra:product-1": {
+      "status": "completed",
+      "answer_status": "answer",
+      "answer": "Jared has influenced product prioritization and scope decisions, not only implementation. Before an accelerator, he prioritized dependency upgrades, then email notifications, expert profiles, and aesthetic redesign, weighing foundational risk, reuse, requirement stability, and the risk of throwaway work; the aesthetic work began after discovery started to avoid multiple aesthetic passes.\n\nHe also pushed back on expanding React to relatively static authentication pages, noting that Rails already handled those flows securely, server-side rendering was already limited for SEO, the migration carried downstream work, and revenue-generating roadmap work took priority. He documented the dependencies and time cost while acknowledging the consistency benefit.",
+      "evidence_ids": [
+        "49",
+        "53"
+      ],
+      "validation": "passed",
+      "reported_model": null,
+      "input_tokens": null,
+      "output_tokens": null,
+      "estimated_cost_cents": null,
+      "latency_ms": 4703,
+      "attempts": 1,
+      "case_id": "product-1",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:31:58Z"
+    },
+    "candidate-context-v2:gpt-5.6-terra:product-2": {
+      "status": "completed",
+      "answer_status": "insufficient_information",
+      "answer": "I don’t have enough information to answer that confidently.",
+      "evidence_ids": [],
+      "validation": "passed",
+      "reported_model": null,
+      "input_tokens": null,
+      "output_tokens": null,
+      "estimated_cost_cents": null,
+      "latency_ms": 2109,
+      "attempts": 1,
+      "case_id": "product-2",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:32:00Z"
+    },
+    "candidate-context-v2:gpt-5.6-terra:product-3": {
+      "status": "completed",
+      "answer_status": "answer",
+      "answer": "The second example was Jared’s pre-accelerator prioritization at Dogly: he sequenced dependency upgrades first, followed by email notifications, expert profiles, and then aesthetic redesign. He weighed foundational risk, reuse, expected requirement stability, and the risk of throwaway work; the aesthetic work began after discovery started to avoid multiple aesthetic passes.",
+      "evidence_ids": [
+        "49"
+      ],
+      "validation": "passed",
+      "reported_model": null,
+      "input_tokens": null,
+      "output_tokens": null,
+      "estimated_cost_cents": null,
+      "latency_ms": 3070,
+      "attempts": 1,
+      "case_id": "product-3",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:32:04Z"
+    },
+    "candidate-context-v2:gpt-5.6-terra:product-4": {
+      "status": "completed",
+      "answer_status": "answer",
+      "answer": "Jared redirected a proposed Community direction toward an evidence-backed daily plan, grounding the decision in user need, explicit tradeoffs, user comparison, and post-launch engagement signals.",
+      "evidence_ids": [
+        "41"
+      ],
+      "validation": "passed",
+      "reported_model": null,
+      "input_tokens": null,
+      "output_tokens": null,
+      "estimated_cost_cents": null,
+      "latency_ms": 3072,
+      "attempts": 1,
+      "case_id": "product-4",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:32:07Z"
+    }
+  },
+  "updated_at": "2026-09-07T01:32:07Z"
+}

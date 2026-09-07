@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "results": {
+    "candidate-context-v2:gpt-5.6-sol:product-1": {
+      "status": "completed",
+      "answer_status": "answer",
+      "answer": "Before an accelerator, Jared prioritized dependency upgrades, followed by email notifications, expert profiles, and then an aesthetic redesign. He weighed foundational risk, reuse, expected requirement stability, and the risk of throwaway work; aesthetic work began after discovery started, avoiding multiple design passes.\n\nAt Dogly, he also pushed back on broader React adoption for relatively static authentication pages because Rails already handled those flows securely, SEO was already limited partly by insufficient server-side rendering, the migration carried downstream work, and revenue-generating roadmap work had priority. He documented the dependencies and time cost while acknowledging the benefit of consistency.",
+      "evidence_ids": [
+        "49",
+        "53"
+      ],
+      "validation": "passed",
+      "reported_model": null,
+      "input_tokens": null,
+      "output_tokens": null,
+      "estimated_cost_cents": null,
+      "latency_ms": 6130,
+      "attempts": 1,
+      "case_id": "product-1",
+      "model": "gpt-5.6-sol",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:32:18Z"
+    },
+    "candidate-context-v2:gpt-5.6-sol:product-2": {
+      "status": "completed",
+      "answer_status": "insufficient_information",
+      "answer": "I don’t have enough information to answer that confidently.",
+      "evidence_ids": [],
+      "validation": "passed",
+      "reported_model": null,
+      "input_tokens": null,
+      "output_tokens": null,
+      "estimated_cost_cents": null,
+      "latency_ms": 4114,
+      "attempts": 1,
+      "case_id": "product-2",
+      "model": "gpt-5.6-sol",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:32:22Z"
+    },
+    "candidate-context-v2:gpt-5.6-sol:product-3": {
+      "status": "completed",
+      "answer_status": "answer",
+      "answer": "The second example was Jared’s prioritization before an accelerator: dependency upgrades first, followed by email notifications, expert profiles, and finally an aesthetic redesign. He considered foundational risk, reuse, expected requirement stability, and the risk of throwaway work; the aesthetic work began after discovery started, avoiding multiple aesthetic passes.",
+      "evidence_ids": [
+        "49"
+      ],
+      "validation": "passed",
+      "reported_model": null,
+      "input_tokens": null,
+      "output_tokens": null,
+      "estimated_cost_cents": null,
+      "latency_ms": 3160,
+      "attempts": 1,
+      "case_id": "product-3",
+      "model": "gpt-5.6-sol",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:32:25Z"
+    },
+    "candidate-context-v2:gpt-5.6-sol:product-4": {
+      "status": "completed",
+      "answer_status": "answer",
+      "answer": "Another distinct example is Jared redirecting a proposed Community direction toward an evidence-backed daily plan based on user need, explicit tradeoffs, user comparison, and post-launch engagement signals.",
+      "evidence_ids": [
+        "41"
+      ],
+      "validation": "passed",
+      "reported_model": null,
+      "input_tokens": null,
+      "output_tokens": null,
+      "estimated_cost_cents": null,
+      "latency_ms": 2248,
+      "attempts": 1,
+      "case_id": "product-4",
+      "model": "gpt-5.6-sol",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:32:28Z"
+    }
+  },
+  "updated_at": "2026-09-07T01:32:28Z"
+}

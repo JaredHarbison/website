@@ -88,6 +88,24 @@ class AskJaredQuestionServiceTest < ActiveSupport::TestCase
     refute_includes response["answer"], "probe"
   end
 
+  test "weakness questions discard boundary claims that only limit an unrelated outcome" do
+    unrelated_boundary = KnowledgeEntry.create!(title: "Unrelated outcome boundary", body: "The repository does not establish conversion improvement.", entry_type: "project", metadata: { "recruiter_evidence" => { "claims" => [ { "text" => "The repository does not establish conversion improvement.", "kind" => "boundary" } ], "limitations" => "No conversion outcome is established." } }, approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "unrelated-outcome-boundary", source_fingerprint: "unrelated-outcome-boundary")
+    boundary = KnowledgeEntry.create!(title: "Experience boundary", body: "Sustained large-team engineering experience is limited.", entry_type: "fact", metadata: { "recruiter_evidence" => { "claims" => [ { "text" => "Sustained large-team engineering experience is limited.", "kind" => "boundary" } ] } }, approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "experience-boundary", source_fingerprint: "experience-boundary")
+    retriever = Class.new do
+      def initialize(entries) = @entries = entries
+      def classified_intent(_) = "risk"
+      def call(*) = @entries
+    end.new([ unrelated_boundary, boundary ])
+    provider = Class.new do
+      attr_reader :context
+      def call(context:, **) = (@context = context; { "status" => "answer", "answer" => "Large-team experience is limited.", "evidence_ids" => context.map { |entry| entry.id.to_s }, "source_urls" => [] })
+    end.new
+
+    AskJared::QuestionService.new(token_service: @token_service, retriever: retriever, provider: provider).call(raw_token: @raw_token, question: "What is a weakness or gap in Jared's experience that a hiring manager should know about?", session_id: "weakness-boundary-filter", request_id: "weakness-boundary-filter")
+
+    assert_equal [ boundary.id ], provider.context.map(&:id)
+  end
+
   test "rejects garbage before retrieval or a model request" do
     service = AskJared::QuestionService.new(token_service: @token_service)
 
@@ -232,7 +250,7 @@ class AskJaredQuestionServiceTest < ActiveSupport::TestCase
     provider = Class.new do
       attr_reader :contexts
       def initialize = @contexts = []
-      def call(question:, context:)
+      def call(question:, context:, **)
         @contexts << context
         { "status" => "answer", "answer" => "Grounded.", "evidence_ids" => [ context.first.id.to_s ], "source_urls" => [] }
       end
@@ -256,7 +274,7 @@ class AskJaredQuestionServiceTest < ActiveSupport::TestCase
     provider = Class.new do
       attr_reader :contexts
       def initialize = @contexts = []
-      def call(question:, context:)
+      def call(question:, context:, **)
         @contexts << context
         { "status" => "answer", "answer" => "Grounded.", "evidence_ids" => [ context.first.id.to_s ], "source_urls" => [] }
       end
@@ -363,7 +381,7 @@ class AskJaredQuestionServiceTest < ActiveSupport::TestCase
     provider = Class.new do
       attr_reader :contexts
       def initialize = @contexts = []
-      def call(question:, context:)
+      def call(question:, context:, **)
         @contexts << context
         { "status" => "answer", "answer" => "Grounded.", "evidence_ids" => [ context.first.id.to_s ], "source_urls" => [] }
       end

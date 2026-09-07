@@ -7,6 +7,7 @@ module AskJared
   class OpenAiProvider
     ENDPOINT = URI("https://api.openai.com/v1/chat/completions")
     DEFAULT_MODEL = "gpt-4o-mini"
+    REQUEST_TIMEOUT_SECONDS = 45
     PRICING = YAML.safe_load(File.read(Rails.root.join("config/ask_jared_pricing.yml")), permitted_classes: [ Date ], symbolize_names: true).freeze
     MAX_CONTEXT_ENTRIES = 6
     RESPONSE_SCHEMA = {
@@ -57,11 +58,7 @@ module AskJared
     def request(question:, context:, messages:, response: nil, plan: nil)
       raise ConfigurationError, "OPENAI_API_KEY is not configured" if @api_key.blank?
 
-      response = @http.post(
-        ENDPOINT,
-        JSON.generate(request_body(question: question, context: context, messages: messages, response: response, plan: plan)),
-        { "Authorization" => "Bearer #{@api_key}", "Content-Type" => "application/json" }
-      )
+      response = post(request_body(question: question, context: context, messages: messages, response: response, plan: plan))
       raise ProviderError, "OpenAI request failed" unless response.is_a?(Net::HTTPSuccess)
 
       body = JSON.parse(response.body)
@@ -71,6 +68,18 @@ module AskJared
       validated
     rescue JSON::ParserError, KeyError, TypeError
       raise ProviderError, "OpenAI returned malformed structured output"
+    end
+
+    def post(body)
+      headers = { "Authorization" => "Bearer #{@api_key}", "Content-Type" => "application/json" }
+      return @http.post(ENDPOINT, JSON.generate(body), headers) unless @http == Net::HTTP
+
+      client = Net::HTTP.new(ENDPOINT.host, ENDPOINT.port)
+      client.use_ssl = true
+      client.open_timeout = REQUEST_TIMEOUT_SECONDS
+      client.read_timeout = REQUEST_TIMEOUT_SECONDS
+      client.write_timeout = REQUEST_TIMEOUT_SECONDS if client.respond_to?(:write_timeout=)
+      client.post(ENDPOINT.request_uri, JSON.generate(body), headers)
     end
 
     class ConfigurationError < StandardError; end

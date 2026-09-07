@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "results": {
+    "candidate-context-v2:gpt-5.6-terra:stage-a-1": {
+      "status": "completed",
+      "answer_status": "answer",
+      "answer": "Jared has influenced product prioritization and platform-scope decisions, not only implementation. Before an accelerator, he prioritized dependency upgrades, followed by email notifications and expert profiles, with aesthetic redesign later; he considered foundational risk, reuse, expected requirement stability, and the risk of throwaway work, beginning aesthetic work after discovery started to avoid multiple passes. He also pushed back on expanding React to relatively static authentication pages, documenting the downstream migration work and time cost while recognizing the consistency benefit; Rails already handled those flows securely, server-side rendering was limited, and revenue-generating roadmap work was prioritized.",
+      "evidence_ids": [
+        "49",
+        "53"
+      ],
+      "validation": "passed",
+      "reported_model": null,
+      "input_tokens": null,
+      "output_tokens": null,
+      "estimated_cost_cents": null,
+      "latency_ms": 3469,
+      "attempts": 1,
+      "case_id": "stage-a-1",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:32:10Z"
+    },
+    "candidate-context-v2:gpt-5.6-terra:stage-a-2": {
+      "status": "completed",
+      "answer_status": "insufficient_information",
+      "answer": "I don’t have enough information to answer that confidently.",
+      "evidence_ids": [],
+      "validation": "passed",
+      "reported_model": null,
+      "input_tokens": null,
+      "output_tokens": null,
+      "estimated_cost_cents": null,
+      "latency_ms": 1843,
+      "attempts": 1,
+      "case_id": "stage-a-2",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:32:12Z"
+    }
+  },
+  "updated_at": "2026-09-07T01:32:12Z"
+}

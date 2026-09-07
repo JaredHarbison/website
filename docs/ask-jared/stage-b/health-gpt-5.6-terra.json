@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "results": {
+    "candidate-context-v2:gpt-5.6-terra:H-Q1": {
+      "status": "completed",
+      "answer_status": "answer",
+      "answer": "Jared is an engineer who works within mature product environments while shaping coherent user experiences across content, community, subscriptions, onboarding, daily guidance, and commerce. At Dogly, he designed a resumable partner application and transparent review workflow inside a mature Rails marketplace without forcing a platform rewrite. Before a Stripe integration, he researched the design, wrote an implementation plan, identified gaps, used Stripe documentation and technical material, and implemented the subscription integration; his estimate that the learning ramp took roughly 15% of the work is his own estimate rather than a hard metric. In a technical disagreement, he made opportunity cost visible without presenting either framework as universally correct.",
+      "evidence_ids": [
+        "34",
+        "31",
+        "52",
+        "53"
+      ],
+      "validation": "passed",
+      "reported_model": "gpt-5.6-terra",
+      "input_tokens": 677,
+      "output_tokens": 183,
+      "estimated_cost_cents": null,
+      "latency_ms": 3916,
+      "attempts": 1,
+      "case_id": "H-Q1",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:09:46Z"
+    },
+    "candidate-context-v2:gpt-5.6-terra:H-Q6": {
+      "status": "completed",
+      "answer_status": "answer",
+      "answer": "Jared’s end-to-end ownership at Dogly is best supported around the Stripe subscription integration: he researched the design, wrote an implementation plan, identified implementation gaps, used Stripe documentation and technical material, and implemented the integration. Before that work, he had not built a third-party integration and had gaps around subscriptions, webhooks, concurrency, idempotency, and rate limiting; his roughly 15% estimate is his own estimate rather than a hard metric. He also independently implemented an MVP React frontend, using documentation, code review, senior guidance, and targeted help. In collaboration with the frontend engineer, Jared retained migrations and routing while the other engineer implemented bounded controller actions; later work became highly autonomous, though sustained larger-team engineering experience remains new context.",
+      "evidence_ids": [
+        "52",
+        "51"
+      ],
+      "validation": "passed",
+      "reported_model": "gpt-5.6-terra",
+      "input_tokens": 604,
+      "output_tokens": 189,
+      "estimated_cost_cents": null,
+      "latency_ms": 3878,
+      "attempts": 1,
+      "case_id": "H-Q6",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:09:50Z"
+    },
+    "candidate-context-v2:gpt-5.6-terra:H-Q3": {
+      "status": "completed",
+      "answer_status": "answer",
+      "answer": "A hiring manager can consider Jared's experience by technology rather than assuming uniform depth across domains. Sustained experience on large conventional engineering teams is still a newer context, although Jared has documented adjacent collaboration and organizational-scale experience. At Dogly, Jared began focused on backend work before becoming full-stack, using code review and senior guidance while independently building an MVP React frontend with documentation and targeted help; later work became highly autonomous.",
+      "evidence_ids": [
+        "51",
+        "42",
+        "44"
+      ],
+      "validation": "passed",
+      "reported_model": "gpt-5.6-terra",
+      "input_tokens": 686,
+      "output_tokens": 118,
+      "estimated_cost_cents": null,
+      "latency_ms": 3172,
+      "attempts": 1,
+      "case_id": "H-Q3",
+      "model": "gpt-5.6-terra",
+      "architecture": "candidate-context-v2",
+      "recorded_at": "2026-09-07T01:09:53Z"
+    }
+  },
+  "updated_at": "2026-09-07T01:09:53Z"
+}

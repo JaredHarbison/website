@@ -5,6 +5,7 @@ module AskJared
     MAX_QUESTION_LENGTH = 600
     MIN_QUESTION_LENGTH = 3
     GARBAGE_PATTERN = /\A(.)\1{20,}\z/
+    PUBLIC_DEFAULT_ARCHITECTURE = CandidateContext::VERSION_V2
 
     RECOGNIZED_INTENTS = ApprovedKnowledgeRetriever::INTENT_SPECS.keys.freeze
 
@@ -138,11 +139,13 @@ module AskJared
     end
 
     def planning(question:, intent:, prior_evidence:, requested:, admin_preview:)
-      enabled = [ CandidateContext::VERSION, CandidateContext::VERSION_V2 ].include?(requested.to_s) && (admin_preview || ENV.fetch("ASK_JARED_CANDIDATE_CONTEXT", "0") == "1")
+      public_default_request = requested.blank? && !admin_preview
+      effective_architecture = public_default_request ? PUBLIC_DEFAULT_ARCHITECTURE : requested.to_s
+      enabled = [ CandidateContext::VERSION, CandidateContext::VERSION_V2 ].include?(effective_architecture) && (admin_preview || public_default_request || ENV.fetch("ASK_JARED_CANDIDATE_CONTEXT", "0") == "1")
       return [ nil, "baseline-v1" ] unless enabled
 
-      planner = requested.to_s == CandidateContext::VERSION_V2 ? @v2_planner : @planner
-      [ planner.call(question: question.to_s.strip, intent: intent, prior_evidence_ids: prior_evidence), requested.to_s ]
+      planner = effective_architecture == CandidateContext::VERSION_V2 ? @v2_planner : @planner
+      [ planner.call(question: question.to_s.strip, intent: intent, prior_evidence_ids: prior_evidence), effective_architecture ]
     rescue StandardError
       [ nil, "baseline-v1-planner-fallback" ]
     end
@@ -287,10 +290,11 @@ module AskJared
       evidence = entry.metadata.fetch("recruiter_evidence", {})
       claims = Array(evidence["claims"])
       return true if evidence["evidence_kind"].to_s == "boundary"
-      return true if claims.any? { |claim| %w[boundary trajectory].include?(claim["kind"].to_s) }
-      return true if evidence["limitations"].present?
+      claims.any? do |claim|
+        next false unless %w[boundary trajectory].include?(claim["kind"].to_s)
 
-      [ entry.short_body, entry.body ].compact.join(" ").match?(/\b(?:boundary|gap|limited|newer territory|not established|still developing|development area)\b/i)
+        claim["text"].to_s.match?(/experience|depth|team|organization|technology|context|exposure|authority|management|develop|professional .*not|not established|limited/i)
+      end
     end
 
     def prior_primary_evidence(session_digest)
