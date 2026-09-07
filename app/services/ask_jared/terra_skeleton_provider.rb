@@ -15,7 +15,7 @@ module AskJared
         schema: {
           type: "object",
           properties: {
-            status: { type: "string", enum: StructuredResponse::STATUSES },
+            status: { type: "string", enum: StructuredResponse::MODEL_STATUSES },
             segments: { type: "array", items: { type: "object", properties: { text: { type: "string" }, role_refs: { type: "array", items: { type: "string" } } }, required: %w[text role_refs], additionalProperties: false } }
           },
           required: %w[status segments],

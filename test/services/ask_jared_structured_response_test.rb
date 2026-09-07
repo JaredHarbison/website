@@ -19,6 +19,12 @@ class AskJaredStructuredResponseTest < ActiveSupport::TestCase
     assert_equal "unsupported response status", error.message
   end
 
+  test "keeps system and validation states out of the model response schema" do
+    refute_includes AskJared::StructuredResponse::MODEL_STATUSES, "system_error"
+    refute_includes AskJared::StructuredResponse::MODEL_STATUSES, "validation_failure"
+    assert_includes AskJared::StructuredResponse::STATUSES, "system_error"
+  end
+
   test "rejects unbounded or malformed model output" do
     assert_raises(ArgumentError) { AskJared::StructuredResponse.validate!(BASE.merge("answer" => "x" * 4_001)) }
     assert_raises(ArgumentError) { AskJared::StructuredResponse.validate!(BASE.merge("evidence_ids" => "entry-1")) }

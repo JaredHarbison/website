@@ -68,6 +68,51 @@ class AskJaredQuestionServiceTest < ActiveSupport::TestCase
     assert_equal 1, EngagementEvent.where(event_type: "question_submitted").count
   end
 
+  test "records a provider failure as a reportable system error, not factual insufficiency" do
+    provider = Class.new do
+      def call(**)
+        raise AskJared::OpenAiProvider::ProviderError, "provider unavailable"
+      end
+    end.new
+    entry = KnowledgeEntry.create!(title: "Approved Rails fact", body: "A Rails fact.", entry_type: "fact", approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "provider-error", source_fingerprint: "provider-error")
+    retriever = Class.new do
+      def initialize(entry) = @entry = entry
+      def classified_intent(_) = nil
+      def call(*) = [ @entry ]
+    end.new(entry)
+
+    response = AskJared::QuestionService.new(token_service: @token_service, retriever: retriever, provider: provider).call(raw_token: @raw_token, question: "Tell me about Rails.", session_id: "provider-error-session", request_id: "provider-error-request")
+
+    assert_equal "system_error", response["status"]
+    assert_equal "provider_error", EngagementEvent.find_by!(event_type: "answer_returned").metadata["failure_class"]
+    assert_equal "not_run", EngagementEvent.find_by!(event_type: "answer_returned").metadata["validation"]
+  end
+
+  test "falls back to direct retrieval when planned retrieval is transiently empty" do
+    entry = KnowledgeEntry.create!(title: "Approved product fact", body: "A supported product fact.", entry_type: "fact", approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "planned-empty", source_fingerprint: "planned-empty")
+    retriever = Class.new do
+      attr_reader :calls
+
+      def initialize(entry)
+        @entry = entry
+        @calls = 0
+      end
+
+      def classified_intent(_) = nil
+
+      def call(*)
+        @calls += 1
+        @calls == 1 ? [] : [ @entry ]
+      end
+    end.new(entry)
+    provider = FakeProvider.new({ "status" => "answer", "answer" => "Supported.", "evidence_ids" => [ entry.id.to_s ], "source_urls" => [] })
+
+    response = AskJared::QuestionService.new(token_service: @token_service, retriever: retriever, provider: provider).call(raw_token: @raw_token, question: "What is supported?", session_id: "planned-empty", request_id: "planned-empty")
+
+    assert_equal "answer", response["status"]
+    assert_equal 2, retriever.calls
+  end
+
   test "weakness questions discard unrelated project evidence before generation" do
     unrelated = KnowledgeEntry.create!(title: "Unrelated project", body: "Built a karaoke queue.", entry_type: "project", metadata: { "recruiter_evidence" => { "claims" => [ { "text" => "Built a karaoke queue.", "kind" => "demonstrated" } ] } }, approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "unrelated-project", source_fingerprint: "unrelated-project")
     boundary = KnowledgeEntry.create!(title: "Explicit boundary", body: "Large conventional engineering-team experience is limited.", entry_type: "fact", metadata: { "recruiter_evidence" => { "claims" => [ { "text" => "Large conventional engineering-team experience is limited.", "kind" => "boundary" } ] } }, approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "explicit-boundary", source_fingerprint: "explicit-boundary")
@@ -166,7 +211,7 @@ class AskJaredQuestionServiceTest < ActiveSupport::TestCase
 
     response = service.call(raw_token: @raw_token, question: "What is supported?", session_id: "bad-alias-session", request_id: "bad-alias-request")
 
-    assert_equal "insufficient_information", response["status"]
+    assert_equal "validation_failure", response["status"]
   end
 
   test "removes unsupported predictive transfer claims while retaining factual evidence" do
@@ -235,7 +280,7 @@ class AskJaredQuestionServiceTest < ActiveSupport::TestCase
 
     response = service.call(raw_token: @raw_token, question: "Tell me about First and Second", session_id: "repair-fail-session", request_id: "repair-fail-request")
 
-    assert_equal "insufficient_information", response["status"]
+    assert_equal "validation_failure", response["status"]
     assert_equal 1, provider.repair_calls
   end
 

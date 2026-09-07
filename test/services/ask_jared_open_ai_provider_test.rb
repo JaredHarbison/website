@@ -105,7 +105,7 @@ class AskJaredOpenAiProviderTest < ActiveSupport::TestCase
     AskJared::OpenAiProvider.new(api_key: "test-key", http: http).call(question: "Question", context: [ entry(1) ])
 
     schema = http.request_body.fetch("response_format").fetch("json_schema").fetch("schema")
-    assert_equal AskJared::StructuredResponse::STATUSES, schema.fetch("properties").fetch("status").fetch("enum")
+    assert_equal AskJared::StructuredResponse::MODEL_STATUSES, schema.fetch("properties").fetch("status").fetch("enum")
     assert_equal %w[status answer evidence_ids source_urls claim_refs], schema.fetch("required")
     assert_equal false, schema.fetch("additionalProperties")
     assert_includes http.request_body.fetch("messages").first.fetch("content"), "status=insufficient_information"

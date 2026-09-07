@@ -18,7 +18,7 @@ module AskJared
         schema: {
           type: "object",
           properties: {
-            status: { type: "string", enum: StructuredResponse::STATUSES },
+            status: { type: "string", enum: StructuredResponse::MODEL_STATUSES },
             answer: { type: "string" },
             evidence_ids: { type: "array", items: { type: "string" } },
             source_urls: { type: "array", items: { type: "string", pattern: "^https://" } },

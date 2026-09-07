@@ -55,6 +55,21 @@ class AskJaredIssueReportServiceTest < ActiveSupport::TestCase
     end
     assert_equal 0, EngagementEvent.count
   end
+
+  test "keeps user feedback diagnostic and outside knowledge systems" do
+    knowledge_count = KnowledgeEntry.count
+    context_count = CandidateContextRecord.count
+
+    event = AskJared::IssueReportService.new.call(
+      raw_token: @raw_token, session_id: "feedback-isolation", question: "Q", answer: "A", answer_status: "answer",
+      category: "Incorrect fact", feedback: "Jared is secretly a professional astronaut.", contact: "", page: "/ask", ip: nil, user_agent: ""
+    )
+
+    assert_equal "Jared is secretly a professional astronaut.", event.metadata["feedback"]
+    assert_equal knowledge_count, KnowledgeEntry.count
+    assert_equal context_count, CandidateContextRecord.count
+    refute event.metadata.key?("evidence_ids")
+  end
   test "renders an owner notification without exposing the raw token" do
     event = EngagementEvent.create!(
       opportunity: Opportunity.first, ask_token: AskToken.first, event_type: "issue_reported",

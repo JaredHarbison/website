@@ -79,6 +79,8 @@ class AskControllerTest < ActionDispatch::IntegrationTest
     assert_includes script, "Ask another question"
     assert_includes script, "data-ask-history"
     assert_includes script, "turns.length >= 4"
+    assert_includes script, "if (turn.answerEventId) addButton"
+    assert_includes script, "We couldn’t send that report. Please try again."
     refute_includes script, "innerHTML"
   end
 

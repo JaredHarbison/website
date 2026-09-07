@@ -39,7 +39,7 @@
       var label = document.createElement("p"); label.className = "ask-state__label"; label.textContent = payload.status === "answer" ? "Answer" : "Response";
       var text = document.createElement("p"); text.className = "ask-state__text"; text.textContent = payload.answer;
       state.append(asked, label, text);
-      if (payload.status === "answer") addButton(state, "Something seem off?", "ask-issue-link", function () { showIssue(turn); });
+      if (turn.answerEventId) addButton(state, "Something seem off?", "ask-issue-link", function () { showIssue(turn); });
       history.append(state);
       if (turns.length >= 4) {
         var cta = document.createElement("p"); cta.className = "ask-contact-cta";
@@ -76,7 +76,7 @@
         event.preventDefault(); var issueForm = event.currentTarget; var status = issueForm.querySelector("[data-ask-issue-status]");
         var data = new FormData(issueForm); data.append("t", form.querySelector("[name='t']")?.value || ""); data.append("answer_event_id", modal.dataset.answerEventId || "");
         var issueButton = issueForm.querySelector("[data-ask-issue-submit]"); issueButton.disabled = true; status.textContent = "Sending…";
-        fetch("/api/ask/issues", { method: "POST", body: data, credentials: "same-origin", headers: { Accept: "application/json" } }).then(function (response) { return response.json().then(function (payload) { if (!response.ok || payload.status !== "ok") throw new Error(payload.message || "Feedback could not be sent."); status.textContent = "Thank you — feedback received."; issueButton.disabled = false; setTimeout(function () { modal.close(); }, 700); }); }).catch(function (error) { status.textContent = error.message; issueButton.disabled = false; });
+        fetch("/api/ask/issues", { method: "POST", body: data, credentials: "same-origin", headers: { Accept: "application/json" } }).then(function (response) { return response.json().then(function (payload) { if (!response.ok || payload.status !== "ok") throw new Error("We couldn’t send that report. Please try again."); status.textContent = "Thank you — feedback received."; issueButton.disabled = false; setTimeout(function () { modal.close(); }, 700); }); }).catch(function () { status.textContent = "We couldn’t send that report. Please try again."; issueButton.disabled = false; });
       });
     }
   }

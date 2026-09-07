@@ -2,6 +2,7 @@ module Api
   module Ask
     class IssuesController < ApplicationController
       protect_from_forgery with: :null_session
+      skip_forgery_protection if: :trusted_request?
 
       def create
         event = AskJared::IssueReportService.new.call(
@@ -16,6 +17,10 @@ module Api
       end
 
       private
+
+      def trusted_request?
+        request.headers["X-Ask-Token"].present? || params[:t].present?
+      end
 
       def ask_session_id
         session[:ask_jared_session_marker] ||= SecureRandom.hex(16)

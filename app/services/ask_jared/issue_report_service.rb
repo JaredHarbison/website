@@ -15,7 +15,7 @@ module AskJared
 
       answer_event = answer_event_for(token, session_id, answer_event_id, question, answer)
       raise ArgumentError, "answer exchange is invalid or unavailable" if answer_event_id.present? && answer_event.nil?
-      answer_context = answer_event ? answer_event.metadata.slice("question", "answer", "answer_status", "question_intent", "evidence_ids", "skeleton_roles", "model", "validation", "latency_ms", "input_tokens", "output_tokens", "estimated_cost_cents", "pricing_version", "intent_path", "evidence_count", "turn") : {}
+      answer_context = answer_event ? answer_event.metadata.slice("question", "answer", "answer_status", "question_intent", "evidence_ids", "skeleton_roles", "model", "validation", "failure_class", "architecture", "planner_version", "latency_ms", "input_tokens", "output_tokens", "estimated_cost_cents", "pricing_version", "intent_path", "evidence_count", "turn") : {}
 
       event = @engagement_service.record!(
         raw_token: raw_token, event_type: "issue_reported", session_id: session_id, ip: ip,

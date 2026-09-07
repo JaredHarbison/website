@@ -1,6 +1,7 @@
 module AskJared
   class StructuredResponse
-    STATUSES = %w[answer insufficient_information out_of_scope blocked].freeze
+    MODEL_STATUSES = %w[answer insufficient_information out_of_scope blocked].freeze
+    STATUSES = (MODEL_STATUSES + %w[validation_failure system_error]).freeze
     MAX_ANSWER_LENGTH = 4_000
     MAX_EVIDENCE_IDS = 12
     MAX_SOURCE_URLS = 12

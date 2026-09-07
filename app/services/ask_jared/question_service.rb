@@ -55,7 +55,10 @@ module AskJared
         entries = retrieve_with_plan(question, intent: active_intent, plan: plan).reject { |entry| another_example?(question) && prior_primary.include?(entry.source_reference) }
         entries = entries.first(1) if another_example?(question) && skeleton_path?(active_intent)
       end
-      entries = retrieve(question, limit: 12, intent: active_intent).reject { |entry| prior_primary.include?(entry.source_reference) } if entries.empty? && prior_primary.any? && !another_example?(question) && !continuation?(question)
+      # A planned retrieval may be empty during a transient scope/provider/database
+      # hiccup even though the direct, deterministic retriever can still find the
+      # same approved evidence. Preserve fail-closed behavior after both paths fail.
+      entries = retrieve(question, limit: 12, intent: active_intent).reject { |entry| prior_primary.include?(entry.source_reference) } if entries.empty? && !another_example?(question) && !continuation?(question)
       entries = entries.select { |entry| weakness_evidence?(entry) } if active_intent.to_s == "risk"
       packet = SynthesisEvidencePacket.new(
         entries: entries,
@@ -72,7 +75,7 @@ module AskJared
         begin
           @skeleton_provider.call(question: question.to_s.strip, skeleton: RecruiterAnswerSkeleton.new(packet: packet, intent: active_intent, question: question.to_s.strip))
         rescue OpenAiProvider::ConfigurationError, OpenAiProvider::ProviderError
-          insufficient_response
+          system_error_response
         end
       else
         begin
@@ -82,11 +85,13 @@ module AskJared
             @provider.call(question: question.to_s.strip, context: packet)
           end
         rescue OpenAiProvider::ConfigurationError, OpenAiProvider::ProviderError
-          insufficient_response
+          system_error_response
         end
       end
       telemetry = response.delete("__telemetry") || {} if response.is_a?(Hash)
-      response = if skeleton_path?(active_intent) && !packet.empty?
+      response = if %w[system_error validation_failure].include?(response["status"])
+        response
+      elsif skeleton_path?(active_intent) && !packet.empty?
         validate_skeleton_response(response, question: question.to_s.strip, packet: packet)
       else
         validate_response(response, question: question.to_s.strip, packet: packet)
@@ -105,7 +110,10 @@ module AskJared
           "context_keys" => plan&.context_keys, "plan_summary" => plan&.summary,
           "example_evidence_ids" => example_evidence_groups(response: response, packet: packet),
           "turn" => EngagementEvent.where(session_digest: session_digest, event_type: "answer_returned").count + 1,
-          "validation" => "passed", "input_tokens" => telemetry["input_tokens"], "output_tokens" => telemetry["output_tokens"],
+          "validation" => validation_state(response), "failure_class" => failure_class(response),
+          "retrieval_mode" => retrieval_trace[:mode], "retrieval_selected_count" => retrieval_trace[:selected].to_a.length,
+          "retrieval_considered_count" => retrieval_trace[:considered].to_a.length,
+          "input_tokens" => telemetry["input_tokens"], "output_tokens" => telemetry["output_tokens"],
           "estimated_cost_cents" => telemetry["estimated_cost_cents"], "pricing_version" => telemetry["pricing_version"]
         })
         response["answer_event_id"] = answer_event.id
@@ -113,7 +121,7 @@ module AskJared
       end
       response.delete("claim_refs")
       response["evaluation"] = { "architecture" => architecture_used, "planner_version" => plan&.version,
-                                  "model" => model_for(skeleton_path?(active_intent)), "validation" => "passed",
+                                  "model" => model_for(skeleton_path?(active_intent)), "validation" => validation_state(response),
                                   "input_tokens" => telemetry["input_tokens"], "output_tokens" => telemetry["output_tokens"],
                                   "estimated_cost_cents" => telemetry["estimated_cost_cents"], "pricing_version" => telemetry["pricing_version"] } if admin_preview && evaluation
       response
@@ -156,7 +164,7 @@ module AskJared
       EvidenceIntegrity.validate_response!(answer: resolved["answer"], evidence_ids: resolved["evidence_ids"], claim_refs: resolved["claim_refs"], packet: packet, question: question, intent: packet.intent)
       resolved
     rescue AskJared::EvidenceIntegrity::Violation => violation
-      return insufficient_response unless @provider.respond_to?(:repair)
+      return validation_failure_response unless @provider.respond_to?(:repair)
 
       begin
         repaired = @provider.repair(question: question, context: packet, response: response, violations: violation.violations)
@@ -165,10 +173,10 @@ module AskJared
         EvidenceIntegrity.validate_response!(answer: resolved["answer"], evidence_ids: resolved["evidence_ids"], claim_refs: resolved["claim_refs"], packet: packet, question: question, intent: packet.intent)
         resolved
       rescue AskJared::EvidenceIntegrity::Violation, ArgumentError, KeyError, TypeError, AskJared::OpenAiProvider::ConfigurationError, AskJared::OpenAiProvider::ProviderError
-        insufficient_response
+        validation_failure_response
       end
     rescue ArgumentError, KeyError, TypeError, AskJared::OpenAiProvider::ConfigurationError, AskJared::OpenAiProvider::ProviderError
-      insufficient_response
+      validation_failure_response
     end
 
     def validate_skeleton_response(response, question:, packet:)
@@ -176,7 +184,7 @@ module AskJared
       normalized = response.is_a?(Hash) ? response : {}
       status = normalized["status"]
       segments = normalized["segments"]
-      raise EvidenceIntegrity::Violation, "skeleton response is malformed" unless StructuredResponse::STATUSES.include?(status) && segments.is_a?(Array)
+      raise EvidenceIntegrity::Violation, "skeleton response is malformed" unless StructuredResponse::MODEL_STATUSES.include?(status) && segments.is_a?(Array)
       return insufficient_response if status == "insufficient_information"
 
       raise EvidenceIntegrity::Violation, "skeleton response must contain segments" if segments.empty?
@@ -201,7 +209,7 @@ module AskJared
         "claim_refs" => resolved_claim_refs
       }
     rescue EvidenceIntegrity::Violation => violation
-      return insufficient_response unless @skeleton_provider.respond_to?(:repair)
+      return validation_failure_response unless @skeleton_provider.respond_to?(:repair)
 
       begin
         repaired = @skeleton_provider.repair(
@@ -212,7 +220,7 @@ module AskJared
         )
         validate_skeleton_response_once(repaired, packet: packet, question: question)
       rescue EvidenceIntegrity::Violation, ArgumentError, KeyError, TypeError, OpenAiProvider::ConfigurationError, OpenAiProvider::ProviderError
-        insufficient_response
+        validation_failure_response
       end
     end
 
@@ -269,6 +277,28 @@ module AskJared
         "I don’t have enough information to answer that confidently."
       end
       { "status" => "insufficient_information", "answer" => answer, "evidence_ids" => [], "source_urls" => [] }
+    end
+
+    def validation_failure_response
+      { "status" => "validation_failure", "answer" => "I couldn’t provide a reliable answer from the available information. Please try again or report this response.", "evidence_ids" => [], "source_urls" => [] }
+    end
+
+    def system_error_response
+      { "status" => "system_error", "answer" => "The answer service is temporarily unavailable. Please try again or report this response.", "evidence_ids" => [], "source_urls" => [] }
+    end
+
+    def validation_state(response)
+      response["status"] == "validation_failure" ? "failed" : (response["status"] == "system_error" ? "not_run" : "passed")
+    end
+
+    def failure_class(response)
+      return "provider_error" if response["status"] == "system_error"
+      "validation_failure" if response["status"] == "validation_failure"
+    end
+
+    def retrieval_trace
+      trace = @retriever.respond_to?(:last_trace) ? @retriever.last_trace : nil
+      trace.is_a?(Hash) ? trace : {}
     end
 
     def another_example?(question)
