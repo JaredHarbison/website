@@ -2,12 +2,18 @@ require "test_helper"
 
 class AskJaredEngagementExportTest < ActiveSupport::TestCase
   setup do
+    @previous_analytics_boundary = ENV[AskJared::AnalyticsBoundary::ENV_KEY]
+    ENV[AskJared::AnalyticsBoundary::ENV_KEY] = 10.days.ago.iso8601
     EngagementEvent.delete_all
     AskUsageEvent.delete_all
     AskToken.delete_all
     Opportunity.delete_all
     @opportunity = Opportunity.create!(external_id: "role-export-1", company: "Acme", role_title: "Engineer", application_state: "submitted", submitted_at: 8.days.ago)
     @token = AskToken.create!(token_digest: "digest-export", token_prefix: "export-1", status: "submitted", opportunity: @opportunity)
+  end
+
+  teardown do
+    ENV[AskJared::AnalyticsBoundary::ENV_KEY] = @previous_analytics_boundary
   end
 
   test "exports aggregate meaningful engagement without privacy-sensitive identifiers" do

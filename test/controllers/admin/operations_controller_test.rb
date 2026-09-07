@@ -4,11 +4,17 @@ class Admin::OperationsControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
 
   setup do
+    @previous_analytics_boundary = ENV[AskJared::AnalyticsBoundary::ENV_KEY]
+    ENV[AskJared::AnalyticsBoundary::ENV_KEY] = 1.hour.ago.iso8601
     AdminUser.delete_all
     EngagementEvent.delete_all
     @admin = AdminUser.create!(email: "jared@example.com", password: "a-secure-password")
     @opportunity = Opportunity.create!(external_id: "ops-role", company: "Acme", role_title: "Engineer")
     @token = AskToken.create!(token_digest: "ops-digest", token_prefix: "ops", status: "claimed", opportunity: @opportunity)
+  end
+
+  teardown do
+    ENV[AskJared::AnalyticsBoundary::ENV_KEY] = @previous_analytics_boundary
   end
 
   test "admin overview links operational areas" do

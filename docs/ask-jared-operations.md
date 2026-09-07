@@ -11,3 +11,22 @@ Issue reports reuse the existing engagement-event store. The server matches the 
 Knowledge entries originate from imported or approved source material. Recruiter retrieval requires `approved` status, `recruiter_visible` visibility, and a current embedding. The production-incident candidate is intentionally `needs_review` and private until remediation, impact, validation, and outcome are confirmed.
 
 Do not add a manual knowledge-entry form unless it creates complete provenance, claims, capability mappings, approval/visibility state, embeddings, and finalization-compatible metadata. Do not remove rejected or private history as cleanup. The Rails 8.0.5 lifecycle warning remains a separate maintenance task; no major framework upgrade is part of the Ask product pass.
+
+## Analytics launch boundary
+
+Live recruiter analytics is defined by the `ASK_JARED_ANALYTICS_LIVE_AT`
+configuration value. Only activity from a non-QA AskLink with an event timestamp
+at or after that ISO-8601 timestamp is included in default recruiter analytics.
+The value is separate from the AskLink's `tracker_source`, so historical
+development activity cannot become live analytics merely because it was not
+labeled QA.
+
+## Testing Ask Jared in production
+
+Production Ask Jared testing must use an Internal/QA AskLink. This applies to
+Codex, Jared, automated checks, smoke tests, answer-quality checks, screenshots,
+debugging, and production validation. Testing links must use
+`tracker_source=internal_qa`; never create or use a normal recruiter AskLink for
+testing. Use the clearly labeled “Create Internal / QA link” action in Admin >
+Recruiter Intelligence > Create Access. Genuine recruiter/application links use
+the separate recruiter-link path and remain non-QA.

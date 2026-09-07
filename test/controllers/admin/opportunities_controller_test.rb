@@ -4,10 +4,17 @@ class Admin::OpportunitiesControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
 
   setup do
+    @previous_analytics_boundary = ENV[AskJared::AnalyticsBoundary::ENV_KEY]
+    ENV[AskJared::AnalyticsBoundary::ENV_KEY] = 1.hour.ago.iso8601
     Opportunity.delete_all
     AdminUser.delete_all
     @admin = AdminUser.create!(email: "jared@example.com", password: "a-secure-password")
     @opportunity = Opportunity.create!(external_id: "role-admin-1", company: "Acme", role_title: "Engineer")
+    EngagementEvent.create!(opportunity: @opportunity, event_type: "question_submitted", event_key: "admin-question", session_digest: "admin-session", activity_class: "unclassified", occurred_at: 1.minute.ago, meaningful: true)
+  end
+
+  teardown do
+    ENV[AskJared::AnalyticsBoundary::ENV_KEY] = @previous_analytics_boundary
   end
 
   test "requires Jared authentication" do

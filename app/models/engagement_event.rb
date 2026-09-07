@@ -12,4 +12,5 @@ class EngagementEvent < ApplicationRecord
   scope :meaningful_events, -> { where(meaningful: true) }
   scope :from_internal_qa, -> { joins(:opportunity).where(opportunities: { tracker_source: AskJared::ActivityClassification::QA_TRACKER_SOURCES }) }
   scope :from_real_prospect, -> { where.not(opportunity_id: Opportunity.where(tracker_source: AskJared::ActivityClassification::QA_TRACKER_SOURCES).select(:id)) }
+  scope :from_live_recruiter, -> { from_real_prospect.where("engagement_events.occurred_at >= ?", AskJared::AnalyticsBoundary.live_at) }
 end

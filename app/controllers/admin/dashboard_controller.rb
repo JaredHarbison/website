@@ -8,7 +8,7 @@ module Admin
       @manual_opportunities = Opportunity.where(tracker_source: "manual").includes(:ask_token).order(created_at: :desc)
       @prospect_access_count = Opportunity.joins(:ask_token).count
       @active_access_count = AskToken.where(status: %w[claimed submitted]).count
-      prospect_events = EngagementEvent.from_real_prospect
+      prospect_events = EngagementEvent.from_live_recruiter
       @meaningful_sessions = prospect_events.where(meaningful: true).distinct.count(:session_digest)
       @engaged_prospects = prospect_events.where(meaningful: true).where.not(opportunity_id: nil).distinct.count(:opportunity_id)
       @question_count = prospect_events.where(event_type: "question_submitted").count

@@ -31,6 +31,17 @@ class Admin::ShareLinksControllerTest < ActionDispatch::IntegrationTest
     assert_empty Opportunity.where(tracker_source: "manual")
   end
 
+  test "owner can create an explicitly classified Internal / QA link" do
+    sign_in @admin
+
+    assert_difference("Opportunity.where(tracker_source: 'internal_qa').count", 1) do
+      post "/admin/share_links", params: { label: "QA check", purpose: "Production verification", link_type: "internal_qa" }
+    end
+
+    assert_redirected_to "/admin"
+    assert_match(%r{/?t=}, flash[:direct_share_link])
+  end
+
   test "owner can revoke a manual link without affecting application links" do
     opportunity, = AskJared::ManualShareService.new.create!(label: "Portfolio review", purpose: "General introduction")
     application_opportunity = Opportunity.create!(external_id: "application-1", company: "Acme", role_title: "Engineer")

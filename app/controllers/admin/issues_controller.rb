@@ -10,7 +10,7 @@ module Admin
       scoped = if @activity_class == "internal_qa"
         scoped.from_internal_qa
       else
-        scoped.from_real_prospect
+        scoped.from_live_recruiter
       end
       scoped = scoped.includes(:opportunity).order(occurred_at: :desc)
       scoped = scoped.select { |event| @status.blank? || (event.metadata["issue_status"].presence || "new") == @status }

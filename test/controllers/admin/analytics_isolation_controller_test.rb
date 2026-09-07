@@ -4,6 +4,8 @@ class Admin::AnalyticsIsolationControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
 
   setup do
+    @previous_analytics_boundary = ENV[AskJared::AnalyticsBoundary::ENV_KEY]
+    ENV[AskJared::AnalyticsBoundary::ENV_KEY] = 1.hour.ago.iso8601
     EngagementEvent.delete_all
     AskToken.delete_all
     Opportunity.delete_all
@@ -17,6 +19,10 @@ class Admin::AnalyticsIsolationControllerTest < ActionDispatch::IntegrationTest
     create_event(@qa, "question_submitted", "qa-question", { "question" => "QA question" })
     create_event(@qa, "answer_returned", "qa-answer", { "answer" => "QA answer" })
     create_event(@qa, "issue_reported", "qa-issue", { "issue_category" => "Technical issue", "feedback" => "QA issue" })
+  end
+
+  teardown do
+    ENV[AskJared::AnalyticsBoundary::ENV_KEY] = @previous_analytics_boundary
   end
 
   test "dashboard headline counts exclude QA activity" do
@@ -51,6 +57,17 @@ class Admin::AnalyticsIsolationControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_includes response.body, "QA issue"
     refute_includes response.body, "Real issue"
+  end
+
+  test "pre-launch non-QA activity is excluded from default analytics" do
+    ENV[AskJared::AnalyticsBoundary::ENV_KEY] = 1.minute.from_now.iso8601
+
+    sign_in @admin
+    get "/admin"
+
+    assert_select ".admin-summary-card__value", text: "0", count: 4
+    get "/admin/issues"
+    assert_includes response.body, "No issues match this filter"
   end
 
   private

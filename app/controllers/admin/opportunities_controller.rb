@@ -5,7 +5,7 @@ module Admin
       scope = if include_internal
         Opportunity.where(tracker_source: AskJared::ActivityClassification::QA_TRACKER_SOURCES)
       else
-        Opportunity.where(tracker_source: nil).or(Opportunity.where.not(tracker_source: AskJared::ActivityClassification::QA_TRACKER_SOURCES))
+        Opportunity.where(id: EngagementEvent.from_live_recruiter.select(:opportunity_id))
       end
       all = AskJared::EngagementExport.new(scope: scope, include_internal: include_internal).call
       @filter = params[:filter].presence

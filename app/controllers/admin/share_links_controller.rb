@@ -1,12 +1,14 @@
 module Admin
   class ShareLinksController < BaseController
     def create
-      _opportunity, _token, raw_token = AskJared::ManualShareService.new.create!(
+      qa_link = params[:link_type].to_s == "internal_qa"
+      service = qa_link ? AskJared::InternalQaShareService.new : AskJared::ManualShareService.new
+      _opportunity, _token, raw_token = service.create!(
         label: params[:label], purpose: params[:purpose], company: params[:company], expires_at: expiration_time
       )
       link = "#{request.base_url}/?t=#{ERB::Util.url_encode(raw_token)}"
       flash[:direct_share_link] = link
-      redirect_to safe_return_path, notice: "Direct share link created."
+      redirect_to safe_return_path, notice: qa_link ? "Internal / QA link created." : "Direct share link created."
     end
 
     def revoke
