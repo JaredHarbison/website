@@ -28,7 +28,7 @@ class AskJaredTerraSkeletonProviderTest < ActiveSupport::TestCase
     assert_equal "answer", response["status"]
     assert_equal [ "r1" ], response["segments"].first["role_refs"]
     assert_equal "gpt-5.6-terra", http.request_body.fetch("model")
-    assert_equal 500, http.request_body.fetch("max_completion_tokens")
+    assert_equal 1_000, http.request_body.fetch("max_completion_tokens")
     refute http.request_body.key?("temperature")
   end
 

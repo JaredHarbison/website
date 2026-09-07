@@ -47,7 +47,7 @@ module AskJared
       if repair
         user[:repair] = "Previous realization failed validation: #{repair[:violations].join('; ')}. Rewrite only the affected segments. Return role_refs for every segment and use no facts outside the skeleton. Previous response: #{repair[:response].to_json}"
       end
-      body = { model: @model, max_completion_tokens: 500, response_format: RESPONSE_SCHEMA, messages: [ { role: "system", content: system_prompt }, { role: "user", content: JSON.generate(user) } ] }
+      body = { model: @model, max_completion_tokens: 1_000, response_format: RESPONSE_SCHEMA, messages: [ { role: "system", content: system_prompt }, { role: "user", content: JSON.generate(user) } ] }
       response = post(body)
       raise OpenAiProvider::ProviderError, "OpenAI request failed" unless response.is_a?(Net::HTTPSuccess)
 
