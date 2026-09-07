@@ -1,21 +1,51 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" style="background-color:#080b0c; color-scheme:dark;">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><%= content_for?(:title) ? yield(:title) : "Ask Jared issue report" %></title>
+    <meta name="color-scheme" content="dark">
+    <meta name="supported-color-schemes" content="dark">
+    <title><%= content_for?(:title) ? yield(:title) : "Jared Harbison" %></title>
+    <style>
+      :root { color-scheme: dark; supported-color-schemes: dark; }
+      body, .email-body { background-color:#080b0c !important; color:#d9e0dc !important; }
+      .email-shell { width:100% !important; background-color:#080b0c !important; }
+      .email-container { width:100%; max-width:640px; background-color:#0d1112 !important; border:1px solid #26302c; }
+      .email-header, .email-panel { background-color:#101817 !important; }
+      .email-text { color:#d9e0dc !important; }
+      .email-muted { color:#929e98 !important; }
+      .email-link { color:#75bfff !important; }
+      .email-button { background-color:#86d99a !important; color:#080b0c !important; }
+      @media screen and (max-width:640px) {
+        .email-gutter { padding:20px 12px !important; }
+        .email-container { width:100% !important; }
+        .email-content { padding:24px 20px !important; }
+        .email-button { display:block !important; text-align:center !important; }
+      }
+    </style>
   </head>
-  <body style="margin:0; padding:0; background:#080b0c; color:#d9e0dc; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;">
-    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%; background:#080b0c;">
-      <tr><td align="center" style="padding:32px 16px;">
-        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:640px; width:100%; background:#0d1112; border:1px solid #26302c;">
-          <tr><td style="padding:24px 28px; background:#101817; color:#d9e0dc; border-bottom:1px solid #26302c;">
-            <p style="margin:0 0 8px; color:#86d99a; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; letter-spacing:1.5px; text-transform:uppercase;">&gt; Jared Harbison</p>
-            <h1 style="margin:0; color:#d9e0dc; font-size:24px; line-height:1.2; font-weight:600;"><%= content_for?(:title) ? yield(:title) : "Ask Jared" %></h1>
-          </td></tr>
-          <tr><td style="padding:28px; color:#d9e0dc;"><%= yield %></td></tr>
-        </table>
-      </td></tr>
+  <body class="email-body" bgcolor="#080b0c" style="margin:0; padding:0; width:100%; background-color:#080b0c; color:#d9e0dc; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;">
+    <table class="email-shell" role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="#080b0c" style="width:100%; background-color:#080b0c;">
+      <tr>
+        <td class="email-gutter" align="center" style="padding:32px 16px;">
+          <table class="email-container" role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="#0d1112" style="width:100%; max-width:640px; background-color:#0d1112; border:1px solid #26302c;">
+            <tr>
+              <td class="email-header" bgcolor="#101817" style="padding:24px 28px; background-color:#101817; color:#d9e0dc; border-bottom:1px solid #26302c;">
+                <p style="margin:0 0 8px; color:#75bfff; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; letter-spacing:1.5px; text-transform:uppercase;">&gt; Jared Harbison</p>
+                <h1 style="margin:0; color:#86d99a; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:24px; line-height:1.2; font-weight:600;"><%= content_for?(:title) ? yield(:title) : "Jared Harbison" %></h1>
+              </td>
+            </tr>
+            <tr>
+              <td class="email-content email-text" style="padding:28px; background-color:#0d1112; color:#d9e0dc;"><%= yield %></td>
+            </tr>
+            <tr>
+              <td style="padding:18px 28px; background-color:#0d1112; border-top:1px solid #26302c; color:#929e98; font-size:12px; line-height:1.5;">
+                <a class="email-link" href="https://jaredharbison.com" style="color:#75bfff; text-decoration:underline;">jaredharbison.com</a>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
     </table>
   </body>
 </html>

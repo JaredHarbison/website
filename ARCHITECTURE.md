@@ -3,9 +3,9 @@
 ## Context
 
 The portfolio is authored as a Rails application under `app/`, `config/`, and
-`content/`, but production is static. GitHub Pages does not publish directly
-from the repository root. A custom Actions workflow runs Rails at build time and
-deploys only the generated `_site` artifact.
+`content/`. The live hosted runtime is Rails on Heroku with Postgres. A custom
+Actions workflow also runs Rails at build time and produces a validated `_site`
+artifact for the repository-backed public-content fallback path.
 
 ## Application boundaries
 
@@ -30,9 +30,11 @@ behavior.
 `CaseStudy`, for example, can report missing sections from the structure used by
 the portfolio.
 
-These are Active Model objects, not database records. They give controllers and
-views a familiar interface without pretending the application needs
-persistence.
+These public-content objects are Active Model objects, not database records.
+They give controllers and views a familiar interface without turning editorial
+content into a CMS. Separate Active Record models support runtime domains such
+as admin authentication, Ask Jared access and engagement, approved recruiter
+knowledge, and operational workflows.
 
 ### Rendering
 
@@ -60,8 +62,9 @@ static artifact. When Rails is run directly for a preview, setting
 `PUBLIC_SECTIONS_ENABLED=false` hides navigation and makes non-home routes
 unavailable. The Pages workflow does not use that preview flag.
 
-This is a release control, not authorization. There are no user accounts or
-private records in the application.
+This is a publication control, not authorization. Authentication and private
+runtime records belong to the Heroku application and Postgres; the static
+artifact contains only published public content.
 
 ## Testing strategy
 
@@ -82,9 +85,10 @@ They would become more useful if interactive components are introduced.
 
 Rails is more framework than a static site generator, but it is also the
 framework I work in most often. Using a narrow slice of it gives the site
-conventional routing and testing while keeping the application small. Running
-Rails only during CI preserves that authoring model without carrying a public
-application server, secrets, or cold starts in production.
+conventional routing, testing, mailers, and runtime boundaries while keeping
+the public-content layer small. The static exporter preserves a fallback path,
+while the Heroku deployment serves the protected runtime features that cannot
+be static.
 
 ### Parsing during rendering
 

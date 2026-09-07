@@ -1,0 +1,8 @@
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%; border-top:1px solid #26302c;">
+  <% rows.each do |label, value| %>
+    <tr>
+      <td style="width:34%; padding:9px 12px 9px 0; color:#75bfff; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; letter-spacing:.5px; line-height:1.4; text-transform:uppercase; vertical-align:top;"><%= h label %></td>
+      <td class="email-muted" style="padding:9px 0; color:#929e98; font-size:13px; line-height:1.45; vertical-align:top; overflow-wrap:anywhere;"><%= h value.to_s %></td>
+    </tr>
+  <% end %>
+</table>

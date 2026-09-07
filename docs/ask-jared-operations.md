@@ -1,6 +1,6 @@
 # Ask Jared operations
 
-Ask Jared has two answer paths. Recognized recruiter intents use capability-qualified evidence, a server-selected factual/positioning skeleton, and Terra for natural language realization. Open-ended questions use the protected fallback RAG path. In both paths, aliases and provenance are resolved server-side; recruiter responses never expose internal evidence identifiers.
+Ask Jared has two answer paths. Recognized recruiter intents use capability-qualified evidence, a server-selected factual/positioning skeleton, and gpt-5.6-sol for natural language realization. Open-ended questions use the protected gpt-4o-mini fallback path. In both paths, aliases and provenance are resolved server-side; recruiter responses never expose internal evidence identifiers.
 
 Prospect sessions persist through the encrypted Rails session. The public Ask interface appends turns, supports story-preserving follow-ups and distinct alternate examples, and caps a conversation at four questions. A valid prospect token is remembered while navigating public pages, where page views and Ask activity are grouped by an anonymous session digest.
 

@@ -1,5 +1,5 @@
 Devise.setup do |config|
-  config.mailer_sender = "please-change-me@example.com"
+  config.mailer_sender = ENV.fetch("MAILER_FROM", "ask-jared@localhost")
   config.parent_controller = "ApplicationController"
   config.case_insensitive_keys = [ :email ]
   config.strip_whitespace_keys = [ :email ]
