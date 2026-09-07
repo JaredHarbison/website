@@ -37,6 +37,7 @@ class AskJaredApprovedKnowledgeRetrieverTest < ActiveSupport::TestCase
       "How did he respond to feedback?" => "feedback",
       "How did he prioritize competing work?" => "prioritization",
       "Tell me about a technical conflict" => "disagreement",
+      "How does Jared handle disagreement with a teammate?" => "disagreement",
       "What shows mentorship?" => "mentorship",
       "How did he handle ambiguity?" => "ambiguity",
       "What measurable impact did he have?" => "impact",

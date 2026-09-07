@@ -147,6 +147,11 @@ module AskJared
         references. Return those references in claim_refs using only the supplied cN aliases.
         Claim aliases and internal claim references are server-side and must never appear in answer
         prose. Use only approved claims and relationships in the packet.
+        For broad characterization or profile questions, keep the lead concise, use two or three
+        dimensions, and include at most one short example before stopping. For planned, prototype,
+        or shipped-status questions, state the status directly first and preserve the distinction
+        between planned, prototype, implemented, and shipped; if the supplied evidence cannot answer
+        the status question, say so narrowly rather than substituting a nearby prioritization story.
         Recommend role families only when the supplied evidence demonstrates the relevant work.
         Translate internal evidence language into natural recruiter-facing prose. Do not say "boundary",
         "not established", "should be evaluated", "approved evidence", or similar policy terminology

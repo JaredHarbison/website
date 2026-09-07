@@ -32,7 +32,7 @@ module AskJared
           "company", "role", "verification_id", "delivery_status", "latency_ms", "input_tokens", "output_tokens",
           "estimated_cost_cents", "pricing_version", "intent_path", "evidence_count", "answer_status", "answer_event_id", "issue_answer_event_id",
           "failure_class", "retrieval_mode", "retrieval_selected_count", "retrieval_considered_count",
-          "architecture", "planner_version", "planner_model", "context_keys", "plan_summary", "example_evidence_ids"
+          "architecture", "planner_version", "planner_model", "context_keys", "plan_summary", "example_evidence_ids", "validation_error"
         )
         event.occurred_at = Time.current
         event.meaningful = MEANINGFUL_EVENTS.include?(event_type)

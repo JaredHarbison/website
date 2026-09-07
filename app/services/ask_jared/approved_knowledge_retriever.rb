@@ -34,7 +34,7 @@ module AskJared
       [ "risk", /\brisk|risks|gap|gaps|weakness|concern|less experience/i ],
       [ "organization", /\blarger engineering team|large engineering team|organizational scale|organizational levels|layered (?:team|organization)|managed large/i ],
       [ "feedback", /\bfeedback|respond to criticism|received criticism/i ],
-      [ "disagreement", /\btechnical disagreement|technical conflict|disagreed|push(?:ed)? back|conflict over/i ],
+      [ "disagreement", /\btechnical disagreement|\bdisagreement with\b|\bhandle(?:d)? .*disagreement|technical conflict|disagreed|push(?:ed)? back|conflict over/i ],
       [ "prioritization", /\bpriorit(?:y|ize|izing|ization)|competing work|tradeoff/i ],
       [ "ambiguity", /\bambigu(?:ity|ous)|unclear requirements|uncertainty/i ],
       [ "impact", /\bmeasurable (?:(?:business|product)(?: or (?:business|product))? )?impact|measurable result|business result|quantified outcome/i ],
@@ -57,7 +57,7 @@ module AskJared
       "mentorship" => { "story:anthropologie-succession-mentorship" => 5.0 },
       "ambiguity" => { "story:doglydaily-three-send-ux" => 5.0 },
       "disagreement" => { "story:dogly-react-migration-disagreement" => 5.0 },
-      "stakeholder" => { "story:jcrew-dress-swim-decision" => 5.0 },
+      "stakeholder" => { "story:dogly-agenda-completion-alignment" => 6.0, "story:dogly-pre-accelerator-prioritization" => 4.0, "story:dogly-react-migration-disagreement" => 3.0 },
       "impact" => { "story:jcrew-dress-swim-decision" => 5.0, "story:dogly-agenda-simplification" => 4.0, "career:jcrew-associate-store-manager-columbus-circle" => 3.0 }
     }.freeze
 

@@ -88,10 +88,13 @@ module AskJared
         every skeleton role it expresses in role_refs. Never put role IDs, claim aliases, or
         internal references in segment text. Use natural recruiter-facing language rather than
         internal evidence-policy words such as boundary or not established. For broad characterization,
-        lead with a concise candidate-level characterization, then cover two to four distinct supported
-        dimensions before brief examples; do not start with one anecdote or let one React disagreement
-        dominate. For gap questions, use only explicit limitations, limited-depth claims, missing-context
-        claims, or supported development areas; never turn an unrelated project into an area to probe.
+        lead with a concise candidate-level characterization, then cover two or three distinct supported
+        dimensions and at most one brief example; do not repeat a full implementation anecdote or let one
+        React disagreement dominate. For gap questions, name each concrete gap plainly. Do not preface
+        with generalized disclaimers such as “depth varies by technology”; distinguish a technology-specific
+        ramp area from general frontend ability and limited large-team experience from inability to collaborate.
+        Use only explicit limitations, limited-depth claims, missing-context claims, or supported development
+        areas; never turn an unrelated project into an area to probe.
         Return status and segments only.
       PROMPT
     end

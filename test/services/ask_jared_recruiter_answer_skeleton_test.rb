@@ -28,6 +28,16 @@ class AskJaredRecruiterAnswerSkeletonTest < ActiveSupport::TestCase
     assert_equal [ disagreement.id.to_s ], skeleton.evidence_ids_for(skeleton.role_ids)
   end
 
+  test "selects approved stakeholder decision stories for stakeholder questions" do
+    generic = entry("story:generic", "Generic collaboration.", "direct_fact")
+    stakeholder = entry("story:dogly-agenda-completion-alignment", "Translated a stakeholder disagreement about completion metrics.", "action")
+    packet = AskJared::SynthesisEvidencePacket.new(entries: [ generic, stakeholder ], intent: "stakeholder", question: "How does Jared collaborate with product stakeholders?")
+
+    skeleton = AskJared::RecruiterAnswerSkeleton.new(packet: packet, intent: "stakeholder", question: "How does Jared collaborate with product stakeholders?")
+
+    assert_equal [ stakeholder.id.to_s ], skeleton.evidence_ids_for(skeleton.role_ids)
+  end
+
   test "broad characterization selects multiple dimensions before a single anecdote" do
     partner = entry("case-study:dogly-partner-applications", "Designed a resumable Rails application workflow.", "direct_fact")
     product = entry("case-study:dogly-product-design", "Built a coherent product language across several product surfaces.", "direct_fact")

@@ -23,6 +23,7 @@ module AskJared
 
     def call(raw_token:, question:, session_id:, ip: nil, request_id:, admin_preview: false, architecture: nil, evaluation: false)
       started_at = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      @validation_failure_reason = nil
       token = @token_service.resolve(raw_token)
       unless admin_preview
         raise ActiveRecord::RecordNotFound, "Ask token is invalid or unavailable" unless @token_service.recruiter_accessible?(token)
@@ -40,9 +41,11 @@ module AskJared
       prior_context = prior_answer_context(session_digest)
       prior_intent = prior_question_intent(session_digest)
       classified_intent = @retriever.respond_to?(:classified_intent) ? @retriever.classified_intent(question) : nil
-      active_intent = continuation?(question) ? (prior_intent || classified_intent) : (classified_intent || prior_intent)
+      # A new question must establish its own intent. Prior intent is only
+      # useful after the user has clearly continued the preceding exchange.
+      active_intent = continuation?(question) ? (prior_intent || classified_intent) : classified_intent
       plan, architecture_used = planning(question: question, intent: active_intent, prior_evidence: prior_context["evidence_ids"], requested: architecture, admin_preview: admin_preview || qa_preview)
-      if continuation?(question) && prior_context.any?
+      if referent_follow_up?(question) && prior_context.any?
         referent_ids = referent_entry_ids(question, prior_context)
         referent_keys = referent_ids.map(&:to_s)
         numeric_ids = referent_ids.select { |referent| referent.to_s.match?(/\A\d+\z/) }
@@ -58,7 +61,7 @@ module AskJared
       # A planned retrieval may be empty during a transient scope/provider/database
       # hiccup even though the direct, deterministic retriever can still find the
       # same approved evidence. Preserve fail-closed behavior after both paths fail.
-      entries = retrieve(question, limit: 12, intent: active_intent).reject { |entry| prior_primary.include?(entry.source_reference) } if entries.empty? && !another_example?(question) && !continuation?(question)
+      entries = retrieve(question, limit: 12, intent: active_intent).reject { |entry| prior_primary.include?(entry.source_reference) } if entries.empty? && !another_example?(question) && !referent_follow_up?(question)
       entries = entries.select { |entry| weakness_evidence?(entry) } if active_intent.to_s == "risk"
       packet = SynthesisEvidencePacket.new(
         entries: entries,
@@ -72,10 +75,15 @@ module AskJared
       response = if packet.empty?
         insufficient_response(another_example: another_example?(question))
       elsif skeleton_path?(active_intent)
-        begin
-          @skeleton_provider.call(question: question.to_s.strip, skeleton: RecruiterAnswerSkeleton.new(packet: packet, intent: active_intent, question: question.to_s.strip))
-        rescue OpenAiProvider::ConfigurationError, OpenAiProvider::ProviderError
-          system_error_response
+        skeleton = RecruiterAnswerSkeleton.new(packet: packet, intent: active_intent, question: question.to_s.strip)
+        if skeleton.roles.empty?
+          insufficient_response
+        else
+          begin
+            @skeleton_provider.call(question: question.to_s.strip, skeleton: skeleton)
+          rescue OpenAiProvider::ConfigurationError, OpenAiProvider::ProviderError
+            system_error_response
+          end
         end
       else
         begin
@@ -111,6 +119,7 @@ module AskJared
           "example_evidence_ids" => example_evidence_groups(response: response, packet: packet),
           "turn" => EngagementEvent.where(session_digest: session_digest, event_type: "answer_returned").count + 1,
           "validation" => validation_state(response), "failure_class" => failure_class(response),
+          "validation_error" => @validation_failure_reason,
           "retrieval_mode" => retrieval_trace[:mode], "retrieval_selected_count" => retrieval_trace[:selected].to_a.length,
           "retrieval_considered_count" => retrieval_trace[:considered].to_a.length,
           "input_tokens" => telemetry["input_tokens"], "output_tokens" => telemetry["output_tokens"],
@@ -164,6 +173,7 @@ module AskJared
       EvidenceIntegrity.validate_response!(answer: resolved["answer"], evidence_ids: resolved["evidence_ids"], claim_refs: resolved["claim_refs"], packet: packet, question: question, intent: packet.intent)
       resolved
     rescue AskJared::EvidenceIntegrity::Violation => violation
+      @validation_failure_reason = violation.violations.join("; ")
       return validation_failure_response unless @provider.respond_to?(:repair)
 
       begin
@@ -172,10 +182,15 @@ module AskJared
         resolved = resolve_claim_refs(repaired, packet: packet)
         EvidenceIntegrity.validate_response!(answer: resolved["answer"], evidence_ids: resolved["evidence_ids"], claim_refs: resolved["claim_refs"], packet: packet, question: question, intent: packet.intent)
         resolved
-      rescue AskJared::EvidenceIntegrity::Violation, ArgumentError, KeyError, TypeError, AskJared::OpenAiProvider::ConfigurationError, AskJared::OpenAiProvider::ProviderError
+      rescue AskJared::EvidenceIntegrity::Violation => repair_violation
+        @validation_failure_reason = [ @validation_failure_reason, repair_violation.violations.join("; ") ].compact.join("; ")
+        validation_failure_response
+      rescue ArgumentError, KeyError, TypeError, AskJared::OpenAiProvider::ConfigurationError, AskJared::OpenAiProvider::ProviderError => error
+        @validation_failure_reason = [ @validation_failure_reason, error.class.name ].compact.join("; ")
         validation_failure_response
       end
-    rescue ArgumentError, KeyError, TypeError, AskJared::OpenAiProvider::ConfigurationError, AskJared::OpenAiProvider::ProviderError
+    rescue ArgumentError, KeyError, TypeError, AskJared::OpenAiProvider::ConfigurationError, AskJared::OpenAiProvider::ProviderError => error
+      @validation_failure_reason = error.class.name
       validation_failure_response
     end
 
@@ -209,6 +224,7 @@ module AskJared
         "claim_refs" => resolved_claim_refs
       }
     rescue EvidenceIntegrity::Violation => violation
+      @validation_failure_reason = violation.violations.join("; ")
       return validation_failure_response unless @skeleton_provider.respond_to?(:repair)
 
       begin
@@ -219,7 +235,11 @@ module AskJared
           violations: violation.violations
         )
         validate_skeleton_response_once(repaired, packet: packet, question: question)
-      rescue EvidenceIntegrity::Violation, ArgumentError, KeyError, TypeError, OpenAiProvider::ConfigurationError, OpenAiProvider::ProviderError
+      rescue EvidenceIntegrity::Violation => repair_violation
+        @validation_failure_reason = [ @validation_failure_reason, repair_violation.violations.join("; ") ].compact.join("; ")
+        validation_failure_response
+      rescue ArgumentError, KeyError, TypeError, OpenAiProvider::ConfigurationError, OpenAiProvider::ProviderError => error
+        @validation_failure_reason = [ @validation_failure_reason, error.class.name ].compact.join("; ")
         validation_failure_response
       end
     end
@@ -306,7 +326,11 @@ module AskJared
     end
 
     def continuation?(question)
-      question.to_s.match?(/\btell me more\b|\bwhat happened afterward\b|\bwhat did (?:he|jared) learn\b|\bwhat is the risk there\b|\bwhat did .* convince\b|\bwhy did he do that\b|\bwhat did .* have to convince\b/i)
+      question.to_s.match?(/\btell me more\b|\bwhat happened afterward\b|\bwhat did (?:he|jared) learn\b|\bwhat is the risk there\b|\bwhat did .* convince\b|\bwhy did he do that\b|\bwhat did .* have to convince\b/i) || another_example?(question)
+    end
+
+    def referent_follow_up?(question)
+      continuation?(question) && !another_example?(question)
     end
 
     def supported_influence_without_authority?(packet)

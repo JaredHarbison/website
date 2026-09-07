@@ -19,7 +19,7 @@ module AskJared
       "mentorship" => { sources: %w[story:anthropologie-succession-mentorship], max: 1 },
       "ambiguity" => { sources: %w[story:doglydaily-three-send-ux], preferred_roles: %w[context action planned_state], max: 1 },
       "impact" => { sources: %w[story:jcrew-dress-swim-decision story:dogly-agenda-simplification career:jcrew-associate-store-manager-columbus-circle], roles: %w[action metric], preferred_roles: %w[action metric], max: 2 },
-      "stakeholder" => { sources: %w[story:jcrew-dress-swim-decision], preferred_roles: %w[action], max: 1 },
+      "stakeholder" => { sources: %w[story:dogly-agenda-completion-alignment story:dogly-pre-accelerator-prioritization story:dogly-react-migration-disagreement], preferred_roles: %w[action context], max: 1 },
       "influence_without_authority" => { roles: %w[action direct_fact], max: 2 }
     }.freeze
 
@@ -98,13 +98,13 @@ module AskJared
     def selected_broad_characterization_claims
       preferred_sources = %w[
         case-study:dogly-partner-applications case-study:dogly-product-design
-        story:dogly-engineering-collaboration story:stripe-learning-ramp
+        story:dogly-engineering-collaboration
         story:dogly-react-migration-disagreement
       ]
       candidates = @packet.claims.select { |claim| %w[direct_fact action process].include?(claim.fetch("role")) }
       candidates.sort_by { |claim| [ preferred_sources.index(claim.fetch("source_reference")) || preferred_sources.length, @packet.claims.index(claim) ] }
                 .group_by { |claim| claim.fetch("source_reference") }
-                .values.map(&:first).first(4)
+                .values.map(&:first).first(3)
     end
 
     def broad_characterization_question?
