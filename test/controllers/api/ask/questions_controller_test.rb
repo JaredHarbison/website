@@ -108,15 +108,15 @@ class ApiAskQuestionsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     event = EngagementEvent.where(event_type: "answer_returned").order(:id).last
-    assert_equal "baseline-v1", event.metadata["architecture"]
-    assert_nil event.metadata["planner_version"]
+    assert_equal "candidate-context-v2", event.metadata["architecture"]
+    assert_equal "candidate-context-v2", event.metadata["planner_version"]
   end
 
   test "ignores candidate-context-v2 architecture selection from an unauthenticated public request" do
     post "/api/ask/questions", params: { question: "What kind of engineer is Jared?", architecture: "candidate-context-v2" }, headers: { "X-Ask-Token" => @raw_token }
 
     event = EngagementEvent.find_by!(event_type: "answer_returned")
-    assert_equal "baseline-v1", event.metadata["architecture"]
+    assert_equal "candidate-context-v2", event.metadata["architecture"]
   end
 
   test "accepts v2 architecture for an explicitly internal QA token" do

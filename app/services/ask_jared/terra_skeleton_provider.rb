@@ -5,7 +5,7 @@ require "uri"
 module AskJared
   class TerraSkeletonProvider
     ENDPOINT = URI("https://api.openai.com/v1/chat/completions")
-    MODEL = "gpt-5.6-terra"
+    MODEL = "gpt-5.6-sol"
     REQUEST_TIMEOUT_SECONDS = 45
     RESPONSE_SCHEMA = {
       type: "json_schema",
