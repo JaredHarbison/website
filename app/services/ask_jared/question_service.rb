@@ -5,7 +5,7 @@ module AskJared
     MAX_QUESTION_LENGTH = 600
     MIN_QUESTION_LENGTH = 3
     GARBAGE_PATTERN = /\A(.)\1{20,}\z/
-    PUBLIC_DEFAULT_ARCHITECTURE = CandidateContext::VERSION_V2
+    PUBLIC_DEFAULT_ARCHITECTURE = "baseline-v1"
 
     RECOGNIZED_INTENTS = ApprovedKnowledgeRetriever::INTENT_SPECS.keys.freeze
 
