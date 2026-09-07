@@ -11,6 +11,7 @@
     var submit = form.querySelector("[data-ask-submit]");
     var endpoint = container.dataset.askEndpoint || form.action;
     var turns = [];
+    var completedQuestionCount = Number.parseInt(container.dataset.askQuestionCount || "0", 10) || 0;
 
     function addButton(parent, label, className, handler) {
       var element = document.createElement("button");
@@ -20,8 +21,22 @@
 
     function restoreForm() {
       if (turns.length >= 4) return;
-      form.hidden = false; question.disabled = false; submit.disabled = false;
+      form.hidden = false; form.removeAttribute("aria-hidden"); question.disabled = false; submit.disabled = false;
       submit.textContent = turns.length ? "Ask another question" : "Ask About Jared"; question.value = ""; question.placeholder = turns.length ? "Ask a follow-up…" : "What kind of engineer is Jared?"; question.focus();
+    }
+
+    function finishConversation() {
+      form.hidden = true; form.setAttribute("aria-hidden", "true"); question.disabled = true; submit.disabled = true; submit.textContent = "";
+    }
+
+    function appendTerminalHandoff() {
+      var cta = document.createElement("p"); cta.className = "ask-contact-cta";
+      cta.append("Got more questions? ");
+      var link = document.createElement("a"); link.href = "/contact"; link.textContent = "Ask Jared."; cta.append(link);
+      if (container.dataset.resumeAvailable === "true") { var resume = document.createElement("span"); resume.textContent = " You can also request Jared's résumé there."; cta.append(resume); }
+      history.append(cta);
+      var limit = document.createElement("p"); limit.className = "ask-limit-message"; limit.setAttribute("role", "status"); limit.textContent = "This conversation has reached its four-question limit. Continue the conversation with Jared."; history.append(limit);
+      finishConversation();
     }
 
     function showIssue(turn) {
@@ -42,12 +57,7 @@
       if (turn.answerEventId) addButton(state, "Something seem off?", "ask-issue-link", function () { showIssue(turn); });
       history.append(state);
       if (turns.length >= 4) {
-        var cta = document.createElement("p"); cta.className = "ask-contact-cta";
-        cta.append("Got more questions? ");
-        var link = document.createElement("a"); link.href = "/contact"; link.textContent = "Ask Jared."; cta.append(link);
-        if (container.dataset.resumeAvailable === "true") { var resume = document.createElement("span"); resume.textContent = " You can also request Jared's résumé there."; cta.append(resume); } history.append(cta);
-        var limit = document.createElement("p"); limit.className = "ask-limit-message"; limit.setAttribute("role", "status"); limit.textContent = "This conversation has reached its four-question limit. Continue the conversation with Jared."; history.append(limit);
-        form.hidden = true;
+        appendTerminalHandoff();
       } else restoreForm();
       state.scrollIntoView({ behavior: "smooth", block: "start" });
     }
@@ -79,6 +89,7 @@
         fetch("/api/ask/issues", { method: "POST", body: data, credentials: "same-origin", headers: { Accept: "application/json" } }).then(function (response) { return response.json().then(function (payload) { if (!response.ok || payload.status !== "ok") throw new Error("We couldn’t send that report. Please try again."); status.textContent = "Thank you — feedback received."; issueButton.disabled = false; setTimeout(function () { modal.close(); }, 700); }); }).catch(function () { status.textContent = "We couldn’t send that report. Please try again."; issueButton.disabled = false; });
       });
     }
+    if (completedQuestionCount >= 4) { turns.length = 4; appendTerminalHandoff(); }
   }
   document.querySelectorAll("[data-ask-controller]").forEach(initializeAsk);
 }());

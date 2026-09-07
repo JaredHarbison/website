@@ -15,7 +15,7 @@ module Admin
       @issue_email_configured = ENV["JARED_ISSUE_EMAIL"].present?
       @recognized_model = "gpt-5.6-terra"
       @fallback_model = ENV["ASK_JARED_MODEL"].presence || "configured fallback"
-      answer_events = EngagementEvent.where(event_type: "answer_returned").where("occurred_at >= ?", 30.days.ago).where.not(activity_class: "internal_qa")
+      answer_events = EngagementEvent.from_real_prospect.where(event_type: "answer_returned").where("occurred_at >= ?", 30.days.ago)
       statuses = answer_events.pluck(:metadata).group_by { |metadata| metadata["answer_status"].presence || "unknown" }.transform_values(&:count)
       @successful_answers = statuses.fetch("answer", 0)
       @intentional_responses = statuses.values_at("insufficient_information", "out_of_scope", "blocked").compact.sum
@@ -30,7 +30,7 @@ module Admin
     private
 
     def observability_period(since)
-      answers = EngagementEvent.where(event_type: "answer_returned").where.not(activity_class: "internal_qa")
+      answers = EngagementEvent.from_real_prospect.where(event_type: "answer_returned")
       answers = answers.where("occurred_at >= ?", since) if since
       metadata = answers.pluck(:metadata)
       usage = AskUsageEvent.where(status: "completed")

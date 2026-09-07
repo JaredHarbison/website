@@ -60,6 +60,7 @@ class AskControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "[data-ask-controller][data-ask-endpoint='/api/ask/questions']"
+    assert_select "[data-ask-controller][data-ask-question-count='0']"
     assert_select "form[data-ask-form][action='/api/ask/questions']"
     assert_select "textarea[data-ask-question]"
     assert_select "button[data-ask-submit]", "Ask About Jared"
@@ -79,9 +80,21 @@ class AskControllerTest < ActionDispatch::IntegrationTest
     assert_includes script, "Ask another question"
     assert_includes script, "data-ask-history"
     assert_includes script, "turns.length >= 4"
+    assert_includes script, "completedQuestionCount"
+    assert_includes script, "appendTerminalHandoff"
+    assert_includes script, "finishConversation"
     assert_includes script, "if (turn.answerEventId) addButton"
     assert_includes script, "We couldn’t send that report. Please try again."
     refute_includes script, "innerHTML"
+    assert_includes Rails.root.join("app/assets/stylesheets/application.css").read, ".ask-form[hidden] { display: none; }"
+  end
+
+  test "the fourth response terminalizes regardless of visible response status" do
+    script = Rails.root.join("app/assets/javascripts/ask.js").read
+
+    assert_includes script, "if (turns.length >= 4) {"
+    assert_includes script, "appendTerminalHandoff();"
+    assert_includes script, "finishConversation();"
   end
 
   test "renders a manual direct-share token through the normal opportunity lifecycle" do

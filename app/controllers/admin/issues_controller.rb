@@ -5,14 +5,21 @@ module Admin
     def index
       @status = params[:status].presence
       @category = params[:category].presence
-      scoped = EngagementEvent.where(event_type: "issue_reported").includes(:opportunity).order(occurred_at: :desc)
+      @activity_class = params[:activity_class].presence
+      scoped = EngagementEvent.where(event_type: "issue_reported")
+      scoped = if @activity_class == "internal_qa"
+        scoped.from_internal_qa
+      else
+        scoped.from_real_prospect
+      end
+      scoped = scoped.includes(:opportunity).order(occurred_at: :desc)
       scoped = scoped.select { |event| @status.blank? || (event.metadata["issue_status"].presence || "new") == @status }
       scoped = scoped.select { |event| @category.blank? || event.metadata["issue_category"] == @category }
       @issue_count = scoped.length
       @total_pages = [ 1, (@issue_count / 20.0).ceil ].max
       @page = [ params.fetch(:page, 1).to_i, 1 ].max
       @issues = paginate(scoped)
-      @categories = EngagementEvent.where(event_type: "issue_reported").pluck(:metadata).filter_map { |metadata| metadata["issue_category"] }.uniq.sort
+      @categories = scoped.map { |event| event.metadata["issue_category"] }.compact.uniq.sort
     end
 
     def show

@@ -23,7 +23,8 @@ module AskJared
         event.session_digest = digest(session_id)
         event.ip_digest = digest(ip) if ip.present?
         event.user_agent_class = user_agent_class.to_s.first(80)
-        event.activity_class = metadata[:activity_class].presence || metadata["activity_class"].presence || (token.opportunity&.tracker_source == "manual" ? "manual_share" : "unclassified")
+        requested_activity_class = metadata[:activity_class].presence || metadata["activity_class"].presence
+        event.activity_class = ActivityClassification.for(token.opportunity, requested_activity_class)
         event.metadata = metadata.stringify_keys.slice(
           "source", "question_category", "primary_evidence_reference", "question_intent", "question", "answer",
           "answer_status", "evidence_ids", "skeleton_roles", "model", "validation", "issue_category", "feedback",
@@ -53,7 +54,7 @@ module AskJared
         )
         event.occurred_at = Time.current
         event.meaningful = MEANINGFUL_EVENTS.include?(event_type)
-        event.activity_class = token.opportunity&.tracker_source == "manual" ? "manual_share" : "unclassified"
+        event.activity_class = ActivityClassification.for(token.opportunity)
       end
     end
 

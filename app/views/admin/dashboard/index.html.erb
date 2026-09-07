@@ -9,7 +9,7 @@
   </header>
 
   <section aria-labelledby="health-title">
-    <div class="admin-section-heading"><h2 id="health-title">At a glance</h2><%= link_to "Open System", admin_system_path, class: "admin-text-link" %></div>
+    <div class="admin-section-heading"><h2 id="health-title">At a glance</h2><span><%= link_to "Internal / QA", admin_opportunities_path(activity_class: "internal_qa"), class: "admin-text-link" %> · <%= link_to "Open System", admin_system_path, class: "admin-text-link" %></span></div>
     <div class="admin-summary-grid">
       <%= link_to admin_opportunities_path(filter: "engaged"), class: "admin-summary-card" do %><span class="admin-summary-card__label">Engaged prospects</span><strong class="admin-summary-card__value"><%= @engaged_prospects %></strong><span class="admin-summary-card__action">View journeys →</span><% end %>
       <%= link_to admin_opportunities_path, class: "admin-summary-card" do %><span class="admin-summary-card__label">Meaningful sessions</span><strong class="admin-summary-card__value"><%= @meaningful_sessions %></strong><span class="admin-summary-card__action">View Prospects →</span><% end %>

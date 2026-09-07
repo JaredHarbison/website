@@ -12,6 +12,11 @@ class AskController < ApplicationController
     end
     @token = token_service.resolve(prospect_raw_token) unless @admin_preview
     @qa_preview = @token&.opportunity&.tracker_source == "internal_qa"
+    @ask_question_count = if @admin_preview
+      0
+    else
+      EngagementEvent.where(session_digest: AskJared::EngagementService.new.session_digest(request.session.id.to_s), event_type: "question_submitted").count
+    end
     @preview_architecture = (@admin_preview || @qa_preview) && %w[baseline-v1 candidate-context-v1 candidate-context-v2].include?(params[:architecture].to_s) ? params[:architecture].to_s : "baseline-v1"
     unless @admin_preview || token_service.recruiter_accessible?(@token)
       @ask_unavailable = true

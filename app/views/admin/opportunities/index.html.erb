@@ -49,7 +49,7 @@
         </tbody>
       </table>
     </div>
-    <%= admin_pagination(page: @page, has_previous: @page > 1, has_next: @page < @total_pages, total_pages: @total_pages, params: params.permit(:page).to_h.symbolize_keys) %>
+    <%= admin_pagination(page: @page, has_previous: @page > 1, has_next: @page < @total_pages, total_pages: @total_pages, params: params.permit(:filter, :activity_class, :page).to_h.symbolize_keys) %>
   <% else %>
     <div class="admin-empty-state">
       <h2>No opportunities yet</h2>

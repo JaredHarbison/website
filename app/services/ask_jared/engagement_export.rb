@@ -19,8 +19,8 @@ module AskJared
       events = opportunity.engagement_events.where(meaningful: true, event_type: EVENT_TYPES - [ "page_view" ])
       page_views = opportunity.engagement_events.where(event_type: "page_view")
       unless @include_internal
-        events = events.where.not(activity_class: "internal_qa")
-        page_views = page_views.where.not(activity_class: "internal_qa")
+        events = events.from_real_prospect
+        page_views = page_views.from_real_prospect
       end
       sessions = events.where.not(session_digest: nil).distinct.count(:session_digest)
       networks = events.where.not(ip_digest: nil).distinct.count(:ip_digest)

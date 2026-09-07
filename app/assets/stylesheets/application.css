@@ -1493,6 +1493,8 @@ select:focus-visible {
   max-width: var(--layout-readable);
 }
 
+.ask-form[hidden] { display: none; }
+
 .ask-form label {
   color: var(--color-accent);
   font-family: var(--font-mono);

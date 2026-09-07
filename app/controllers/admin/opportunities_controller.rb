@@ -2,7 +2,12 @@ module Admin
   class OpportunitiesController < BaseController
     def index
       include_internal = params[:activity_class] == "internal_qa"
-      all = AskJared::EngagementExport.new(include_internal: include_internal).call
+      scope = if include_internal
+        Opportunity.where(tracker_source: AskJared::ActivityClassification::QA_TRACKER_SOURCES)
+      else
+        Opportunity.where(tracker_source: nil).or(Opportunity.where.not(tracker_source: AskJared::ActivityClassification::QA_TRACKER_SOURCES))
+      end
+      all = AskJared::EngagementExport.new(scope: scope, include_internal: include_internal).call
       @filter = params[:filter].presence
       all = all.select do |summary|
         case @filter
