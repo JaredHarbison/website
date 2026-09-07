@@ -1,0 +1,60 @@
+- id: H01
+  category: broad_characterization
+  question: What is Jared's engineering profile in three sentences?
+- id: H02
+  category: strengths
+  question: Which engineering strengths are best supported by Jared's work?
+- id: H03
+  category: weakness
+  question: What experience boundary would be useful for a hiring manager to understand?
+- id: H04
+  category: product_judgment
+  question: How has Jared shaped what a product should do rather than only how to implement it?
+- id: H05
+  category: ownership_scope
+  question: What part of a Dogly system can Jared accurately describe as end-to-end ownership?
+- id: H06
+  category: platform_scope
+  question: What should I avoid assuming from Jared's ownership of individual features?
+- id: H07
+  category: authority_influence
+  question: What evidence is there that Jared changed a decision without being the approver?
+- id: H08
+  category: causality
+  question: Which outcomes are directly attributed to Jared, and which are only associated with his work?
+- id: H09
+  category: technology_depth
+  question: What does Jared's professional experience actually show about TypeScript?
+- id: H10
+  category: collaboration
+  question: What does Jared's engineering collaboration look like in practice?
+- id: H11
+  category: disagreement
+  question: Describe a technical disagreement Jared handled and the limits of what it proves.
+- id: H12
+  category: restraint
+  question: What product did Jared explicitly decide not to build?
+- id: H13
+  category: prototype_production
+  question: Which frontend work was a prototype or MVP rather than established production depth?
+- id: H14
+  category: planned_shipped
+  question: Which product work shipped, and what measurement was still only planned?
+- id: H15
+  category: ambiguous_followup
+  question: Tell me more about that decision and what happened afterward.
+- id: H16
+  category: ordinal_referent
+  question: What did Jared have to convince people of in the second example?
+- id: H17
+  category: insufficiency
+  question: How many engineers did Jared manage as an engineering manager?
+- id: H18
+  category: insufficiency
+  question: Did Jared's product decision cause revenue growth?
+- id: H19
+  category: insufficiency
+  question: Is Jared an expert in TypeScript?
+- id: H20
+  category: insufficiency
+  question: What formal authority did Jared lack in the product decision you mentioned?

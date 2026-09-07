@@ -32,6 +32,18 @@ class AskJaredTerraSkeletonProviderTest < ActiveSupport::TestCase
     refute http.request_body.key?("temperature")
   end
 
+  test "the skeleton model is configurable for apples-to-apples bakeoffs" do
+    body = { choices: [ { message: { content: { status: "answer", segments: [ { text: "Grounded.", role_refs: [ "r1" ] } ] }.to_json } } ] }.to_json
+    http = Http.new(Net::HTTPSuccess.allocate.tap { |response| response.define_singleton_method(:body) { body } })
+    packet = AskJared::SynthesisEvidencePacket.new(entries: [ entry ], intent: "collaboration", question: "Question", max_claims: 3)
+    skeleton = AskJared::RecruiterAnswerSkeleton.new(packet: packet, intent: "collaboration", question: "Question")
+    provider = AskJared::TerraSkeletonProvider.new(api_key: "test-key", model: "gpt-5.6-sol", http: http)
+
+    provider.call(question: "Question", skeleton: skeleton)
+
+    assert_equal "gpt-5.6-sol", http.request_body.fetch("model")
+  end
+
   test "role refs outside the skeleton are rejected" do
     packet = AskJared::SynthesisEvidencePacket.new(entries: [ entry ], intent: "collaboration")
     skeleton = AskJared::RecruiterAnswerSkeleton.new(packet: packet, intent: "collaboration", question: "How has Jared collaborated?")

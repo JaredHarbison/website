@@ -342,7 +342,7 @@ module AskJared
     end
 
     def model_for(skeleton)
-      return "gpt-5.6-terra" if skeleton
+      return ENV.fetch("ASK_JARED_SKELETON_MODEL", TerraSkeletonProvider::MODEL) if skeleton
       ENV.fetch("ASK_JARED_MODEL", OpenAiProvider::DEFAULT_MODEL)
     end
 

@@ -23,8 +23,9 @@ module AskJared
       }
     }.freeze
 
-    def initialize(api_key: ENV["OPENAI_API_KEY"], http: Net::HTTP)
+    def initialize(api_key: ENV["OPENAI_API_KEY"], model: ENV.fetch("ASK_JARED_SKELETON_MODEL", MODEL), http: Net::HTTP)
       @api_key = api_key
+      @model = model
       @http = http
     end
 
@@ -45,7 +46,7 @@ module AskJared
       if repair
         user[:repair] = "Previous realization failed validation: #{repair[:violations].join('; ')}. Rewrite only the affected segments. Return role_refs for every segment and use no facts outside the skeleton. Previous response: #{repair[:response].to_json}"
       end
-      body = { model: MODEL, max_completion_tokens: 500, response_format: RESPONSE_SCHEMA, messages: [ { role: "system", content: system_prompt }, { role: "user", content: JSON.generate(user) } ] }
+      body = { model: @model, max_completion_tokens: 500, response_format: RESPONSE_SCHEMA, messages: [ { role: "system", content: system_prompt }, { role: "user", content: JSON.generate(user) } ] }
       response = @http.post(ENDPOINT, JSON.generate(body), { "Authorization" => "Bearer #{@api_key}", "Content-Type" => "application/json" })
       raise OpenAiProvider::ProviderError, "OpenAI request failed" unless response.is_a?(Net::HTTPSuccess)
 
