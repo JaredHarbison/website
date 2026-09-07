@@ -35,6 +35,6 @@ class ApiAskIssuesControllerTest < ActionDispatch::IntegrationTest
     post "/api/ask/issues", params: { t: other_raw, answer_event_id: answer_event_id, category: "Technical issue", feedback: "Tampered", contact: "" }
 
     assert_response :unprocessable_entity
-    assert_equal "answer exchange is invalid or unavailable", response.parsed_body.fetch("message")
+    assert_equal "We couldn’t send that report. Please try again.", response.parsed_body.fetch("message")
   end
 end

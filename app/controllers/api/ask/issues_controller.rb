@@ -13,7 +13,8 @@ module Api
         )
         render json: { status: "ok", report_id: event.id }
       rescue ActiveRecord::RecordNotFound, ArgumentError => error
-        render json: { status: "error", message: error.message }, status: :unprocessable_entity
+        Rails.logger.info("Ask Jared issue report rejected: #{error.class}: #{error.message}")
+        render json: { status: "error", message: "We couldn’t send that report. Please try again." }, status: :unprocessable_entity
       end
 
       private
