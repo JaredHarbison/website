@@ -21,6 +21,7 @@ module AskJared
       "mentorship" => { terms: [ "mentorship", "people development" ], kinds: %w[demonstrated] },
       "ambiguity" => { terms: [ "ambiguity", "ambiguous objectives" ], kinds: %w[demonstrated] },
       "impact" => { terms: [ "measurable impact", "measurable outcomes", "measurable business outcomes" ], kinds: %w[demonstrated] },
+      "status" => { terms: [], kinds: %w[planned demonstrated boundary] },
       "production" => { terms: [ "production reliability", "security", "incident response" ], kinds: %w[demonstrated] },
       "stakeholder" => { terms: [ "stakeholder alignment", "executive communication", "communication", "influence without authority" ], kinds: %w[demonstrated] },
       "influence_without_authority" => { terms: [ "influence without authority", "stakeholder alignment", "decision alignment" ], kinds: %w[demonstrated] }
@@ -38,6 +39,7 @@ module AskJared
       [ "prioritization", /\bpriorit(?:y|ize|izing|ization)|competing work|tradeoff/i ],
       [ "ambiguity", /\bambigu(?:ity|ous)|unclear requirements|uncertainty/i ],
       [ "impact", /\bmeasurable (?:(?:business|product)(?: or (?:business|product))? )?impact|measurable result|business result|quantified outcome/i ],
+      [ "status", /\b(?:prototype|prototyped|planned|plan(?:ned)?|shipped|implemented)\b/i ],
       [ "stakeholder", /\bstakeholder|executive communication|communicate with .*stakeholder/i ],
       [ "influence_without_authority", /\bwithout formal authority|formal decision[- ]maker|lack(?:ed)? formal authority|persuad(?:e|ed|ing)|convinc(?:e|ed|ing).*authority/i ],
       [ "mentorship", /\bmentor|mentorship|people development|succession/i ],
@@ -116,7 +118,7 @@ module AskJared
       return false unless kind_allowed
       return false if intent == "impact" && (claim_kinds.include?("planned") || !evidence["result"].to_s.match?(/\d|%|\$/))
 
-      if %w[characterization candidacy rails react collaboration learning failure feedback prioritization disagreement mentorship ambiguity impact production stakeholder].include?(intent)
+      if %w[characterization candidacy rails react collaboration learning failure feedback prioritization disagreement mentorship ambiguity impact production stakeholder status].include?(intent)
         return false if claim_kinds.include?("boundary")
       end
 

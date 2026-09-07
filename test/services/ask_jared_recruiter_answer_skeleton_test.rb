@@ -38,6 +38,16 @@ class AskJaredRecruiterAnswerSkeletonTest < ActiveSupport::TestCase
     assert_equal [ stakeholder.id.to_s ], skeleton.evidence_ids_for(skeleton.role_ids)
   end
 
+  test "keeps planned and prototype status claims in status questions" do
+    planned = entry("story:planned", "A planned measurement remains unobserved.", "planned_state", "planned")
+    implemented = entry("story:implemented", "An implemented foundation.", "action")
+    packet = AskJared::SynthesisEvidencePacket.new(entries: [ implemented, planned ], intent: "status", question: "What has Jared only prototyped or planned?")
+
+    skeleton = AskJared::RecruiterAnswerSkeleton.new(packet: packet, intent: "status", question: "What has Jared only prototyped or planned?")
+
+    assert_equal [ planned.id.to_s, implemented.id.to_s ], skeleton.evidence_ids_for(skeleton.role_ids)
+  end
+
   test "broad characterization selects multiple dimensions before a single anecdote" do
     partner = entry("case-study:dogly-partner-applications", "Designed a resumable Rails application workflow.", "direct_fact")
     product = entry("case-study:dogly-product-design", "Built a coherent product language across several product surfaces.", "direct_fact")

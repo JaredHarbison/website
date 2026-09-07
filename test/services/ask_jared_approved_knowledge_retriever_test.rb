@@ -42,7 +42,8 @@ class AskJaredApprovedKnowledgeRetrieverTest < ActiveSupport::TestCase
       "How did he handle ambiguity?" => "ambiguity",
       "What measurable impact did he have?" => "impact",
       "Has he handled a production incident?" => "production",
-      "How does he communicate with stakeholders?" => "stakeholder"
+      "How does he communicate with stakeholders?" => "stakeholder",
+      "What has Jared only prototyped or planned?" => "status"
     }.each { |question, intent| assert_equal intent, retriever.classified_intent(question), question }
   end
 
