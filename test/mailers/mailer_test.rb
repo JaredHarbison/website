@@ -18,13 +18,13 @@ class MailerTest < ActionMailer::TestCase
   test "resume delivery is multipart and includes the approved attachment" do
     verification = OpenStruct.new(email: "recruiter@example.com")
     previous = ENV["APPROVED_GENERIC_RESUME_PATH"]
-    ENV["APPROVED_GENERIC_RESUME_PATH"] = "tmp/pdfs/jared-resume.png"
+    ENV["APPROVED_GENERIC_RESUME_PATH"] = "app/assets/images/jared-harbison-headshot.webp"
     mail = ResumeMailer.resume(verification)
 
     assert_equal [ "recruiter@example.com" ], mail.to
     assert mail.html_part
     assert mail.text_part
-    assert_equal [ "jared-resume.png" ], mail.attachments.map(&:filename)
+    assert_equal [ "jared-harbison-headshot.webp" ], mail.attachments.map(&:filename)
     assert_includes mail.html_part.body.to_s, "Your résumé is attached"
   ensure
     ENV["APPROVED_GENERIC_RESUME_PATH"] = previous

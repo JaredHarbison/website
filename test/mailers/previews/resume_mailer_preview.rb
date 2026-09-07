@@ -7,7 +7,7 @@ class ResumeMailerPreview < ActionMailer::Preview
 
   def resume
     previous = ENV["APPROVED_GENERIC_RESUME_PATH"]
-    ENV["APPROVED_GENERIC_RESUME_PATH"] = "tmp/pdfs/jared-resume.png"
+    ENV["APPROVED_GENERIC_RESUME_PATH"] = "app/assets/images/jared-harbison-headshot.webp"
     delivery = ResumeMailer.resume(OpenStruct.new(email: "recruiter@example.com"))
     delivery.message
     delivery
