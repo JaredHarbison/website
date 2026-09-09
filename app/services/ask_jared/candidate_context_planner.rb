@@ -4,7 +4,7 @@ module AskJared
       @context = context
     end
 
-    def call(question:, intent:, prior_evidence_ids: [])
+    def call(question:, intent:, prior_evidence_ids: [], intent_candidates: nil, planning_required: false, planning_reasons: [])
       started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
       records = @context.for(intent, question: question)
       sources = records.flat_map { |record| Array(record["source_references"]) }.uniq
@@ -21,7 +21,8 @@ module AskJared
         referent_ids: Array(prior_evidence_ids), context_keys: @context.context_keys(records),
         dimensions: broad_characterization?(intent, question) ? broad_dimensions(records) : [],
         evidence_requirements: contract[:evidence_requirements], scope_rules: contract[:scope_rules],
-        fallback_behavior: contract[:fallback_behavior]
+        fallback_behavior: contract[:fallback_behavior], intent_candidates: Array(intent_candidates).presence || [ intent ].compact,
+        planning_required: planning_required, planning_reasons: planning_reasons
       ).tap { |plan| plan.define_singleton_method(:planning_latency_ms) { ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - started) * 1000).round } }
     rescue StandardError
       raise

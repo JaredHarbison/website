@@ -39,11 +39,13 @@ module AskJared
       prior_primary = prior_primary_evidence(session_digest)
       prior_context = prior_answer_context(session_digest)
       prior_intent = prior_question_intent(session_digest)
+      classification = @retriever.respond_to?(:classification) ? @retriever.classification(question) : {}
       classified_intent = @retriever.respond_to?(:classified_intent) ? @retriever.classified_intent(question) : nil
+      intent_candidates = Array(classification[:candidates]).presence || [ classified_intent ].compact
       # A new question must establish its own intent. Prior intent is only
       # useful after the user has clearly continued the preceding exchange.
       active_intent = continuation?(question) ? (prior_intent || classified_intent) : classified_intent
-      plan, architecture_used = planning(question: question, intent: active_intent, prior_evidence: prior_context["evidence_ids"], requested: architecture, admin_preview: admin_preview || qa_preview)
+      plan, architecture_used = planning(question: question, intent: active_intent, intent_candidates: intent_candidates, classification: classification, prior_evidence: prior_context["evidence_ids"], requested: architecture, admin_preview: admin_preview || qa_preview)
       if referent_follow_up?(question) && prior_context.any?
         referent_ids = referent_entry_ids(question, prior_context)
         referent_keys = referent_ids.map(&:to_s)
@@ -55,7 +57,7 @@ module AskJared
         end
       else
         entries = retrieve_with_plan(question, intent: active_intent, plan: plan).reject { |entry| another_example?(question) && prior_primary.include?(entry.source_reference) }
-        entries = entries.first(1) if another_example?(question) && skeleton_path?(active_intent)
+        entries = entries.first(1) if another_example?(question) && skeleton_path?(active_intent, plan: plan)
       end
       # A planned retrieval may be empty during a transient scope/provider/database
       # hiccup even though the direct, deterministic retriever can still find the
@@ -66,14 +68,14 @@ module AskJared
         entries: entries,
         intent: active_intent,
         question: question.to_s.strip,
-        max_claims: skeleton_path?(active_intent) ? nil : 3
+        max_claims: skeleton_path?(active_intent, plan: plan) ? nil : 3
       )
       force_insufficient = active_intent.to_s == "influence_without_authority" && !supported_influence_without_authority?(packet)
       force_insufficient ||= question.to_s.match?(/convinc|persuad/i) && !packet.claims.any? { |claim| claim["text"].match?(/convinc|persuad|influenc|advocat/i) }
       telemetry = {}
       response = if packet.empty?
         insufficient_response(another_example: another_example?(question))
-      elsif skeleton_path?(active_intent)
+      elsif skeleton_path?(active_intent, plan: plan)
         skeleton = RecruiterAnswerSkeleton.new(packet: packet, intent: active_intent, question: question.to_s.strip)
         if skeleton.roles.empty?
           insufficient_response
@@ -98,7 +100,7 @@ module AskJared
       telemetry = response.delete("__telemetry") || {} if response.is_a?(Hash)
       response = if %w[system_error validation_failure].include?(response["status"])
         response
-      elsif skeleton_path?(active_intent) && !packet.empty?
+      elsif skeleton_path?(active_intent, plan: plan) && !packet.empty?
         validate_skeleton_response(response, question: question.to_s.strip, packet: packet)
       else
         validate_response(response, question: question.to_s.strip, packet: packet)
@@ -111,7 +113,7 @@ module AskJared
           "primary_evidence_reference" => primary_entry&.source_reference, "question_intent" => active_intent,
           "question" => question.to_s, "answer" => response["answer"], "answer_status" => response["status"],
           "evidence_ids" => response["evidence_ids"], "skeleton_roles" => response["claim_refs"],
-          "model" => model_for(skeleton_path?(active_intent)), "latency_ms" => ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - started_at) * 1000).round,
+          "model" => model_for(skeleton_path?(active_intent, plan: plan)), "latency_ms" => ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - started_at) * 1000).round,
           "intent_path" => classified_intent.present? ? "recognized" : "fallback", "evidence_count" => response["evidence_ids"].to_a.length,
           "architecture" => architecture_used, "planner_version" => plan&.version, "planner_model" => "deterministic",
           "context_keys" => plan&.context_keys, "plan_summary" => plan&.summary,
@@ -129,7 +131,7 @@ module AskJared
       end
       response.delete("claim_refs")
       response["evaluation"] = { "architecture" => architecture_used, "planner_version" => plan&.version,
-                                  "model" => model_for(skeleton_path?(active_intent)), "validation" => validation_state(response),
+                                  "model" => model_for(skeleton_path?(active_intent, plan: plan)), "validation" => validation_state(response),
                                   "input_tokens" => telemetry["input_tokens"], "output_tokens" => telemetry["output_tokens"],
                                   "estimated_cost_cents" => telemetry["estimated_cost_cents"], "pricing_version" => telemetry["pricing_version"] } if admin_preview && evaluation
       response
@@ -148,18 +150,21 @@ module AskJared
       return retrieve(question, intent: intent) unless plan
 
       queries = plan.retrieval_queries.first(4)
-      results = queries.flat_map { |query| retrieve(query, limit: 12, intent: intent) }
+      candidates = Array(plan.intent_candidates).presence || [ intent ]
+      results = queries.flat_map { |query| candidates.first(3).flat_map { |candidate| retrieve(query, limit: 12, intent: candidate) } }
       unique = results.uniq { |entry| entry.id }
       preferred = unique.select { |entry| plan.preferred_sources.include?(entry.source_reference.to_s) }
       (preferred + unique.reject { |entry| preferred.include?(entry) }).first(12)
     end
 
-    def planning(question:, intent:, prior_evidence:, requested:, admin_preview:)
+    def planning(question:, intent:, intent_candidates:, classification:, prior_evidence:, requested:, admin_preview:)
       # Candidate Context v2 is canonical for public, admin-preview, and QA
       # traffic. The old baseline and v1 planner were evaluation variants and
       # must not silently re-enter production when a planner errors.
       effective_architecture = PUBLIC_DEFAULT_ARCHITECTURE
-      [ @v2_planner.call(question: question.to_s.strip, intent: intent, prior_evidence_ids: prior_evidence), effective_architecture ]
+      [ @v2_planner.call(question: question.to_s.strip, intent: intent, intent_candidates: intent_candidates,
+                         planning_required: !!classification[:planning_required],
+                         planning_reasons: Array(classification[:planning_reasons]), prior_evidence_ids: prior_evidence), effective_architecture ]
     rescue StandardError => error
       Rails.logger.error("Ask Jared candidate-context-v2 planning failed: #{error.class}: #{error.message}")
       # Keep the canonical architecture and use the provider's evidence-only
@@ -271,8 +276,8 @@ module AskJared
       RECOGNIZED_INTENTS.include?(intent.to_s)
     end
 
-    def skeleton_path?(intent)
-      @skeleton_enabled && recognized_intent?(intent) && @skeleton_provider.respond_to?(:call)
+    def skeleton_path?(intent, plan: nil)
+      @skeleton_enabled && recognized_intent?(intent) && @skeleton_provider.respond_to?(:call) && !plan&.planning_required
     end
 
     def resolve_claim_refs(response, packet:)

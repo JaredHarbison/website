@@ -27,37 +27,19 @@ module AskJared
       "soft_skills" => { terms: [ "stakeholder alignment", "engineering collaboration", "communication", "mentorship", "people development", "feedback coachability", "product judgment", "ambiguity" ], kinds: %w[demonstrated] },
       "influence_without_authority" => { terms: [ "influence without authority", "stakeholder alignment", "decision alignment" ], kinds: %w[demonstrated] },
       "complexity" => { terms: [ "technical ownership", "integration", "debugging", "architecture", "production reliability" ], kinds: %w[demonstrated] },
-      "scope" => { terms: [], kinds: %w[demonstrated leadership_story engineering_story project integration_story] }
+      "scope" => { terms: [], kinds: %w[demonstrated leadership_story engineering_story project integration_story] },
+      "role_fit" => { terms: [ "engineering", "product judgment", "technical ownership", "collaboration" ], kinds: %w[demonstrated] },
+      "frontend" => { terms: [ "react", "ux", "frontend engineering", "product design" ], kinds: %w[demonstrated] },
+      "backend" => { terms: [ "rails", "backend engineering", "technical ownership", "database" ], kinds: %w[demonstrated] },
+      "integration" => { terms: [ "integration", "technical ownership", "learning new technology" ], kinds: %w[demonstrated] },
+      "architecture" => { terms: [ "architecture", "technical ownership", "tradeoff analysis", "production reliability" ], kinds: %w[demonstrated] },
+      "testing" => { terms: [ "testing", "production reliability", "technical ownership" ], kinds: %w[demonstrated] },
+      "security" => { terms: [ "security", "authentication", "technical ownership" ], kinds: %w[demonstrated] },
+      "ai_data" => { terms: [ "retrieval", "evidence", "data" ], kinds: %w[demonstrated] },
+      "leadership" => { terms: [ "leadership", "mentorship", "people development", "stakeholder alignment" ], kinds: %w[demonstrated] },
+      "career" => { terms: [ "career", "trajectory", "engineering", "leadership" ], kinds: %w[demonstrated] },
+      "availability" => { terms: [], kinds: %w[demonstrated] }
     }.freeze
-
-    INTENT_PATTERNS = [
-      [ "typescript", /\btypescript\b/i ],
-      [ "rails", /\brails\b/i ],
-      [ "react", /\breact\b/i ],
-      [ "production", /\bproduction (?:incident|problem|issue)|incident response|production reliability/i ],
-      [ "scope", /\b(?:outside|before|after|other than|non-)\s*(?:dogly|dogly's)/i ],
-      [ "complexity", /\b(?:most|complexest|hardest|largest)\b.*\b(?:project|system|work|build)/i ],
-      [ "risk", /\brisk|risks|gap|gaps|weakness|concern|less experience/i ],
-      [ "organization", /\blarger engineering team|large engineering team|organizational scale|organizational levels|layered (?:team|organization)|managed large/i ],
-      [ "feedback", /\bfeedback|respond to criticism|received criticism/i ],
-      [ "disagreement", /\btechnical disagreement|\bdisagreement with\b|\bhandle(?:d)? .*disagreement|technical conflict|disagreed|push(?:ed)? back|conflict over/i ],
-      [ "prioritization", /\bpriorit(?:y|ize|izing|ization)|competing work|tradeoff/i ],
-      [ "ambiguity", /\bambigu(?:ity|ous)|unclear requirements|uncertainty/i ],
-      [ "impact", /\bmeasurable (?:(?:business|product)(?: or (?:business|product))? )?impact|measurable result|business result|quantified outcome/i ],
-      [ "status", /\b(?:prototype|prototyped|planned|plan(?:ned)?|shipped|implemented)\b/i ],
-      [ "stakeholder", /\bstakeholder|executive communication|communicate with .*stakeholder/i ],
-      [ "soft_skills", /\bsoft skills?|interpersonal skills?|people skills?|human skills?|communication and collaboration/i ],
-      [ "influence_without_authority", /\bwithout formal authority|formal decision[- ]maker|lack(?:ed)? formal authority|persuad(?:e|ed|ing)|convinc(?:e|ed|ing).*authority/i ],
-      [ "mentorship", /\bmentor|mentorship|people development|succession/i ],
-      [ "failure", /\bfailure|mistake|technical debt|production problem/i ],
-      [ "collaboration", /\bcollaborat|worked with engineers|engineer-to-engineer/i ],
-      [ "learning", /\blearn(?:ing|ed)|unfamiliar technology|technical ramp/i ],
-      [ "product", /\bproduct judgment|product thinking|product direction|product decision|user problem|\bux\b/i ],
-      [ "characterization", /\bwhat kind of engineer|engineering profile|engineer is Jared/i ],
-      [ "candidacy", /\bwhy (?:should|would) .*interview|why hire|case for Jared|recommend Jared/i ],
-      [ "characterization", /\bstrongest qualities|biggest strengths|what stands out|especially good at/i ],
-      [ "ownership", /\bwhat has .* owned|\bowned .* end[- ]to[- ]end|\btechnical ownership\b/i ]
-    ].freeze
 
     INTENT_SOURCE_BOOSTS = {
       "characterization" => {
@@ -82,6 +64,7 @@ module AskJared
     def initialize(scope: ::KnowledgeEntry.recruiter_retrievable, embedding_provider: OpenAiEmbeddingProvider.new)
       @scope = scope
       @embedding_provider = embedding_provider
+      @intent_router = IntentRouter.new
     end
 
     def call(question, limit: DEFAULT_LIMIT, intent: nil)
@@ -98,8 +81,15 @@ module AskJared
     end
 
     def classified_intent(question)
-      text = question.to_s
-      INTENT_PATTERNS.find { |_intent, pattern| text.match?(pattern) }&.first
+      @intent_router.primary_intent(question)
+    end
+
+    def classified_intents(question)
+      @intent_router.analyze(question).fetch(:candidates)
+    end
+
+    def classification(question)
+      @intent_router.analyze(question)
     end
 
     def qualified_for_intent?(intent, entry)
@@ -145,7 +135,7 @@ module AskJared
     end
 
     def strict_intent?(intent)
-      %w[risk typescript feedback disagreement ambiguity impact production scope complexity soft_skills].include?(intent)
+      %w[risk typescript feedback disagreement ambiguity impact production scope complexity soft_skills availability].include?(intent)
     end
 
     def scope_entry?(entry)
