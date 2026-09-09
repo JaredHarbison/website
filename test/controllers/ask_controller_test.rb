@@ -52,6 +52,7 @@ class AskControllerTest < ActionDispatch::IntegrationTest
     assert_select "p", /owner session/
     assert_select "input[name='admin_preview'][value='1']"
     assert_select "input[name='architecture'][value='candidate-context-v2']"
+    assert_select "[data-ask-unlimited='true']"
     assert_select "input[name='t'][value=?]", session[:ask_jared_admin_qa_token]
     assert_equal "internal_qa", AskToken.find_by(token_digest: AskJared::TokenService.new.digest(session[:ask_jared_admin_qa_token])).opportunity.tracker_source
     assert_select "input[name='authenticity_token']"
@@ -98,6 +99,7 @@ class AskControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "[data-ask-controller][data-ask-endpoint='/api/ask/questions']"
     assert_select "[data-ask-controller][data-ask-question-count='0']"
+    assert_select "[data-ask-controller][data-ask-unlimited='false']"
     assert_select "form[data-ask-form][action='/api/ask/questions']"
     assert_select "textarea[data-ask-question]"
     assert_select "button[data-ask-submit]", "Ask About Jared"
@@ -116,7 +118,8 @@ class AskControllerTest < ActionDispatch::IntegrationTest
     assert_includes script, "Finding evidence…"
     assert_includes script, "Ask another question"
     assert_includes script, "data-ask-history"
-    assert_includes script, "turns.length >= 4"
+    assert_includes script, "var maxQuestions = unlimited ? Number.POSITIVE_INFINITY : 4;"
+    assert_includes script, "turns.length >= maxQuestions"
     assert_includes script, "completedQuestionCount"
     assert_includes script, "appendTerminalHandoff"
     assert_includes script, "finishConversation"
@@ -129,7 +132,7 @@ class AskControllerTest < ActionDispatch::IntegrationTest
   test "the fourth response terminalizes regardless of visible response status" do
     script = Rails.root.join("app/assets/javascripts/ask.js").read
 
-    assert_includes script, "if (turns.length >= 4) {"
+    assert_includes script, "if (turns.length >= maxQuestions) {"
     assert_includes script, "appendTerminalHandoff();"
     assert_includes script, "finishConversation();"
   end

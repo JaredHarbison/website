@@ -13,6 +13,8 @@
     var endpoint = container.dataset.askEndpoint || form.action;
     var turns = [];
     var completedQuestionCount = Number.parseInt(container.dataset.askQuestionCount || "0", 10) || 0;
+    var unlimited = container.dataset.askUnlimited === "true";
+    var maxQuestions = unlimited ? Number.POSITIVE_INFINITY : 4;
 
     function addButton(parent, label, className, handler) {
       var element = document.createElement("button");
@@ -21,7 +23,7 @@
     }
 
     function restoreForm() {
-      if (turns.length >= 4) return;
+      if (turns.length >= maxQuestions) return;
       form.hidden = false; form.removeAttribute("aria-hidden"); question.disabled = false; submit.disabled = false;
       if (feedbackMessage) feedbackMessage.hidden = true;
       submit.textContent = turns.length ? "Ask another question" : "Ask About Jared"; question.value = ""; question.placeholder = turns.length ? "Ask a follow-up…" : "What kind of engineer is Jared?"; question.focus();
@@ -58,7 +60,7 @@
       state.append(asked, label, text);
       if (turn.answerEventId) addButton(state, "Something seem off?", "ask-issue-link", function () { showIssue(turn); });
       history.append(state);
-      if (turns.length >= 4) {
+      if (turns.length >= maxQuestions) {
         appendTerminalHandoff();
       } else restoreForm();
       state.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -72,7 +74,7 @@
     }
 
     form.addEventListener("submit", function (event) {
-      event.preventDefault(); if (submit.disabled || turns.length >= 4) return;
+      event.preventDefault(); if (submit.disabled || turns.length >= maxQuestions) return;
       var submittedQuestion = question.value.trim(); var formData = new FormData(form);
       submit.disabled = true; question.disabled = true; submit.textContent = "Finding evidence…";
       if (feedbackMessage) feedbackMessage.hidden = false;
@@ -92,7 +94,7 @@
         fetch("/api/ask/issues", { method: "POST", body: data, credentials: "same-origin", headers: { Accept: "application/json" } }).then(function (response) { return response.json().then(function (payload) { if (!response.ok || payload.status !== "ok") throw new Error("We couldn’t send that report. Please try again."); status.textContent = "Thank you — feedback received."; issueButton.disabled = false; setTimeout(function () { modal.close(); }, 700); }); }).catch(function () { status.textContent = "We couldn’t send that report. Please try again."; issueButton.disabled = false; });
       });
     }
-    if (completedQuestionCount >= 4) { turns.length = 4; appendTerminalHandoff(); }
+    if (!unlimited && completedQuestionCount >= maxQuestions) { turns.length = maxQuestions; appendTerminalHandoff(); }
   }
   document.querySelectorAll("[data-ask-controller]").forEach(initializeAsk);
 }());
