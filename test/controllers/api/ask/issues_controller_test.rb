@@ -1,6 +1,8 @@
 require "test_helper"
 
 class ApiAskIssuesControllerTest < ActionDispatch::IntegrationTest
+  include Devise::Test::IntegrationHelpers
+
   setup do
     EngagementEvent.delete_all
     AskToken.delete_all
@@ -36,5 +38,28 @@ class ApiAskIssuesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :unprocessable_entity
     assert_equal "We couldn’t send that report. Please try again.", response.parsed_body.fetch("message")
+  end
+
+  test "allows an authenticated admin to report an issue against the QA preview" do
+    admin = AdminUser.create!(email: "owner@example.com", password: "password123456")
+    sign_in admin
+    get "/ask"
+    csrf_token = css_select("input[name='authenticity_token']").first["value"]
+    qa_token = css_select("input[name='t']").first["value"]
+
+    post "/api/ask/questions",
+      params: { admin_preview: "1", t: qa_token, authenticity_token: csrf_token, question: "What kind of engineer is Jared?" },
+      headers: { "Origin" => "null" }
+    answer_event_id = response.parsed_body.fetch("answer_event_id")
+
+    post "/api/ask/issues", params: {
+      t: qa_token, authenticity_token: csrf_token, answer_event_id: answer_event_id,
+      category: "Technical issue", feedback: "The owner preview needs a closer look.", contact: ""
+    }
+
+    assert_response :success
+    issue = EngagementEvent.find(response.parsed_body.fetch("report_id"))
+    assert_equal "internal_qa", issue.activity_class
+    assert_equal "internal_qa", issue.opportunity.tracker_source
   end
 end

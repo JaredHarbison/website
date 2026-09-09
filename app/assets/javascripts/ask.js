@@ -9,6 +9,7 @@
     if (!body || !history || !form) return;
     var question = form.querySelector("[data-ask-question]");
     var submit = form.querySelector("[data-ask-submit]");
+    var feedbackMessage = form.querySelector("[data-ask-feedback-message]");
     var endpoint = container.dataset.askEndpoint || form.action;
     var turns = [];
     var completedQuestionCount = Number.parseInt(container.dataset.askQuestionCount || "0", 10) || 0;
@@ -22,6 +23,7 @@
     function restoreForm() {
       if (turns.length >= 4) return;
       form.hidden = false; form.removeAttribute("aria-hidden"); question.disabled = false; submit.disabled = false;
+      if (feedbackMessage) feedbackMessage.hidden = true;
       submit.textContent = turns.length ? "Ask another question" : "Ask About Jared"; question.value = ""; question.placeholder = turns.length ? "Ask a follow-up…" : "What kind of engineer is Jared?"; question.focus();
     }
 
@@ -73,6 +75,7 @@
       event.preventDefault(); if (submit.disabled || turns.length >= 4) return;
       var submittedQuestion = question.value.trim(); var formData = new FormData(form);
       submit.disabled = true; question.disabled = true; submit.textContent = "Finding evidence…";
+      if (feedbackMessage) feedbackMessage.hidden = false;
       fetch(endpoint, { method: "POST", body: formData, credentials: "same-origin", headers: { Accept: "application/json" } })
         .then(function (response) { return response.json().then(function (payload) {
           if (!response.ok || !payload || typeof payload.answer !== "string") throw new Error(payload && payload.answer || "The answer could not be loaded.");

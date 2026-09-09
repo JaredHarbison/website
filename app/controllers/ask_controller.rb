@@ -10,12 +10,17 @@ class AskController < ApplicationController
       @ask_unavailable = true
       return render :show
     end
-    @token = token_service.resolve(prospect_raw_token) unless @admin_preview
+    ensure_admin_qa_access! if @admin_preview
+    @admin_raw_token = session[:ask_jared_admin_qa_token] if @admin_preview
+    @token = token_service.resolve(@admin_raw_token || prospect_raw_token)
     @qa_preview = @token&.opportunity&.tracker_source == "internal_qa"
-    @ask_question_count = if @admin_preview
-      0
+    @ask_question_count = if @token&.opportunity
+      @token.opportunity.engagement_events.where(
+        session_digest: AskJared::EngagementService.new.session_digest(request.session.id.to_s),
+        event_type: "question_submitted"
+      ).count
     else
-      EngagementEvent.where(session_digest: AskJared::EngagementService.new.session_digest(request.session.id.to_s), event_type: "question_submitted").count
+      0
     end
     @preview_architecture = (@admin_preview || @qa_preview) && %w[baseline-v1 candidate-context-v1 candidate-context-v2].include?(params[:architecture].to_s) ? params[:architecture].to_s : "baseline-v1"
     unless @admin_preview || token_service.recruiter_accessible?(@token)
@@ -31,6 +36,17 @@ class AskController < ApplicationController
 
   def token_service
     @token_service ||= AskJared::TokenService.new
+  end
+
+  def ensure_admin_qa_access!
+    token = token_service.resolve(session[:ask_jared_admin_qa_token])
+    return if token_service.recruiter_accessible?(token) && token.opportunity.tracker_source == "internal_qa"
+
+    _opportunity, _token, raw_token = AskJared::InternalQaShareService.new.create!(
+      label: "Admin Ask Jared preview",
+      purpose: "Owner testing and QA"
+    )
+    session[:ask_jared_admin_qa_token] = raw_token
   end
 
   def record_event(event_type)

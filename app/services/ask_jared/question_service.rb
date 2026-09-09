@@ -105,7 +105,7 @@ module AskJared
         validate_response(response, question: question.to_s.strip, packet: packet)
       end
       response = insufficient_response if force_insufficient
-      unless admin_preview
+      if token.present?
         @engagement_service.record!(raw_token: raw_token, event_type: "question_submitted", session_id: session_id, ip: ip, event_key: "#{request_id}:question", metadata: { "question" => question.to_s, "turn" => EngagementEvent.where(session_digest: session_digest, event_type: "question_submitted").count + 1 })
         primary_entry = primary_entry_for(entries, response: response, packet: packet)
         answer_event = @engagement_service.record!(raw_token: raw_token, event_type: "answer_returned", session_id: session_id, ip: ip, event_key: "#{request_id}:answer", metadata: {

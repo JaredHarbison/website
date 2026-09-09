@@ -71,6 +71,23 @@ class ApiAskQuestionsControllerTest < ActionDispatch::IntegrationTest
     ActionController::Base.allow_forgery_protection = previous
   end
 
+  test "records admin preview questions against an Internal / QA object" do
+    admin = AdminUser.create!(email: "owner@example.com", password: "password123456")
+    sign_in admin
+    get "/ask"
+    csrf_token = css_select("input[name='authenticity_token']").first["value"]
+    qa_token = css_select("input[name='t']").first["value"]
+
+    post "/api/ask/questions",
+      params: { admin_preview: "1", t: qa_token, authenticity_token: csrf_token, question: "What kind of engineer is Jared?" },
+      headers: { "Origin" => "null" }
+
+    assert_response :success
+    event = EngagementEvent.find_by!(event_type: "answer_returned")
+    assert_equal "internal_qa", event.opportunity.tracker_source
+    assert_equal "internal_qa", event.activity_class
+  end
+
   test "does not accept an admin preview form with an invalid token and null origin" do
     admin = AdminUser.create!(email: "owner@example.com", password: "password123456")
     sign_in admin

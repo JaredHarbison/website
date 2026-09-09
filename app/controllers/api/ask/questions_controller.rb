@@ -12,7 +12,7 @@ module Api
 
       def create
         admin_preview = current_admin_user.present? && params[:admin_preview].to_s == "1"
-        raw_token = admin_preview ? nil : request.headers["X-Ask-Token"].presence || params[:t]
+        raw_token = request.headers["X-Ask-Token"].presence || params[:t]
         qa_preview = !admin_preview && AskJared::TokenService.new.resolve(raw_token)&.opportunity&.tracker_source == "internal_qa"
         render json: question_service.call(
           raw_token: raw_token,
@@ -28,9 +28,9 @@ module Api
       private
 
       def trusted_request?
-        return true if request.headers["X-Ask-Token"].present? || params[:t].present?
+        return admin_preview_request_with_valid_token? if params[:admin_preview].to_s == "1"
 
-        admin_preview_request_with_valid_token?
+        request.headers["X-Ask-Token"].present? || params[:t].present?
       end
 
       def admin_preview_request_with_valid_token?

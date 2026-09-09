@@ -1295,7 +1295,6 @@ select:focus-visible {
 }
 
 .auth-form__submit {
-  background: transparent;
   cursor: pointer;
   justify-self: start;
 }
@@ -1535,6 +1534,17 @@ select:focus-visible {
   justify-self: start;
   margin-top: 0.5rem;
 }
+
+.ask-form__actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.ask-form__actions .button-link { margin-top: 0; }
+.ask-form__feedback { color: var(--color-accent); font-size: 0.875rem; margin: 0; }
 
 .ask-card {
   max-width: var(--layout-readable);

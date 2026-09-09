@@ -20,7 +20,11 @@ module Api
       private
 
       def trusted_request?
-        request.headers["X-Ask-Token"].present? || params[:t].present?
+        request.headers["X-Ask-Token"].present? || params[:t].present? || admin_issue_request_with_valid_token?
+      end
+
+      def admin_issue_request_with_valid_token?
+        current_admin_user.present? && valid_authenticity_token?(session, request.headers["X-CSRF-Token"].presence || params[:authenticity_token])
       end
 
       def ask_session_id

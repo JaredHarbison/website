@@ -20,18 +20,21 @@
       <summary>About Ask Jared</summary>
       <p>Ask Jared is an evolving side project for recruiters and hiring teams who want a quick, useful starting point. It can help with questions about my engineering experience, product decisions, collaboration, and how I approach building and shipping software. Answers are grounded in a deliberately approved career knowledge base and stay within what that evidence supports. It is meant to supplement, not replace, a conversation with me; if something seems unclear or off, feedback is genuinely welcome.</p>
     </details>
-    <p><%= @admin_preview ? "Preview this experience using your owner session. This preview does not create prospect activity records." : "Ask about my experience, work, product thinking, or how I approach engineering. Follow-up questions work too." %></p>
+    <p><%= @admin_preview ? "Preview this experience using your owner session. Preview questions and feedback are recorded as Internal / QA activity." : "Ask about my experience, work, product thinking, or how I approach engineering. Follow-up questions work too." %></p>
 
     <div data-ask-target="body">
       <div data-ask-history></div>
       <form class="ask-form" action="/api/ask/questions" method="post" data-ask-form>
-        <% unless @admin_preview %><input type="hidden" name="t" value="<%= prospect_token %>"><% end %>
+        <input type="hidden" name="t" value="<%= @admin_preview ? @admin_raw_token : prospect_token %>">
         <% if @admin_preview %><input type="hidden" name="admin_preview" value="1"><% end %>
         <% if @admin_preview || @qa_preview %><input type="hidden" name="architecture" value="<%= @preview_architecture %>"><% end %>
         <% if @admin_preview %><%= hidden_field_tag :authenticity_token, form_authenticity_token %><% end %>
         <label for="ask-question">Your question</label>
         <textarea id="ask-question" name="question" rows="5" maxlength="600" required placeholder="What kind of engineer is Jared?" data-ask-question></textarea>
-        <button class="button-link button-link--primary" type="submit" data-ask-submit>Ask About Jared</button>
+        <div class="ask-form__actions">
+          <button class="button-link button-link--primary" type="submit" data-ask-submit>Ask About Jared</button>
+          <p class="ask-form__feedback" data-ask-feedback-message hidden>If something seems unclear or off, feedback is genuinely welcome.</p>
+        </div>
       </form>
     </div>
     <dialog class="ask-issue-modal" data-ask-issue-modal aria-labelledby="ask-issue-title">
@@ -43,6 +46,7 @@
         <textarea id="ask-issue-feedback" name="feedback" rows="4" required></textarea>
         <label for="ask-issue-contact">Contact (optional)</label>
         <input id="ask-issue-contact" name="contact" type="text" autocomplete="email">
+        <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
         <div class="ask-issue-form__actions"><button type="button" class="button-link" data-ask-issue-cancel>Cancel</button><button type="submit" class="button-link button-link--primary" data-ask-issue-submit>Send feedback</button></div>
         <p class="ask-issue-form__status" data-ask-issue-status role="status"></p>
       </form>
