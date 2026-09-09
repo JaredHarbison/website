@@ -57,6 +57,40 @@ class AskControllerTest < ActionDispatch::IntegrationTest
     assert_equal 0, EngagementEvent.count
   end
 
+  test "removes a public token from the URL for an authenticated admin" do
+    admin = AdminUser.create!(email: "owner@example.com", password: "a-secure-password")
+    sign_in admin
+
+    get "/ask", params: { t: @raw_token }
+
+    assert_response :see_other
+    assert_equal "/ask", URI(response.headers.fetch("Location")).request_uri
+  end
+
+  test "does not initialize an admin preview with the QA question limit" do
+    admin = AdminUser.create!(email: "owner@example.com", password: "a-secure-password")
+    sign_in admin
+    get "/ask"
+    qa_token = css_select("input[name='t']").first["value"]
+    qa_opportunity = AskJared::TokenService.new.resolve(qa_token).opportunity
+    4.times do |index|
+      EngagementEvent.create!(
+        opportunity: qa_opportunity,
+        ask_token: qa_opportunity.ask_token,
+        event_type: "question_submitted",
+        event_key: "admin-limit-#{index}",
+        session_digest: AskJared::EngagementService.new.session_digest(session.id.to_s),
+        occurred_at: Time.current,
+        meaningful: true,
+        activity_class: "internal_qa"
+      )
+    end
+
+    get "/ask"
+
+    assert_select "[data-ask-question-count='0']"
+  end
+
   test "renders the Ask About Jared state-transition contract" do
     get "/ask", params: { t: @raw_token }
 

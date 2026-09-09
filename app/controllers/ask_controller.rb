@@ -12,9 +12,15 @@ class AskController < ApplicationController
     end
     ensure_admin_qa_access! if @admin_preview
     @admin_raw_token = session[:ask_jared_admin_qa_token] if @admin_preview
+    if @admin_preview && params[:t].present?
+      session.delete(:ask_jared_prospect_token)
+      return redirect_to ask_path(architecture: params[:architecture].presence), status: :see_other
+    end
     @token = token_service.resolve(@admin_raw_token || prospect_raw_token)
     @qa_preview = @token&.opportunity&.tracker_source == "internal_qa"
-    @ask_question_count = if @token&.opportunity
+    @ask_question_count = if @admin_preview
+      0
+    elsif @token&.opportunity
       @token.opportunity.engagement_events.where(
         session_digest: AskJared::EngagementService.new.session_digest(request.session.id.to_s),
         event_type: "question_submitted"
