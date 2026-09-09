@@ -1,7 +1,7 @@
 module AskJared
   class RecruiterAnswerSkeleton
     ROLE_POLICIES = {
-      "characterization" => { roles: %w[direct_fact action], sources: %w[case-study:dogly-product-design case-study:dogly-partner-applications story:dogly-react-migration-disagreement story:dogly-engineering-collaboration], max: 3 },
+      "characterization" => { roles: %w[profile trajectory scope direct_fact action], sources: %w[fact:engineering-profile fact:engineering-scope-and-trajectory case-study:dogly-product-design case-study:dogly-partner-applications story:dogly-react-migration-disagreement story:dogly-engineering-collaboration], max: 3 },
       "candidacy" => { roles: %w[direct_fact action], max: 2 },
       "ownership" => { sources: %w[story:stripe-learning-ramp story:dogly-engineering-collaboration], preferred_roles: %w[process direct_fact], max: 2 },
       "rails" => { roles: %w[direct_fact action], max: 2 },
@@ -98,11 +98,12 @@ module AskJared
 
     def selected_broad_characterization_claims
       preferred_sources = %w[
+        fact:engineering-profile fact:engineering-scope-and-trajectory
         case-study:dogly-partner-applications case-study:dogly-product-design
         story:dogly-engineering-collaboration
         story:dogly-react-migration-disagreement
       ]
-      candidates = @packet.claims.select { |claim| %w[direct_fact action process].include?(claim.fetch("role")) }
+      candidates = @packet.claims.select { |claim| %w[profile trajectory scope direct_fact action process].include?(claim.fetch("role")) }
       candidates.sort_by { |claim| [ preferred_sources.index(claim.fetch("source_reference")) || preferred_sources.length, @packet.claims.index(claim) ] }
                 .group_by { |claim| claim.fetch("source_reference") }
                 .values.map(&:first).first(3)

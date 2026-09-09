@@ -63,6 +63,17 @@ class AskJaredRecruiterAnswerSkeletonTest < ActiveSupport::TestCase
     assert_equal partner.id.to_s, skeleton.evidence_ids_for(skeleton.role_ids).first
   end
 
+  test "broad characterization prefers canonical profile evidence when supplied" do
+    profile = entry("fact:engineering-profile", "Engineering profile.", "profile")
+    trajectory = entry("fact:engineering-scope-and-trajectory", "Engineering trajectory.", "trajectory")
+    anecdote = entry("story:dogly-engineering-collaboration", "Dogly collaboration.", "direct_fact")
+    packet = AskJared::SynthesisEvidencePacket.new(entries: [ anecdote, trajectory, profile ], intent: "characterization", question: "What kind of engineer is Jared?")
+
+    skeleton = AskJared::RecruiterAnswerSkeleton.new(packet: packet, intent: "characterization", question: "What kind of engineer is Jared?")
+
+    assert_equal [ "fact:engineering-profile", "fact:engineering-scope-and-trajectory", "story:dogly-engineering-collaboration" ], skeleton.roles.map { |role| role.fetch("provenance") }
+  end
+
   private
 
   def entry(source_reference, text, role, kind = "demonstrated")
