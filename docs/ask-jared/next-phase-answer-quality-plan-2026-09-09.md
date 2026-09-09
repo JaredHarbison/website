@@ -4,6 +4,13 @@ Plan date: 2026-09-09
 Plan owner: Codex, with Jared approving factual content and QA results
 Status: Phase 0, slice 0.1 complete locally; deployment and production retest pending
 
+Implementation update (2026-09-09): the first hardening slice is implemented locally. Candidate
+Context v2 now emits explicit evidence requirements, scope rules, fallback behavior, and retrieval
+expansions for broad characterization, superlative/complexity, and employer-scoped questions. Two
+canonical recruiter-visible engineering synthesis records were added to the inventory. Production
+import/finalization and QA retest remain required; these additions are not being treated as proof
+that the corpus is complete.
+
 ## Non-negotiable work contract
 
 This plan is the controlling contract for the next improvement cycle.

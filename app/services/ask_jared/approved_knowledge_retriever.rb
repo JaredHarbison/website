@@ -24,7 +24,9 @@ module AskJared
       "status" => { terms: [], kinds: %w[planned demonstrated boundary] },
       "production" => { terms: [ "production reliability", "security", "incident response" ], kinds: %w[demonstrated] },
       "stakeholder" => { terms: [ "stakeholder alignment", "executive communication", "communication", "influence without authority" ], kinds: %w[demonstrated] },
-      "influence_without_authority" => { terms: [ "influence without authority", "stakeholder alignment", "decision alignment" ], kinds: %w[demonstrated] }
+      "influence_without_authority" => { terms: [ "influence without authority", "stakeholder alignment", "decision alignment" ], kinds: %w[demonstrated] },
+      "complexity" => { terms: [ "technical ownership", "integration", "debugging", "architecture", "production reliability" ], kinds: %w[demonstrated] },
+      "scope" => { terms: [], kinds: %w[demonstrated leadership_story engineering_story project integration_story] }
     }.freeze
 
     INTENT_PATTERNS = [
@@ -32,6 +34,8 @@ module AskJared
       [ "rails", /\brails\b/i ],
       [ "react", /\breact\b/i ],
       [ "production", /\bproduction (?:incident|problem|issue)|incident response|production reliability/i ],
+      [ "scope", /\b(?:outside|before|after|other than|non-)\s*(?:dogly|dogly's)/i ],
+      [ "complexity", /\b(?:most|complexest|hardest|largest)\b.*\b(?:project|system|work|build)/i ],
       [ "risk", /\brisk|risks|gap|gaps|weakness|concern|less experience/i ],
       [ "organization", /\blarger engineering team|large engineering team|organizational scale|organizational levels|layered (?:team|organization)|managed large/i ],
       [ "feedback", /\bfeedback|respond to criticism|received criticism/i ],
@@ -60,7 +64,8 @@ module AskJared
       "ambiguity" => { "story:doglydaily-three-send-ux" => 5.0 },
       "disagreement" => { "story:dogly-react-migration-disagreement" => 5.0 },
       "stakeholder" => { "story:dogly-agenda-completion-alignment" => 6.0, "story:dogly-pre-accelerator-prioritization" => 4.0, "story:dogly-react-migration-disagreement" => 3.0 },
-      "impact" => { "story:jcrew-dress-swim-decision" => 5.0, "story:dogly-agenda-simplification" => 4.0, "career:jcrew-associate-store-manager-columbus-circle" => 3.0 }
+      "impact" => { "story:jcrew-dress-swim-decision" => 5.0, "story:dogly-agenda-simplification" => 4.0, "career:jcrew-associate-store-manager-columbus-circle" => 3.0 },
+      "complexity" => { "case-study:dogly-shopify-integration" => 5.0, "case-study:dogly-membership" => 4.0, "story:doglydaily-technical-debt-learning" => 4.0, "case-study:dogly-product-design" => 3.0 }
     }.freeze
 
     attr_reader :last_trace
@@ -104,6 +109,7 @@ module AskJared
 
       evidence = entry.metadata.fetch("recruiter_evidence", {})
       claim_kinds = claim_kinds_for(entry)
+      return scope_entry?(entry) if intent == "scope"
       return claim_kinds.include?("boundary") if intent == "risk"
       return false if intent == "production" && entry.entry_type != "incident_story" && !evidence["relationship"].to_s.match?(/production incident|incident response/i)
       mappings = evidence.fetch("capability_map", {}).filter_map do |capability, details|
@@ -130,7 +136,12 @@ module AskJared
     end
 
     def strict_intent?(intent)
-      %w[risk typescript feedback disagreement ambiguity impact production].include?(intent)
+      %w[risk typescript feedback disagreement ambiguity impact production scope complexity].include?(intent)
+    end
+
+    def scope_entry?(entry)
+      text = [ entry.source_reference, entry.title, entry.short_body, entry.body ].compact.join(" ")
+      !text.match?(/\bdogly\b/i) && !archive_only?(entry) && claim_kinds_for(entry).any? { |kind| %w[demonstrated leadership_story engineering_story project integration_story].include?(kind) }
     end
 
     def capability_match?(capability, terms)

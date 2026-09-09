@@ -178,4 +178,23 @@ class AskJaredCandidateContextTest < ActiveSupport::TestCase
     assert_operator plan.dimensions.length, :>=, 2
     assert_includes plan.answer_shape, "2-4 dimensions"
   end
+
+  test "broad characterization planning requires canonical profile evidence" do
+    plan = AskJared::CandidateContextPlanner.new.call(question: "What kind of engineer is Jared?", intent: "characterization")
+
+    assert_includes plan.evidence_requirements, "canonical_profile_statement"
+    assert_includes plan.scope_rules, "Prefer profile-level evidence before anecdotes."
+    assert_match(/insufficient_information/, plan.fallback_behavior)
+    assert_includes plan.retrieval_queries.join(" "), "professional engineering identity"
+  end
+
+  test "planner contract protects employer scope and superlative questions" do
+    outside = AskJared::CandidateContextPlanner.new.call(question: "What has Jared built outside Dogly?", intent: nil)
+    complex = AskJared::CandidateContextPlanner.new.call(question: "What is the most complicated project he worked on for Dogly?", intent: nil)
+
+    assert_includes outside.evidence_requirements, "employer_or_project_identity"
+    assert_includes outside.scope_rules, "Exclude Dogly evidence unless explicitly labeled as comparison context."
+    assert_includes complex.evidence_requirements, "explicit_complexity_basis"
+    assert_match(/superlative/, complex.fallback_behavior)
+  end
 end

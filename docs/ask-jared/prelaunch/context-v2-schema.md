@@ -21,5 +21,10 @@ Each record has:
 
 The database-backed import surface uses `CandidateContextImporter`. Imports are idempotent by
 stable ID, update records in place, and never delete omitted records. Retirement is a lifecycle
-state, not destructive deletion. The existing v1 YAML remains the active experiment corpus until
-an externally reviewed v2 corpus is supplied and explicitly activated.
+state, not destructive deletion. Candidate Context v2 is now the sole runtime architecture for
+public, admin-preview, and internal QA traffic. The versioned YAML remains the review/import
+source, while production planning reads only approved private database records.
+
+The planner also derives explicit contracts from the private context: required evidence roles,
+employer/project scope rules, fallback behavior, and retrieval expansions. These contracts guide
+retrieval and synthesis but never authorize a claim or replace recruiter-visible evidence.
