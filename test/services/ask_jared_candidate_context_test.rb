@@ -44,7 +44,7 @@ class AskJaredCandidateContextTest < ActiveSupport::TestCase
     planner = AskJared::CandidateContextPlanner.new
     service = AskJared::QuestionService.new(token_service: @token_service, retriever: FakeRetriever.new([]), planner: planner)
 
-    response = service.call(raw_token: @raw_token, architecture: "candidate-context-v1", question: "What kind of engineer is Jared?", session_id: "missing-context", request_id: "missing-context-request")
+    response = service.call(raw_token: @raw_token, architecture: "candidate-context-v2", question: "What kind of engineer is Jared?", session_id: "missing-context", request_id: "missing-context-request")
 
     assert_equal "insufficient_information", response["status"]
     refute response.to_json.include?("positioning.engineering_identity")
@@ -55,7 +55,7 @@ class AskJaredCandidateContextTest < ActiveSupport::TestCase
     provider = PlanningProvider.new(entry)
     service = AskJared::QuestionService.new(token_service: @token_service, retriever: FakeRetriever.new([ entry ]), provider: provider)
 
-    response = service.call(raw_token: nil, architecture: "candidate-context-v1", admin_preview: true, question: "What kind of engineer is Jared?", session_id: "candidate-context", request_id: "candidate-context-request")
+    response = service.call(raw_token: nil, architecture: "candidate-context-v2", admin_preview: true, question: "What kind of engineer is Jared?", session_id: "candidate-context", request_id: "candidate-context-request")
 
     assert_equal "answer", response["status"]
     assert_equal [ entry.id.to_s ], response["evidence_ids"]
@@ -63,14 +63,14 @@ class AskJaredCandidateContextTest < ActiveSupport::TestCase
     assert_equal AskJared::CandidateContext::VERSION, provider.plans.first.version
   end
 
-  test "records the architecture on recruiter answer events only when server-side experiment mode is enabled" do
+  test "records the canonical architecture on recruiter answer events" do
     entry = KnowledgeEntry.create!(title: "Approved", body: "A supported answer.", entry_type: "fact", approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "telemetry-context-test", source_fingerprint: "telemetry-context-test")
     provider = PlanningProvider.new(entry)
     service = AskJared::QuestionService.new(token_service: @token_service, retriever: FakeRetriever.new([ entry ]), provider: provider)
     previous = ENV["ASK_JARED_CANDIDATE_CONTEXT"]
     ENV["ASK_JARED_CANDIDATE_CONTEXT"] = "1"
 
-    service.call(raw_token: @raw_token, architecture: "candidate-context-v1", question: "What kind of engineer is Jared?", session_id: "telemetry-context", request_id: "telemetry-context-request")
+    service.call(raw_token: @raw_token, architecture: "candidate-context-v2", question: "What kind of engineer is Jared?", session_id: "telemetry-context", request_id: "telemetry-context-request")
 
     event = EngagementEvent.find_by!(event_type: "answer_returned")
     assert_equal AskJared::CandidateContext::VERSION, event.metadata["architecture"]
@@ -87,7 +87,7 @@ class AskJaredCandidateContextTest < ActiveSupport::TestCase
     refute plan.to_h.values.any? { |value| value.to_s.include?("previous answer") }
   end
 
-  test "planner failure falls back to the baseline provider contract" do
+  test "planner failure is not silently downgraded to a legacy architecture" do
     entry = KnowledgeEntry.create!(title: "Approved", body: "A supported answer.", entry_type: "fact", approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "planner-fallback-test", source_fingerprint: "planner-fallback-test")
     planner = Object.new
     planner.define_singleton_method(:call) { |**| raise "planner unavailable" }
@@ -99,11 +99,13 @@ class AskJaredCandidateContextTest < ActiveSupport::TestCase
       end
     end.new
     service = AskJared::QuestionService.new(token_service: @token_service, retriever: FakeRetriever.new([ entry ]), provider: provider, planner: planner)
+    service.instance_variable_set(:@v2_planner, planner)
 
-    response = service.call(raw_token: @raw_token, architecture: "candidate-context-v1", question: "What kind of engineer is Jared?", session_id: "planner-fallback", request_id: "planner-fallback-request")
+    response = service.call(raw_token: @raw_token, architecture: "candidate-context-v2", question: "What kind of engineer is Jared?", session_id: "planner-fallback", request_id: "planner-fallback-request")
 
     assert_equal "answer", response["status"]
     assert_equal entry.id.to_s, response["evidence_ids"].first
+    assert_equal AskJared::CandidateContext::VERSION, EngagementEvent.find_by!(event_type: "answer_returned").metadata["architecture"]
   end
 
   test "candidate context loader ignores draft and retired records" do
@@ -149,11 +151,11 @@ class AskJaredCandidateContextTest < ActiveSupport::TestCase
     approved = CandidateContextRecord.create!(stable_key: "positioning.engineering_identity", corpus_version: "candidate-context-v2", category: "positioning", approval_status: "approved", privacy_classification: "private", guidance: "Identity guidance", intent_tags: [ "characterization" ], affects: [ "interpretation" ], priority: 100)
     CandidateContextRecord.create!(stable_key: "draft.identity", corpus_version: "candidate-context-v2", category: "positioning", approval_status: "draft", privacy_classification: "private", guidance: "Should not be selected", intent_tags: [ "characterization" ], affects: [ "interpretation" ], priority: 110)
 
-    plan = AskJared::CandidateContextPlanner.new(context: AskJared::CandidateContext.new(version: AskJared::CandidateContext::VERSION_V2)).call(question: "What kind of engineer is Jared?", intent: "characterization")
+    plan = AskJared::CandidateContextPlanner.new(context: AskJared::CandidateContext.new).call(question: "What kind of engineer is Jared?", intent: "characterization")
 
     assert_includes plan.context_keys, approved.stable_key
     refute_includes plan.context_keys, "draft.identity"
-    assert_equal AskJared::CandidateContext::VERSION_V2, plan.version
+    assert_equal AskJared::CandidateContext::VERSION, plan.version
   end
 
   test "broad characterization planning produces multiple candidate dimensions" do
@@ -170,7 +172,7 @@ class AskJaredCandidateContextTest < ActiveSupport::TestCase
       CandidateContextRecord.create!(stable_key: key, corpus_version: "candidate-context-v2", category: "positioning", approval_status: "approved", privacy_classification: "private", guidance: guidance, intent_tags: [ "characterization" ], affects: [ "interpretation", "retrieval" ], priority: 100 - index)
     end
 
-    context = AskJared::CandidateContext.new(version: AskJared::CandidateContext::VERSION_V2)
+    context = AskJared::CandidateContext.new
     plan = AskJared::CandidateContextPlanner.new(context: context).call(question: "What kind of engineer is Jared?", intent: "characterization")
 
     assert_operator plan.dimensions.length, :>=, 2

@@ -130,7 +130,7 @@ File.write(out.join("count-reconciliation.md"), <<~MD)
   - Entry type: `#{types.inspect}`
   - Recruiter utility: `#{utility.inspect}`
   - Duplicate source references: `#{entries.group_by(&:source_reference).select { |_ref, values| values.length > 1 }.keys.inspect}`
-  - Runtime knowledge structures: `KnowledgeEntry.recruiter_retrievable` plus Candidate Context v1 YAML; no other runtime knowledge store found.
+  - Runtime knowledge structures: `KnowledgeEntry.recruiter_retrievable` plus approved Candidate Context planning records; no other runtime knowledge store found.
 
   ## Excluded records
 
@@ -159,6 +159,6 @@ context = AskJared::CandidateContext.new
 context_audit = context.records.map do |record|
   "### `#{record["key"]}`\n\n- Category: #{record["category"]}\n- Purpose: #{record["purpose"]}\n- Source references: #{val(record["source_references"])}\n- Guidance: #{record["guidance"]}\n- Affects: #{val(record["affects"])}\n- Useful now: yes, as conservative planning guidance\n- Redundant: review against the richer externally authored v2 corpus\n- Too retrieval-specific: #{Array(record["affects"]).include?("retrieval") ? "partly; preserve only if it remains a planning relationship" : "no obvious issue"}\n- Retain in v2: candidate for merge/rewrite, not assumed permanent\n- Recommended disposition: **REWRITE**\n"
 end.join("\n")
-File.write(out.join("candidate-context-v1-audit.md"), "# Candidate Context v1 audit\n\nGenerated #{Time.current.iso8601}. Starting records: #{context.records.length}. These records are private planning guidance, not recruiter evidence. The v1 YAML predates explicit approval fields and is treated as approved legacy planning data; new v2 records require explicit `approval_status: approved`.\n\n#{context_audit}\n")
+File.write(out.join("candidate-context-audit.md"), "# Candidate Context audit\n\nGenerated #{Time.current.iso8601}. Starting records: #{context.records.length}. These records are private planning guidance, not recruiter evidence. Each record requires explicit `approval_status: approved`.\n\n#{context_audit}\n")
 
 puts out

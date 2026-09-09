@@ -29,25 +29,24 @@ def internal_qa_token(architecture)
   raw
 end
 
-def follow_up_chain(architecture)
-  raw_token = internal_qa_token(architecture)
-  session_id = "candidate-context-v2-smoke-chain-#{architecture}"
+def follow_up_chain
+  raw_token = internal_qa_token(AskJared::CandidateContext::VERSION)
+  session_id = "candidate-context-v2-smoke-chain"
   service = AskJared::QuestionService.new
-  first = service.call(raw_token: raw_token, question: QUESTIONS.fetch(3), session_id: session_id, request_id: "candidate-context-v2-chain-#{architecture}-4", admin_preview: false, architecture: architecture, evaluation: true)
-  second = service.call(raw_token: raw_token, question: QUESTIONS.fetch(4), session_id: session_id, request_id: "candidate-context-v2-chain-#{architecture}-5", admin_preview: false, architecture: architecture, evaluation: true)
+  first = service.call(raw_token: raw_token, question: QUESTIONS.fetch(3), session_id: session_id, request_id: "candidate-context-v2-chain-4", admin_preview: false, architecture: AskJared::CandidateContext::VERSION, evaluation: true)
+  second = service.call(raw_token: raw_token, question: QUESTIONS.fetch(4), session_id: session_id, request_id: "candidate-context-v2-chain-5", admin_preview: false, architecture: AskJared::CandidateContext::VERSION, evaluation: true)
   [ first, second ]
 end
 
-chains = %w[baseline-v1 candidate-context-v2].to_h { |architecture| [ architecture, follow_up_chain(architecture) ] }
+chain = follow_up_chain
 
 rows = QUESTIONS.each_with_index.map do |question, index|
-  baseline = index.between?(3, 4) ? chains.fetch("baseline-v1").fetch(index - 3) : run_question(question, "baseline-v1", index)
-  v2 = index.between?(3, 4) ? chains.fetch("candidate-context-v2").fetch(index - 3) : run_question(question, "candidate-context-v2", index)
-  { "id" => index + 1, "question" => question, "baseline" => baseline, "candidate_context_v2" => v2 }
+  answer = index.between?(3, 4) ? chain.fetch(index - 3) : run_question(question, AskJared::CandidateContext::VERSION, index)
+  { "id" => index + 1, "question" => question, "candidate_context_v2" => answer }
 rescue StandardError => error
   { "id" => index + 1, "question" => question, "status" => "runner_error", "error" => error.message }
 end
 
 path = Rails.root.join("docs/ask-jared/prelaunch/context-v2-smoke-live.json")
-File.write(path, JSON.pretty_generate({ "generated_at" => Time.current.iso8601, "architecture_versions" => [ "baseline-v1", "candidate-context-v2" ], "rows" => rows }))
+File.write(path, JSON.pretty_generate({ "generated_at" => Time.current.iso8601, "architecture" => AskJared::CandidateContext::VERSION, "rows" => rows }))
 puts path

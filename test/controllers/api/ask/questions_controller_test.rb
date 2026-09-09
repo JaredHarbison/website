@@ -121,7 +121,7 @@ class ApiAskQuestionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "ignores candidate architecture selection from an unauthenticated public request" do
-    post "/api/ask/questions", params: { question: "What kind of engineer is Jared?", architecture: "candidate-context-v1" }, headers: { "X-Ask-Token" => @raw_token }
+    post "/api/ask/questions", params: { question: "What kind of engineer is Jared?", architecture: "candidate-context-v2" }, headers: { "X-Ask-Token" => @raw_token }
 
     assert_response :success
     event = EngagementEvent.where(event_type: "answer_returned").order(:id).last

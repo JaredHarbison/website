@@ -5,11 +5,11 @@ module AskJared
     MAX_QUESTION_LENGTH = 600
     MIN_QUESTION_LENGTH = 3
     GARBAGE_PATTERN = /\A(.)\1{20,}\z/
-    PUBLIC_DEFAULT_ARCHITECTURE = CandidateContext::VERSION_V2
+    PUBLIC_DEFAULT_ARCHITECTURE = CandidateContext::VERSION
 
     RECOGNIZED_INTENTS = ApprovedKnowledgeRetriever::INTENT_SPECS.keys.freeze
 
-    def initialize(token_service: TokenService.new, retriever: ApprovedKnowledgeRetriever.new, provider: OpenAiProvider.new, skeleton_provider: nil, engagement_service: EngagementService.new, usage_guard: UsageGuard.new, planner: CandidateContextPlanner.new)
+    def initialize(token_service: TokenService.new, retriever: ApprovedKnowledgeRetriever.new, provider: OpenAiProvider.new, skeleton_provider: nil, engagement_service: EngagementService.new, usage_guard: UsageGuard.new, planner: nil)
       @token_service = token_service
       @retriever = retriever
       @provider = provider
@@ -17,8 +17,7 @@ module AskJared
       @skeleton_enabled = provider.is_a?(OpenAiProvider) || skeleton_provider.present?
       @engagement_service = engagement_service
       @usage_guard = usage_guard
-      @planner = planner
-      @v2_planner = CandidateContextPlanner.new(context: CandidateContext.new(version: CandidateContext::VERSION_V2))
+      @v2_planner = planner || CandidateContextPlanner.new(context: CandidateContext.new)
     end
 
     def call(raw_token:, question:, session_id:, ip: nil, request_id:, admin_preview: false, architecture: nil, evaluation: false)
@@ -156,15 +155,16 @@ module AskJared
     end
 
     def planning(question:, intent:, prior_evidence:, requested:, admin_preview:)
-      public_default_request = requested.blank? && !admin_preview
-      effective_architecture = public_default_request ? PUBLIC_DEFAULT_ARCHITECTURE : requested.to_s
-      enabled = [ CandidateContext::VERSION, CandidateContext::VERSION_V2 ].include?(effective_architecture) && (admin_preview || public_default_request || ENV.fetch("ASK_JARED_CANDIDATE_CONTEXT", "0") == "1")
-      return [ nil, "baseline-v1" ] unless enabled
-
-      planner = effective_architecture == CandidateContext::VERSION_V2 ? @v2_planner : @planner
-      [ planner.call(question: question.to_s.strip, intent: intent, prior_evidence_ids: prior_evidence), effective_architecture ]
-    rescue StandardError
-      [ nil, "baseline-v1-planner-fallback" ]
+      # Candidate Context v2 is canonical for public, admin-preview, and QA
+      # traffic. The old baseline and v1 planner were evaluation variants and
+      # must not silently re-enter production when a planner errors.
+      effective_architecture = PUBLIC_DEFAULT_ARCHITECTURE
+      [ @v2_planner.call(question: question.to_s.strip, intent: intent, prior_evidence_ids: prior_evidence), effective_architecture ]
+    rescue StandardError => error
+      Rails.logger.error("Ask Jared candidate-context-v2 planning failed: #{error.class}: #{error.message}")
+      # Keep the canonical architecture and use the provider's evidence-only
+      # contract if planning is unavailable. Never downgrade to legacy v1.
+      [ nil, PUBLIC_DEFAULT_ARCHITECTURE ]
     end
 
     def validate_response(response, question:, packet:)

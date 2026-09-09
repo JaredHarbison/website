@@ -28,7 +28,10 @@ class AskController < ApplicationController
     else
       0
     end
-    @preview_architecture = (@admin_preview || @qa_preview) && %w[baseline-v1 candidate-context-v1 candidate-context-v2].include?(params[:architecture].to_s) ? params[:architecture].to_s : "baseline-v1"
+    # Owner and internal QA sessions always exercise the canonical planner.
+    # Historical architecture variants remain available only in archived
+    # evaluation artifacts, never through the live preview surface.
+    @preview_architecture = AskJared::CandidateContext::VERSION
     unless @admin_preview || token_service.recruiter_accessible?(@token)
       @ask_unavailable = true
       return render :show, status: :not_found

@@ -51,6 +51,7 @@ class AskControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "p", /owner session/
     assert_select "input[name='admin_preview'][value='1']"
+    assert_select "input[name='architecture'][value='candidate-context-v2']"
     assert_select "input[name='t'][value=?]", session[:ask_jared_admin_qa_token]
     assert_equal "internal_qa", AskToken.find_by(token_digest: AskJared::TokenService.new.digest(session[:ask_jared_admin_qa_token])).opportunity.tracker_source
     assert_select "input[name='authenticity_token']"

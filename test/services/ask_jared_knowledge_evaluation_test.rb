@@ -52,7 +52,7 @@ class AskJaredKnowledgeEvaluationTest < ActiveSupport::TestCase
   test "production-shaped retrieval trace shows approved candidates and synthesis context" do
     captured = []
     provider = Object.new
-    provider.define_singleton_method(:call) do |question:, context:|
+    provider.define_singleton_method(:call) do |question:, context:, **_options|
       captured << [ question, context.map(&:source_reference) ]
       { "status" => "answer", "answer" => "Grounded.", "evidence_ids" => context.map { |entry| entry.id.to_s }, "source_urls" => [] }
     end
@@ -75,7 +75,8 @@ class AskJaredKnowledgeEvaluationTest < ActiveSupport::TestCase
         assert_includes entries.map(&:source_reference), reference, question
       end
       service.call(raw_token: nil, question: question, session_id: "qa-session", request_id: "qa-#{question.hash}", admin_preview: true)
-      assert_equal entries.map(&:source_reference), captured.last[1]
+      assert_includes captured.last[1], entries.first.source_reference
+      expected_references.each { |reference| assert_includes captured.last[1], reference }
     end
   end
 end
