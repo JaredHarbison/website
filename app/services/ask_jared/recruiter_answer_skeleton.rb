@@ -21,6 +21,7 @@ module AskJared
       "impact" => { sources: %w[story:jcrew-dress-swim-decision story:dogly-agenda-simplification career:jcrew-associate-store-manager-columbus-circle], roles: %w[action metric], preferred_roles: %w[action metric], max: 2 },
       "status" => { roles: %w[planned_state boundary direct_fact action], preferred_roles: %w[planned_state boundary action], max: 2 },
       "stakeholder" => { sources: %w[story:dogly-agenda-completion-alignment story:dogly-pre-accelerator-prioritization story:dogly-react-migration-disagreement], preferred_roles: %w[action context], max: 1 },
+      "soft_skills" => { sources: %w[story:dogly-agenda-completion-alignment story:dogly-engineering-collaboration story:jcrew-crisis-leadership-feedback story:anthropologie-succession-mentorship], roles: %w[profile direct_fact action feedback], max: 3 },
       "influence_without_authority" => { roles: %w[action direct_fact], max: 2 }
     }.freeze
 

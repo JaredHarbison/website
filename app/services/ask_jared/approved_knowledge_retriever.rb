@@ -24,6 +24,7 @@ module AskJared
       "status" => { terms: [], kinds: %w[planned demonstrated boundary] },
       "production" => { terms: [ "production reliability", "security", "incident response" ], kinds: %w[demonstrated] },
       "stakeholder" => { terms: [ "stakeholder alignment", "executive communication", "communication", "influence without authority" ], kinds: %w[demonstrated] },
+      "soft_skills" => { terms: [ "stakeholder alignment", "engineering collaboration", "communication", "mentorship", "people development", "feedback coachability", "product judgment", "ambiguity" ], kinds: %w[demonstrated] },
       "influence_without_authority" => { terms: [ "influence without authority", "stakeholder alignment", "decision alignment" ], kinds: %w[demonstrated] },
       "complexity" => { terms: [ "technical ownership", "integration", "debugging", "architecture", "production reliability" ], kinds: %w[demonstrated] },
       "scope" => { terms: [], kinds: %w[demonstrated leadership_story engineering_story project integration_story] }
@@ -45,6 +46,7 @@ module AskJared
       [ "impact", /\bmeasurable (?:(?:business|product)(?: or (?:business|product))? )?impact|measurable result|business result|quantified outcome/i ],
       [ "status", /\b(?:prototype|prototyped|planned|plan(?:ned)?|shipped|implemented)\b/i ],
       [ "stakeholder", /\bstakeholder|executive communication|communicate with .*stakeholder/i ],
+      [ "soft_skills", /\bsoft skills?|interpersonal skills?|people skills?|human skills?|communication and collaboration/i ],
       [ "influence_without_authority", /\bwithout formal authority|formal decision[- ]maker|lack(?:ed)? formal authority|persuad(?:e|ed|ing)|convinc(?:e|ed|ing).*authority/i ],
       [ "mentorship", /\bmentor|mentorship|people development|succession/i ],
       [ "failure", /\bfailure|mistake|technical debt|production problem/i ],
@@ -70,6 +72,7 @@ module AskJared
       "ambiguity" => { "story:doglydaily-three-send-ux" => 5.0 },
       "disagreement" => { "story:dogly-react-migration-disagreement" => 5.0 },
       "stakeholder" => { "story:dogly-agenda-completion-alignment" => 6.0, "story:dogly-pre-accelerator-prioritization" => 4.0, "story:dogly-react-migration-disagreement" => 3.0 },
+      "soft_skills" => { "story:dogly-agenda-completion-alignment" => 7.0, "story:dogly-engineering-collaboration" => 6.0, "story:jcrew-crisis-leadership-feedback" => 5.0, "story:anthropologie-succession-mentorship" => 5.0, "fact:engineering-profile" => 4.0 },
       "impact" => { "story:jcrew-dress-swim-decision" => 5.0, "story:dogly-agenda-simplification" => 4.0, "career:jcrew-associate-store-manager-columbus-circle" => 3.0 },
       "complexity" => { "case-study:dogly-shopify-integration" => 5.0, "case-study:dogly-membership" => 4.0, "story:doglydaily-technical-debt-learning" => 4.0, "case-study:dogly-product-design" => 3.0 }
     }.freeze
@@ -142,7 +145,7 @@ module AskJared
     end
 
     def strict_intent?(intent)
-      %w[risk typescript feedback disagreement ambiguity impact production scope complexity].include?(intent)
+      %w[risk typescript feedback disagreement ambiguity impact production scope complexity soft_skills].include?(intent)
     end
 
     def scope_entry?(entry)

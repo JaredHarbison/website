@@ -43,6 +43,7 @@ class AskJaredApprovedKnowledgeRetrieverTest < ActiveSupport::TestCase
       "What measurable impact did he have?" => "impact",
       "Has he handled a production incident?" => "production",
       "How does he communicate with stakeholders?" => "stakeholder",
+      "What are Jared's soft skills?" => "soft_skills",
       "What has Jared only prototyped or planned?" => "status"
     }.each { |question, intent| assert_equal intent, retriever.classified_intent(question), question }
   end

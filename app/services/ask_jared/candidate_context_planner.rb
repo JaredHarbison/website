@@ -98,6 +98,15 @@ module AskJared
         }
       end
 
+      if intent.to_s == "soft_skills" || text.match?(/soft skills?|interpersonal skills?|people skills?|human skills?/)
+        return {
+          evidence_requirements: %w[distinct_interpersonal_dimensions concrete_behavior],
+          scope_rules: [ "Synthesize communication, collaboration, judgment, feedback, and mentorship only where evidenced.", "Do not present personality traits as facts without behavioral evidence." ],
+          fallback_behavior: "Answer with the supported dimensions and omit any soft-skill category without a concrete example.",
+          retrieval_queries: [ "communication collaboration stakeholder alignment feedback mentorship product judgment", "how Jared works with engineers stakeholders and developing people" ]
+        }
+      end
+
       {
         evidence_requirements: [ "directly_relevant_claims" ],
         scope_rules: [ "Preserve employer, project, chronology, ownership, and status." ],
