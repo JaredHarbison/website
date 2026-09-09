@@ -65,6 +65,16 @@ class AskJaredApprovedKnowledgeRetrieverTest < ActiveSupport::TestCase
     assert_equal results.map(&:id), retriever.last_trace[:selected]
   end
 
+  test "prefers canonical profile evidence for characterization" do
+    profile = entry(1, "Engineering profile", capabilities: [ "rails", "full_stack_engineering" ])
+    profile.source_reference = "fact:engineering-profile"
+    anecdote = entry(2, "Dogly Product Design", capabilities: [ "rails", "product judgment" ])
+    anecdote.source_reference = "case-study:dogly-product-design"
+    retriever = AskJared::ApprovedKnowledgeRetriever.new(scope: Scope.new([ anecdote, profile ]), embedding_provider: UnavailableEmbedding.new)
+
+    assert_equal profile.id, retriever.call("What kind of engineer is Jared?", intent: "characterization").first.id
+  end
+
   test "keeps boundaries out of ordinary capability pools while retaining them for risks" do
     demonstrated = entry(1, "React work", capabilities: [ "react" ])
     boundary = entry(2, "TypeScript boundary", capabilities: [ "typescript" ], claim_kind: "boundary")
