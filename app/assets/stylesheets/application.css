@@ -1544,7 +1544,7 @@ select:focus-visible {
 }
 
 .ask-form__actions .button-link { margin-top: 0; }
-.ask-form__feedback { color: #e5b566; font-size: 0.875rem; margin: 0; }
+.ask-form__feedback { color: #e5b566 !important; font-size: 0.875rem; font-weight: 600; margin: 0; }
 
 @media (max-width: 44rem) {
   .ask-form__actions { grid-template-columns: 1fr; }
