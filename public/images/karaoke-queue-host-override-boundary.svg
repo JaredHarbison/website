@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="460" viewBox="0 0 960 460" role="img" aria-labelledby="title desc">
+  <title id="title">Event-scoped host queue override consistency boundary</title>
+  <desc id="desc">A host pause or unpause action on an event performance locks that event while a database transaction reads and rewrites only that event's upcoming queue. The operation updates postponed and timestamp ordering fields, then creates an audit record when an actor is present.</desc>
+  <rect width="960" height="460" fill="#080b0c"/>
+  <g font-family="ui-monospace, monospace" fill="#e5b566"><text x="60" y="65" font-size="18">EVENT-SCOPED HOST OVERRIDE</text><text x="60" y="92" font-size="14" fill="#929e98">PAUSE OR UNPAUSE · SERIALIZED QUEUE REWRITE</text></g>
+  <g fill="none" stroke="#26302c" stroke-width="2"><rect x="55" y="145" width="145" height="125" rx="8"/><rect x="245" y="125" width="470" height="185" rx="8"/><rect x="760" y="145" width="145" height="125" rx="8"/></g>
+  <g fill="#132c2b" stroke="#56d6c9" stroke-width="2"><rect x="275" y="155" width="170" height="120" rx="7"/></g>
+  <g font-family="ui-monospace, monospace" font-size="15" fill="#ecf2f8" text-anchor="middle"><text x="128" y="185">HOST ACTION</text><text x="360" y="187">EVENT LOCK</text><text x="580" y="187">TRANSACTION</text><text x="832" y="185">AUDIT RECORD</text></g>
+  <g font-family="ui-sans-serif, sans-serif" font-size="14" fill="#d9e0dc" text-anchor="middle"><text x="128" y="215">pause / unpause</text><text x="128" y="240">performance</text><text x="360" y="215">event.with_lock</text><text x="360" y="240">event queue only</text><text x="580" y="215">read → reorder →</text><text x="580" y="240">update_columns</text><text x="580" y="265">postponed + updated_at</text><text x="832" y="215">song · actor</text><text x="832" y="240">action · timestamp</text></g>
+  <g stroke="#75bfff" stroke-width="3" fill="#75bfff">
+    <line x1="200" y1="207" x2="275" y2="207"/><polygon points="275,207 265,201 265,213"/>
+    <line x1="445" y1="207" x2="495" y2="207"/><polygon points="495,207 485,201 485,213"/>
+    <line x1="715" y1="207" x2="760" y2="207"/><polygon points="760,207 750,201 750,213"/>
+  </g>
+  <path d="M245 330H715" stroke="#56d6c9" stroke-width="2" fill="none"/><text x="480" y="365" fill="#86d99a" font-family="ui-monospace, monospace" font-size="15" text-anchor="middle">LOCKED EVENT QUEUE REWRITE · OTHER EVENT QUEUES ARE OUT OF SCOPE</text><text x="480" y="405" fill="#929e98" font-family="ui-sans-serif, sans-serif" font-size="14" text-anchor="middle">The audit record is created inside the same transaction when an actor and event are present.</text>
+</svg>

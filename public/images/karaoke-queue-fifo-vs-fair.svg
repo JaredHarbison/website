@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="500" viewBox="0 0 960 500" role="img" aria-labelledby="title desc">
+  <title id="title">FIFO and Fair Queue ordering compared</title>
+  <desc id="desc">A chronological FIFO queue places three early requests from Alex before later requests from Bri and Casey. Fair Queue gives Alex the first turn, then Bri and Casey each receive a turn before Alex's remaining requests.</desc>
+  <rect width="960" height="500" fill="#080b0c"/>
+  <g font-family="ui-monospace, monospace" fill="#e5b566">
+    <text x="60" y="65" font-size="18">CHRONOLOGICAL FIFO</text>
+    <text x="505" y="65" font-size="18">FAIR QUEUE</text>
+    <text x="60" y="92" font-size="14" fill="#929e98">EARLY REQUESTS STAY CONSECUTIVE</text>
+    <text x="505" y="92" font-size="14" fill="#929e98">ONE TURN PER PERFORMER IN THE PASS</text>
+  </g>
+  <g fill="none" stroke="#26302c" stroke-width="2">
+    <rect x="60" y="125" width="380" height="275" rx="8"/>
+    <rect x="505" y="125" width="395" height="275" rx="8"/>
+  </g>
+  <g font-family="ui-monospace, monospace" font-size="14" fill="#929e98">
+    <text x="85" y="160">TURN</text><text x="170" y="160">PERFORMER</text>
+    <text x="530" y="160">TURN</text><text x="615" y="160">PERFORMER</text>
+  </g>
+  <g font-family="ui-sans-serif, sans-serif" font-size="17" fill="#d9e0dc">
+    <text x="90" y="210">01</text><text x="170" y="210">Alex · song 1</text>
+    <text x="90" y="260">02</text><text x="170" y="260">Alex · song 2</text>
+    <text x="90" y="310">03</text><text x="170" y="310">Alex · song 3</text>
+    <text x="90" y="360">04</text><text x="170" y="360">Bri · song 1</text>
+    <text x="90" y="385">05</text><text x="170" y="385">Casey · song 1</text>
+    <text x="535" y="210">01</text><text x="615" y="210">Alex · song 1</text>
+    <text x="535" y="260">02</text><text x="615" y="260">Bri · song 1</text>
+    <text x="535" y="310">03</text><text x="615" y="310">Casey · song 1</text>
+    <text x="535" y="360">04</text><text x="615" y="360">Alex · song 2</text>
+    <text x="535" y="385">05</text><text x="615" y="385">Alex · song 3</text>
+  </g>
+  <g stroke="#26302c" stroke-width="2"><line x1="85" y1="175" x2="415" y2="175"/><line x1="530" y1="175" x2="875" y2="175"/></g>
+  <g fill="#e5b566"><circle cx="145" cy="204" r="5"/><circle cx="145" cy="254" r="5"/><circle cx="145" cy="304" r="5"/></g>
+  <g fill="#75bfff"><circle cx="145" cy="354" r="5"/></g><g fill="#56d6c9"><circle cx="145" cy="379" r="5"/></g>
+  <g fill="#e5b566"><circle cx="590" cy="204" r="5"/><circle cx="590" cy="354" r="5"/><circle cx="590" cy="379" r="5"/></g>
+  <g fill="#75bfff"><circle cx="590" cy="254" r="5"/></g><g fill="#56d6c9"><circle cx="590" cy="304" r="5"/></g>
+  <text x="480" y="455" fill="#86d99a" font-family="ui-monospace, monospace" font-size="15" text-anchor="middle">COMPLETED TURNS · STABLE POSITION · ONE ALLOCATED TURN AT A TIME</text>
+</svg>

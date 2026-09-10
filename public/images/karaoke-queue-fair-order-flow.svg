@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="560" viewBox="0 0 960 560" role="img" aria-labelledby="title desc">
+  <title id="title">FairOrder event queue decision flow</title>
+  <desc id="desc">FairOrder reads completed non-skipped turns for the event, identifies performers by authenticated user ID when present or normalized name otherwise, then repeatedly selects the lowest completed and projected turn total. Equal values use stable queue position and then performance ID.</desc>
+  <rect width="960" height="560" fill="#080b0c"/>
+  <g fill="none" stroke="#26302c" stroke-width="2">
+    <rect x="55" y="55" width="250" height="120" rx="8"/><rect x="355" y="55" width="250" height="120" rx="8"/><rect x="655" y="55" width="250" height="120" rx="8"/>
+    <rect x="150" y="285" width="290" height="145" rx="8"/><rect x="520" y="285" width="290" height="145" rx="8"/>
+  </g>
+  <g font-family="ui-monospace, monospace" font-size="16" fill="#e5b566">
+    <text x="75" y="90">1 · EVENT HISTORY</text><text x="375" y="90">2 · QUEUE BASELINE</text><text x="675" y="90">3 · IDENTITY KEY</text>
+    <text x="170" y="320">4 · SELECT NEXT</text><text x="540" y="320">5 · ALLOCATE + REPEAT</text>
+  </g>
+  <g font-family="ui-sans-serif, sans-serif" font-size="15" fill="#d9e0dc">
+    <text x="75" y="122">Count finished, non-skipped</text><text x="75" y="147">performances for this event.</text>
+    <text x="375" y="122">Sort queued performances by</text><text x="375" y="147">updated_at, then ID.</text>
+    <text x="675" y="122">user_id when present;</text><text x="675" y="147">otherwise normalized performer name.</text>
+    <text x="170" y="354">Lowest key wins:</text><text x="170" y="380" fill="#86d99a">completed + projected turns</text><text x="170" y="406">then completed · updated_at · ID</text>
+    <text x="540" y="354">Remove selected performance.</text><text x="540" y="380">Increment its projected turns.</text><text x="540" y="406">Continue until queue is empty.</text>
+  </g>
+  <g stroke="#75bfff" stroke-width="3" fill="#75bfff">
+    <line x1="305" y1="115" x2="355" y2="115"/><polygon points="355,115 345,109 345,121"/>
+    <line x1="605" y1="115" x2="655" y2="115"/><polygon points="655,115 645,109 645,121"/>
+    <line x1="780" y1="175" x2="780" y2="235"/><line x1="780" y1="235" x2="295" y2="235"/><line x1="295" y1="235" x2="295" y2="285"/><polygon points="295,285 289,275 301,275"/>
+    <line x1="440" y1="357" x2="520" y2="357"/><polygon points="520,357 510,351 510,363"/>
+    <line x1="665" y1="430" x2="665" y2="490"/><line x1="665" y1="490" x2="295" y2="490"/><line x1="295" y1="490" x2="295" y2="430"/><polygon points="295,430 289,440 301,440"/>
+  </g>
+  <g font-family="ui-monospace, monospace" font-size="14" fill="#929e98"><text x="385" y="230">stable queue position</text><text x="410" y="480">remaining performances?</text></g>
+  <text x="480" y="525" fill="#56d6c9" font-family="ui-monospace, monospace" font-size="15" text-anchor="middle">DETERMINISTIC EVENT-LOCAL ORDERING</text>
+</svg>
