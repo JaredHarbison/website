@@ -2,7 +2,7 @@
 
 Plan date: 2026-09-10
 Owner: Codex, with Jared approving new factual claims and performing deployed QA
-Status: implementation in progress; production is aligned on candidate-context-v2 and the canonical model, while model-first question understanding is the next implementation slice
+Status: implementation in progress; production is aligned on candidate-context-v2 and the canonical model, while the next release moves the answer path toward public-corpus-first retrieval with a compact policy layer
 
 This document supersedes the planning portions of:
 
@@ -17,14 +17,17 @@ contract for the next release cycle.
 
 ```yaml
 phase_count: 6
-  slice_count: 21
+  slice_count: 22
   completed_slice_count: 2
-  remaining_slice_count: 19
+  remaining_slice_count: 20
   current_phase: 1
   current_slice: 1.3
   canonical_architecture: candidate-context-v2
   canonical_final_model: ASK_JARED_MODEL (default gpt-5.6-sol)
-  intent_resolution: model-first structured output constrained by candidate-context-v2
+  question_understanding: model-first structured decision output
+  primary_answer_corpus: public case studies, public writing, and About page
+  policy_layer: compact Rules contracts; not factual answer material
+  evaluation_contract: 20-question paired set now; 50-question follow-up battery after core acceptance
 ```
 
 A slice is complete only when its acceptance contract, automated tests, and
@@ -62,7 +65,23 @@ remaining count, acceptance result, and next slice.
 11. Admin and internal-QA traffic bypasses the four-question limit; ordinary
     recruiter traffic remains capped at four on both client and server.
 12. Every production issue becomes a regression case with expected answer
-    shape, required evidence, prohibited claims, and acceptable fallback.
+   shape, required evidence, prohibited claims, and acceptable fallback.
+13. Public case studies, public writing, and the About page are the primary
+   recruiter-facing evidence corpus. Atomic knowledge records are not an
+   independent answer authority; they may be migrated, indexed, or retired
+   only when their content is represented in the public corpus or an approved
+   Rule.
+14. Rules constrain interpretation and claims; they do not supply candidate
+   facts, select answers by keyword, or replace model question understanding.
+   A Rule may prohibit an unsupported superlative, preserve lifecycle status,
+   separate retail from engineering, or preserve metric provenance.
+15. The 20-question paired evaluation set is an evaluation and regression
+   contract. Its answer types are test labels and optional answer-shape
+   guidance, not a production ontology or deterministic vocabulary router.
+16. Do not expand deterministic intent vocabulary to chase individual
+   phrasings. New wording belongs in evaluation coverage; recurring semantic
+   failures belong in the model decision contract, evidence corpus, or Rules
+   layer according to diagnosis.
 
 ## Current evidence-based diagnosis
 
@@ -86,7 +105,7 @@ contract, and generation schema at once.
 question
   -> validation and access policy
   -> model-first structured intent and answer-contract resolution
-  -> schema validation against the internal recruiter ontology
+  -> schema validation against a small internal decision contract
   -> validated answer parts, scope, dimensions, and evidence requirements
   -> per-part approved retrieval with hard safety filters
   -> evidence packet and coverage check
@@ -96,12 +115,14 @@ question
   -> complete decision-path telemetry
 ```
 
-The intent model is semantic, structured, and advisory. It may select from
-versioned intent families, dimensions, operations, scope values, and answer
-shapes, but may not add facts or override deterministic safety constraints.
-Internal guidance defines the ontology and behavioral contracts; recruiter
-knowledge entries remain the only factual authority. The final model receives
-only the validated plan and approved evidence packet.
+The intent model is semantic, structured, and advisory. It may select from a
+small versioned set of operations, dimensions, scope values, evidence needs,
+and answer shapes, but may not add facts or override deterministic safety
+constraints. This is a decision schema, not a large ontology or vocabulary
+router. Public articles are the primary factual evidence. Rules define claim
+and presentation boundaries; they are not evidence. The final model receives
+only the validated decision, applicable Rules, and approved public-corpus
+evidence packet.
 
 Regexes may remain as diagnostic signals and test fixtures, but they are not
 authoritative intent routing and must not determine the production answer path.
@@ -143,7 +164,7 @@ assert model selection for narrow, broad, compound, repair, and planner calls.
 
 Create a structured intent-resolution service using the canonical model and
 private candidate-context guidance. The output must be schema-constrained and
-limited to ontology values: intent families, question parts, operations,
+limited to decision-schema values: question parts, operations,
 dimensions, scope constraints, evidence requirements, answer shape, fallback
 behavior, and confidence. It must never contain recruiter facts.
 
@@ -154,18 +175,20 @@ the question.
 
 Acceptance: product-pride/ownership, project/role, comparison, gap, scope,
 follow-up, and compound questions resolve to stable structured contracts;
-malformed or out-of-ontology output fails closed to an explicit unclassified
+malformed or out-of-contract output fails closed to an explicit unclassified
 contract without silently selecting a legacy route.
 
-#### 1.3 Intent registry and ontology contract
+#### 1.3 Decision schema and policy contract
 
-Create one registry for intent patterns, candidate scoring, retrieval
-qualification, source boosts, skeleton policy, answer shape, and fallback.
-Remove duplicated intent lists and add a completeness assertion that every
-registry intent has all required contracts.
+Create one small registry for decision fields, retrieval qualification, source
+ranking hints, answer shape, policy checks, and fallback. Keep semantic
+understanding in the model. Remove duplicated intent lists and add a
+completeness assertion that every supported decision shape has all required
+contracts. Do not turn this registry into a growing phrase dictionary.
 
-Acceptance: adding an intent requires one registry definition and its tests;
-no recognized intent falls back to first claims due to a missing policy.
+Acceptance: adding a decision shape requires one definition and its tests; no
+recognized question falls back to first claims due to a missing policy; adding
+synonyms alone is not treated as an architecture improvement.
 
 #### 1.4 Explicit question decision object
 
@@ -185,9 +208,37 @@ answers possible for compound questions.
 Acceptance: generic and skeleton paths share the same evidence/scope checks and
 cannot produce divergent user-facing failure semantics.
 
-### Phase 2 — Knowledge-base answerability (4 slices)
+### Phase 2 — Public-corpus answerability and policy (5 slices)
 
-#### 2.1 Canonical professional profile and characterization contract
+Purpose: make the public writing the coherent recruiter evidence system, then
+add only the smallest policy layer needed to prevent confident overclaiming.
+
+#### 2.0 Corpus baseline and source policy
+
+Freeze the 20-question paired evaluation set as the first answer-quality
+baseline. Run corpus-only answers before adding Rules, then run corpus-plus-
+Rules answers using the same questions, model, and scoring dimensions. Record
+unsupported-claim flags separately from prose quality. The baseline is not a
+claim that model-generated scores are ground truth; it is a reproducible
+comparison artifact.
+
+Acceptance: every question has a source-corpus answer, a documented expected
+answer shape, required evidence, prohibited claims, and a reviewer-visible
+status. No production routing change is justified by a single QA anecdote.
+
+#### 2.1 Compact Rules layer
+
+Represent only durable constraints that recur across the evaluation set:
+unsupported superlatives and pride claims, ownership boundaries, collaborator
+roles, lifecycle status, metric provenance and causality, retail/engineering
+separation, adjacent-technology limits, and premise correction. Rules are
+versioned, scoped, testable, and invisible in recruiter-facing prose.
+
+Acceptance: Rules can reject or qualify a claim without becoming a second
+knowledge base or a keyword router. Each Rule has a test demonstrating both
+the prohibited claim and a natural supported alternative.
+
+#### 2.2 Canonical professional profile and characterization contract
 
 Keep the confirmed profile and trajectory records as the lead. The answer
 shape is identity, differentiator, scope/trajectory, one concise example, and
@@ -197,7 +248,7 @@ Acceptance: characterization, full-stack, frontend/backend, role-fit, and
 strongest-quality questions lead with candidate-level synthesis in 80–140
 words or a narrow supported answer.
 
-#### 2.2 Engineering soft-skills synthesis
+#### 2.3 Engineering soft-skills synthesis
 
 Add a recruiter-facing engineering-context synthesis only from existing
 confirmed evidence: code review and reciprocal collaboration, stakeholder
@@ -208,7 +259,7 @@ must be labeled by domain and never presented as engineering management.
 Acceptance: soft-skills answers lead with engineering-relevant behaviors and
 use retail evidence only as a clearly scoped supporting example.
 
-#### 2.3 Project index and complexity evidence
+#### 2.4 Project index and complexity evidence
 
 Represent employer, project, systems touched, ambiguity, integrations,
 ownership, collaboration, result, and limitations explicitly. Do not call a
@@ -218,7 +269,7 @@ with the strongest supported candidate and qualify the comparison.
 Acceptance: no project is selected as most complex solely because it ranks first
 or contains a matching technology term.
 
-#### 2.4 Capability, gap, and learning links
+#### 2.5 Capability, gap, and learning links
 
 Use qualitative capability levels only unless a sourced metric exists. Pair a
 confirmed gap with adjacent foundation and demonstrated learning without
@@ -303,9 +354,26 @@ insufficient-information responses, never generic validation failure.
 
 #### 5.1 Frozen recruiter question battery
 
-Maintain at least 60 questions, including 15 multi-part questions and 10
-multi-turn sequences. Each case specifies expected shape, evidence class,
-prohibited claims, and acceptable fallback.
+Maintain the current 20-question paired set as the core comparison contract.
+After the core path meets acceptance, expand to a 50-question battery with
+deliberate follow-up chains, compound questions, adversarial premise questions,
+scope changes, gap questions, and recruiter-style broad prompts. Each case
+specifies expected shape, evidence class, prohibited claims, and acceptable
+fallback.
+
+The 50-question run is a content-gap audit, not permission to add content
+automatically. Classify each miss as one of:
+
+- missing or insufficient public evidence;
+- question decision or decomposition error;
+- retrieval coverage or scope error;
+- synthesis or answer-shape error;
+- Rule or validation error;
+- provider or runtime failure.
+
+Only the first category justifies adding or expanding public content. Any new
+content must be derived from Jared-confirmed facts and pass the existing
+review/approval contract.
 
 #### 5.2 Automated and human scoring
 
@@ -321,11 +389,12 @@ hand back to Jared for Admin QA. The release gate requires zero known critical
 failures, no admin-limit regression, no user-visible validation failure for a
 supported question, and v2/model-path telemetry on every result.
 
-## Knowledge-base size decision
+## Evidence-corpus size decision
 
-The corpus is not too small by record count. It currently has enough evidence
-for a strong profile, product judgment, learning, collaboration, failure, and
-technology-boundary system. It is too thin in *structured answer coverage*:
+The public corpus is not too small by article count. It currently has enough
+evidence for a strong profile, product judgment, learning, collaboration,
+failure, and technology-boundary system. It is too thin in *explicit answer
+coverage* for some recruiter prompts:
 
 - canonical identity and differentiator fields;
 - engineering soft-skills synthesis;
@@ -334,18 +403,25 @@ technology-boundary system. It is too thin in *structured answer coverage*:
 - capability/gap/learning relationships;
 - explicit quantitative-claim availability.
 
-The next additions should therefore be structured, recruiter-facing records
-derived from confirmed evidence, not an indiscriminate expansion of anecdotes.
+The next additions should therefore be targeted public writing or confirmed
+Rules only where the evaluation battery proves a real gap. We will not expand
+the corpus indiscriminately, and we will not use the existing atomic knowledge
+base as a second competing answer source.
 
 ## Immediate implementation order
 
-1. Finish the current invariant tests and correct the broad conjunction false
-   positive.
-2. Unify model selection so compound routing cannot downgrade final synthesis.
-3. Add decision-path/model-path regression tests.
-4. Implement the registry and shared decision object incrementally without
-   changing factual evidence.
+1. Freeze the current production behavior and build the corpus-only baseline
+   from the 20-question evaluation contract.
+2. Correct model-resolution/provider failure behavior so a transient planning
+   failure cannot become a generic user-visible validation failure when the
+   question is answerable.
+3. Implement the compact Rules contract and evaluate corpus-only versus
+   corpus-plus-Rules on the same battery.
+4. Implement the shared decision object and policy checks without adding a
+   phrase dictionary or changing factual evidence.
 5. Add the engineering soft-skills synthesis only after its factual wording is
    included in the review packet and confirmed.
 6. Run the full suite, inspect the production event battery, commit, push only
    after reporting risks, and monitor the build before Admin QA.
+7. Once the core path is acceptable, run the 50-question follow-up battery and
+   produce a categorized content-gap report before proposing any new content.

@@ -1,0 +1,102 @@
+# Contract for the public-corpus versus public-corpus-plus-Rules evaluation.
+# These are evaluation labels, not production intent-routing vocabulary.
+- id: P01
+  question: What kind of engineer is Jared?
+  answer_shape: profile
+  required_evidence: candidate_level_synthesis
+  prohibited_claims: [unsupported_seniority, single_project_as_identity]
+- id: P02
+  question: Is Jared a full-stack engineer, and what technologies does he work with?
+  answer_shape: compound
+  required_evidence: capability_and_technology
+  prohibited_claims: [typescript_extrapolation, unsupported_expertise]
+- id: P03
+  question: What is Jared's strongest technical foundation?
+  answer_shape: direct
+  required_evidence: recurring_technical_foundation
+  prohibited_claims: [unsupported_absolute_ranking]
+- id: P04
+  question: What is the largest or most complex product he has shipped?
+  answer_shape: comparison
+  required_evidence: project_scope_and_comparison_basis
+  prohibited_claims: [unsupported_superlative, lifecycle_blurring]
+- id: P05
+  question: What product is Jared proudest of?
+  answer_shape: comparison
+  required_evidence: explicit_personal_judgment_or_representative_example
+  prohibited_claims: [invented_personal_preference, unsupported_superlative]
+- id: P06
+  question: What has Jared personally owned?
+  answer_shape: scope
+  required_evidence: documented_project_ownership
+  prohibited_claims: [sole_engineer_means_total_ownership, company_level_ownership_inflation]
+- id: P07
+  question: What role did Jared play versus the broader team on his projects?
+  answer_shape: comparison
+  required_evidence: ownership_and_collaboration_boundaries
+  prohibited_claims: [collaborator_erasure, sole_creator_inference]
+- id: P08
+  question: What are Jared's soft skills?
+  answer_shape: profile
+  required_evidence: generalized_behavioral_dimensions
+  prohibited_claims: [retail_as_engineering_management, anecdote_only_answer]
+- id: P09
+  question: How does Jared handle technical disagreement?
+  answer_shape: behavior
+  required_evidence: disagreement_and_tradeoff_behavior
+  prohibited_claims: [unsupported_personality_claim]
+- id: P10
+  question: How does Jared make product decisions and tradeoffs?
+  answer_shape: process
+  required_evidence: planning_and_tradeoff_process
+  prohibited_claims: [unsupported_personality_claim]
+- id: P11
+  question: How does Jared work with founders and stakeholders?
+  answer_shape: behavior
+  required_evidence: stakeholder_collaboration
+  prohibited_claims: [unsupported_authority_claim]
+- id: P12
+  question: How does Jared handle ambiguity?
+  answer_shape: behavior
+  required_evidence: documented_ambiguity_process
+  prohibited_claims: [unsupported_personality_claim]
+- id: P13
+  question: Tell me about a failure or mistake Jared has made.
+  answer_shape: story
+  required_evidence: failure_with_lifecycle_and_learning
+  prohibited_claims: [limited_rollout_as_broad_release, invented_lesson]
+- id: P14
+  question: How does Jared learn unfamiliar technology?
+  answer_shape: gap
+  required_evidence: demonstrated_learning_with_boundary
+  prohibited_claims: [inferred_universal_learning_method, unsupported_expertise]
+- id: P15
+  question: What production and reliability experience does Jared have?
+  answer_shape: comparison
+  required_evidence: production_scope_and_lifecycle
+  prohibited_claims: [limited_rollout_as_production_release, lifecycle_blurring]
+- id: P16
+  question: What measurable impact has Jared had?
+  answer_shape: direct
+  required_evidence: metric_provenance_and_attribution
+  prohibited_claims: [causal_attribution, association_as_conversion, metric_provenance_loss]
+- id: P17
+  question: Has Jared worked in a mature or legacy codebase?
+  answer_shape: direct
+  required_evidence: mature_codebase_evidence
+  prohibited_claims: [greenfield_inference]
+- id: P18
+  question: What frontend and product-design experience does Jared have?
+  answer_shape: comparison
+  required_evidence: design_and_frontend_scope
+  prohibited_claims: [all_surfaces_owned_inference, unsupported_expertise]
+- id: P19
+  question: Has Jared built integrations with external systems?
+  answer_shape: comparison
+  required_evidence: integration_examples_and_lifecycle
+  prohibited_claims: [limited_rollout_as_broad_release, technology_scope_inflation]
+- id: P20
+  question: What kind of team or role is Jared looking for next?
+  answer_shape: profile
+  required_evidence: stated_preference_and_careful_fit
+  prohibited_claims: [inferred_preference_as_stated_fact, unsupported_role_fit]
