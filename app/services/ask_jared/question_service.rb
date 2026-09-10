@@ -58,13 +58,14 @@ module AskJared
           entries = retrieve_with_plan(question, intent: active_intent, plan: plan).select { |entry| referent_keys.include?(entry.id.to_s) || referent_keys.include?(entry.source_reference.to_s) }
         end
       else
-        entries = retrieve_with_plan(question, intent: active_intent, plan: plan).reject { |entry| another_example?(question) && prior_primary.include?(entry.source_reference) }
+        entries = retrieve_with_plan(question, intent: active_intent, plan: plan)
+        entries = entries.reject { |entry| prior_primary.include?(entry.source_reference) } if another_example?(question)
         entries = entries.first(1) if another_example?(question) && skeleton_route
       end
       # A planned retrieval may be empty during a transient scope/provider/database
       # hiccup even though the direct, deterministic retriever can still find the
       # same approved evidence. Preserve fail-closed behavior after both paths fail.
-      entries = retrieve(question, limit: 12, intent: active_intent).reject { |entry| prior_primary.include?(entry.source_reference) } if entries.empty? && !another_example?(question) && !referent_follow_up?(question)
+      entries = retrieve(question, limit: 12, intent: active_intent) if entries.empty? && !another_example?(question) && !referent_follow_up?(question)
       entries = entries.select { |entry| weakness_evidence?(entry) } if active_intent.to_s == "risk"
       packet = SynthesisEvidencePacket.new(
         entries: entries,

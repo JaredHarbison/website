@@ -113,6 +113,24 @@ class AskJaredQuestionServiceTest < ActiveSupport::TestCase
     assert_equal 2, retriever.calls
   end
 
+  test "reuses relevant prior evidence for a new intent instead of treating it as another example" do
+    entry = KnowledgeEntry.create!(title: "Approved product project", body: "Jared designed and implemented a partner application workflow.", entry_type: "project", approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "product-project", source_fingerprint: "product-project")
+    EngagementEvent.create!(event_type: "answer_returned", event_key: "prior-answer", session_digest: AskJared::UsageGuard.new.digest_session("reuse-session"), occurred_at: 1.minute.ago, metadata: { "primary_evidence_reference" => "product-project", "question_intent" => "characterization" })
+    retriever = Class.new do
+      attr_reader :last_trace
+
+      def initialize(entry) = @entry = entry
+      def call(*) = [ @entry ]
+      def classified_intent(_) = "characterization"
+    end.new(entry)
+    provider = FakeProvider.new({ "status" => "answer", "answer" => "Jared designed and implemented the workflow.", "evidence_ids" => [ entry.id.to_s ], "source_urls" => [] })
+
+    response = AskJared::QuestionService.new(token_service: @token_service, retriever: retriever, provider: provider).call(raw_token: @raw_token, question: "What product did Jared build?", session_id: "reuse-session", request_id: "reuse-request")
+
+    assert_equal "answer", response["status"]
+    assert_equal [ entry.id.to_s ], response["evidence_ids"]
+  end
+
   test "weakness questions discard unrelated project evidence before generation" do
     unrelated = KnowledgeEntry.create!(title: "Unrelated project", body: "Built a karaoke queue.", entry_type: "project", metadata: { "recruiter_evidence" => { "claims" => [ { "text" => "Built a karaoke queue.", "kind" => "demonstrated" } ] } }, approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "unrelated-project", source_fingerprint: "unrelated-project")
     boundary = KnowledgeEntry.create!(title: "Explicit boundary", body: "Large conventional engineering-team experience is limited.", entry_type: "fact", metadata: { "recruiter_evidence" => { "claims" => [ { "text" => "Large conventional engineering-team experience is limited.", "kind" => "boundary" } ] } }, approval_status: "approved", visibility: "recruiter_visible", source_type: "test", source_reference: "explicit-boundary", source_fingerprint: "explicit-boundary")
