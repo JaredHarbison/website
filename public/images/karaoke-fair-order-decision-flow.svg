@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="560" viewBox="0 0 960 560" role="img" aria-labelledby="title desc">
+  <title id="title">FairOrder decision flow</title>
+  <desc id="desc">FairOrder builds an event queue one choice at a time by combining completed turns with turns already assigned in the projected queue, then using stable queue position and ID as tie-breakers.</desc>
+  <rect width="960" height="560" fill="#080b0c"/>
+
+  <g font-family="ui-monospace, monospace" font-size="18" fill="#e5b566">
+    <text x="60" y="62">FAIRORDER · ONE CHOICE AT A TIME</text>
+  </g>
+
+  <g fill="none" stroke="#26302c" stroke-width="2">
+    <rect x="55" y="115" width="180" height="115" rx="8"/>
+    <rect x="285" y="115" width="180" height="115" rx="8"/>
+    <rect x="515" y="115" width="180" height="115" rx="8"/>
+    <rect x="745" y="115" width="160" height="115" rx="8"/>
+  </g>
+
+  <g font-family="ui-monospace, monospace" font-size="15" fill="#ecf2f8" text-anchor="middle">
+    <text x="145" y="148">01 · HISTORY</text>
+    <text x="375" y="148">02 · PROJECTION</text>
+    <text x="605" y="148">03 · STABLE TIE</text>
+    <text x="825" y="148">04 · FINAL TIE</text>
+  </g>
+
+  <g font-family="ui-sans-serif, sans-serif" font-size="15" fill="#d9e0dc" text-anchor="middle">
+    <text x="145" y="182">completed turns</text><text x="145" y="207" fill="#929e98">finished, not skipped</text>
+    <text x="375" y="182">turns already assigned</text><text x="375" y="207" fill="#929e98">during this ordering pass</text>
+    <text x="605" y="182">existing queue position</text><text x="605" y="207" fill="#929e98">updated_at</text>
+    <text x="825" y="182">record ID</text><text x="825" y="207" fill="#929e98">deterministic result</text>
+  </g>
+
+  <g stroke="#75bfff" stroke-width="3" fill="#75bfff">
+    <line x1="235" y1="172" x2="285" y2="172"/><polygon points="285,172 275,166 275,178"/>
+    <line x1="465" y1="172" x2="515" y2="172"/><polygon points="515,172 505,166 505,178"/>
+    <line x1="695" y1="172" x2="745" y2="172"/><polygon points="745,172 735,166 735,178"/>
+  </g>
+
+  <rect x="245" y="295" width="470" height="130" rx="8" fill="#132c2b" stroke="#56d6c9" stroke-width="2"/>
+  <g font-family="ui-monospace, monospace" text-anchor="middle">
+    <text x="480" y="330" font-size="17" fill="#ecf2f8">FAIRNESS KEY</text>
+    <text x="480" y="365" font-size="16" fill="#86d99a">completed + projected turns</text>
+    <text x="480" y="393" font-size="15" fill="#d9e0dc">then completed → stable queue position → ID</text>
+  </g>
+
+  <path d="M825 230V270H715" fill="none" stroke="#7b8aa0" stroke-width="2"/>
+  <polygon points="715,270 725,264 725,276" fill="#7b8aa0"/>
+
+  <rect x="330" y="470" width="300" height="55" rx="7" fill="#221a2b" stroke="#b995d6" stroke-width="2"/>
+  <text x="480" y="503" fill="#ecf2f8" font-family="ui-monospace, monospace" font-size="15" text-anchor="middle">APPEND WINNER · INCREMENT PROJECTED TURN · REPEAT</text>
+  <path d="M480 425V470" fill="none" stroke="#7b8aa0" stroke-width="2"/>
+  <polygon points="480,470 474,460 486,460" fill="#7b8aa0"/>
+</svg>
