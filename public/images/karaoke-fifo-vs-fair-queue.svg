@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="520" viewBox="0 0 960 520" role="img" aria-labelledby="title desc">
+  <title id="title">FIFO compared with Fair Queue ordering</title>
+  <desc id="desc">A chronological FIFO queue lets one early performer occupy multiple consecutive turns, while Fair Queue interleaves performers by completed and projected turns before falling back to stable queue position.</desc>
+  <rect width="960" height="520" fill="#080b0c"/>
+
+  <g font-family="ui-monospace, monospace" font-size="18" fill="#e5b566">
+    <text x="60" y="62">SAME REQUESTS · TWO ORDERING RULES</text>
+    <text x="60" y="118">FIFO</text>
+    <text x="60" y="322">FAIR QUEUE</text>
+  </g>
+
+  <g font-family="ui-sans-serif, sans-serif" font-size="15" text-anchor="middle">
+    <g fill="#111722" stroke="#26302c" stroke-width="2">
+      <rect x="60" y="145" width="150" height="90" rx="8"/>
+      <rect x="230" y="145" width="150" height="90" rx="8"/>
+      <rect x="400" y="145" width="150" height="90" rx="8"/>
+      <rect x="570" y="145" width="150" height="90" rx="8"/>
+      <rect x="740" y="145" width="150" height="90" rx="8"/>
+    </g>
+    <g fill="#d9e0dc">
+      <text x="135" y="181">Alex · Song 1</text><text x="135" y="208" fill="#929e98">submitted first</text>
+      <text x="305" y="181">Alex · Song 2</text><text x="305" y="208" fill="#929e98">same performer</text>
+      <text x="475" y="181">Alex · Song 3</text><text x="475" y="208" fill="#929e98">same performer</text>
+      <text x="645" y="181">Beth · Song 1</text><text x="645" y="208" fill="#929e98">later request</text>
+      <text x="815" y="181">Chris · Song 1</text><text x="815" y="208" fill="#929e98">later request</text>
+    </g>
+
+    <g stroke="#929e98" stroke-width="3" fill="#929e98">
+      <line x1="210" y1="190" x2="230" y2="190"/><polygon points="230,190 220,184 220,196"/>
+      <line x1="380" y1="190" x2="400" y2="190"/><polygon points="400,190 390,184 390,196"/>
+      <line x1="550" y1="190" x2="570" y2="190"/><polygon points="570,190 560,184 560,196"/>
+      <line x1="720" y1="190" x2="740" y2="190"/><polygon points="740,190 730,184 730,196"/>
+    </g>
+
+    <g fill="#132c2b" stroke="#56d6c9" stroke-width="2">
+      <rect x="60" y="350" width="150" height="90" rx="8"/>
+      <rect x="230" y="350" width="150" height="90" rx="8"/>
+      <rect x="400" y="350" width="150" height="90" rx="8"/>
+      <rect x="570" y="350" width="150" height="90" rx="8"/>
+      <rect x="740" y="350" width="150" height="90" rx="8"/>
+    </g>
+    <g fill="#d9e0dc">
+      <text x="135" y="386">Beth · Song 1</text><text x="135" y="413" fill="#86d99a">fewer turns</text>
+      <text x="305" y="386">Chris · Song 1</text><text x="305" y="413" fill="#86d99a">fewer turns</text>
+      <text x="475" y="386">Alex · Song 1</text><text x="475" y="413" fill="#75bfff">stable tie-break</text>
+      <text x="645" y="386">Alex · Song 2</text><text x="645" y="413" fill="#929e98">later projected turn</text>
+      <text x="815" y="386">Alex · Song 3</text><text x="815" y="413" fill="#929e98">later projected turn</text>
+    </g>
+
+    <g stroke="#75bfff" stroke-width="3" fill="#75bfff">
+      <line x1="210" y1="395" x2="230" y2="395"/><polygon points="230,395 220,389 220,401"/>
+      <line x1="380" y1="395" x2="400" y2="395"/><polygon points="400,395 390,389 390,401"/>
+      <line x1="550" y1="395" x2="570" y2="395"/><polygon points="570,395 560,389 560,401"/>
+      <line x1="720" y1="395" x2="740" y2="395"/><polygon points="740,395 730,389 730,401"/>
+    </g>
+  </g>
+
+  <text x="480" y="485" fill="#86d99a" font-family="ui-monospace, monospace" font-size="15" text-anchor="middle">COMPLETED TURNS · PROJECTED TURNS · STABLE POSITION · ID</text>
+</svg>
