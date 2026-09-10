@@ -2,7 +2,7 @@
 
 Plan date: 2026-09-10
 Owner: Codex, with Jared approving new factual claims and performing deployed QA
-Status: implementation in progress; production is on the corrected broad-question path, but compound routing and model unification remain open
+Status: implementation in progress; production is aligned on candidate-context-v2 and the canonical model, while model-first question understanding is the next implementation slice
 
 This document supersedes the planning portions of:
 
@@ -17,13 +17,14 @@ contract for the next release cycle.
 
 ```yaml
 phase_count: 6
-slice_count: 20
-completed_slice_count: 1
-remaining_slice_count: 19
-current_phase: 0
-current_slice: 0.2
-canonical_architecture: candidate-context-v2
-canonical_final_model: ASK_JARED_MODEL (default gpt-5.6-sol)
+  slice_count: 21
+  completed_slice_count: 1
+  remaining_slice_count: 20
+  current_phase: 1
+  current_slice: 1.2
+  canonical_architecture: candidate-context-v2
+  canonical_final_model: ASK_JARED_MODEL (default gpt-5.6-sol)
+  intent_resolution: model-first structured output constrained by candidate-context-v2
 ```
 
 A slice is complete only when its acceptance contract, automated tests, and
@@ -35,10 +36,11 @@ remaining count, acceptance result, and next slice.
 
 1. Candidate Context v2 is the only production architecture. No v1 or legacy
    planner may be selected implicitly, even when planning fails.
-2. The same canonical model configuration must govern planning, final
-   synthesis, skeleton realization, and repair unless a documented cost/latency
-   exception is explicitly tested. Prompts, schemas, and roles may differ;
-   capability must not vary accidentally by routing branch.
+2. The same canonical model configuration must govern intent resolution,
+   planning, final synthesis, skeleton realization, and repair unless a
+   documented cost/latency exception is explicitly tested. Prompts, schemas,
+   and roles may differ; capability must not vary accidentally by routing
+   branch.
 3. Intent routing may select an answer contract, never a factual claim.
 4. Every recognized intent must have one explicit retrieval policy, evidence
    boundary policy, answer shape, and fallback behavior.
@@ -83,9 +85,9 @@ contract, and generation schema at once.
 ```text
 question
   -> validation and access policy
-  -> deterministic classification and structural analysis
-  -> optional model planning only for genuine ambiguity/compound structure
-  -> validated answer parts and scope constraints
+  -> model-first structured intent and answer-contract resolution
+  -> schema validation against the internal recruiter ontology
+  -> validated answer parts, scope, dimensions, and evidence requirements
   -> per-part approved retrieval with hard safety filters
   -> evidence packet and coverage check
   -> canonical-model synthesis or structured skeleton realization
@@ -94,10 +96,17 @@ question
   -> complete decision-path telemetry
 ```
 
-The planner model is optional and advisory. It may select from known intent
-names, dimensions, operations, scope values, and answer shapes, but may not add
-facts or override deterministic safety constraints. The final model receives
+The intent model is semantic, structured, and advisory. It may select from
+versioned intent families, dimensions, operations, scope values, and answer
+shapes, but may not add facts or override deterministic safety constraints.
+Internal guidance defines the ontology and behavioral contracts; recruiter
+knowledge entries remain the only factual authority. The final model receives
 only the validated plan and approved evidence packet.
+
+Regexes may remain as diagnostic signals and test fixtures, but they are not
+authoritative intent routing and must not determine the production answer path.
+Safe optimization is limited to caching identical normalized requests; it must
+not create a second semantic routing system.
 
 ## Phases and slices
 
@@ -118,7 +127,7 @@ Acceptance:
 - QA can submit at least five questions without a false limit;
 - stale non-v2 reports are visibly marked stale.
 
-### Phase 1 — Architecture cleanup and decision contracts (4 slices)
+### Phase 1 — Architecture cleanup and decision contracts (5 slices)
 
 #### 1.1 Canonical model configuration
 
@@ -130,7 +139,25 @@ model without exposing credentials.
 Acceptance: no production answer path silently selects `gpt-4o-mini`; tests
 assert model selection for narrow, broad, compound, repair, and planner calls.
 
-#### 1.2 Intent registry
+#### 1.2 Model-first intent and answer-contract resolution — current
+
+Create a structured intent-resolution service using the canonical model and
+private candidate-context guidance. The output must be schema-constrained and
+limited to ontology values: intent families, question parts, operations,
+dimensions, scope constraints, evidence requirements, answer shape, fallback
+behavior, and confidence. It must never contain recruiter facts.
+
+The service receives the current question, clear conversation referent context,
+and a bounded internal guidance summary. It does not receive recruiter-facing
+knowledge entries before intent resolution, preventing retrieval from defining
+the question.
+
+Acceptance: product-pride/ownership, project/role, comparison, gap, scope,
+follow-up, and compound questions resolve to stable structured contracts;
+malformed or out-of-ontology output fails closed to an explicit unclassified
+contract without silently selecting a legacy route.
+
+#### 1.3 Intent registry and ontology contract
 
 Create one registry for intent patterns, candidate scoring, retrieval
 qualification, source boosts, skeleton policy, answer shape, and fallback.
@@ -140,7 +167,7 @@ registry intent has all required contracts.
 Acceptance: adding an intent requires one registry definition and its tests;
 no recognized intent falls back to first claims due to a missing policy.
 
-#### 1.3 Explicit question decision object
+#### 1.4 Explicit question decision object
 
 Replace loose routing arguments with a validated decision object containing
 classification, answer parts, scope, operation, dimensions, unsupported
@@ -149,7 +176,7 @@ per request and use it for retrieval, synthesis, validation, and telemetry.
 
 Acceptance: one persisted decision explains every production answer or failure.
 
-#### 1.4 Shared validation and telemetry pipeline
+#### 1.5 Shared validation and telemetry pipeline
 
 Extract common normalization, claim resolution, repair, failure classification,
 and telemetry logic. Preserve strict evidence validation while making partial
@@ -210,8 +237,9 @@ subrequests. Distinguish coordinated dimensions (“product thinking and
 tradeoffs”) from independently answerable questions. “Shipped” must not
 override a complexity operation.
 
-Acceptance: a frozen 20-question decomposition matrix covers compound,
-comparison, scope, metrics, follow-up, and broad recruiter questions.
+Acceptance: a frozen 40-question decomposition matrix covers compound,
+comparison, scope, metrics, follow-up, broad recruiter questions, product/story
+questions, ownership/contribution questions, and positive gap framing.
 
 #### 3.2 Scope and provenance graph
 

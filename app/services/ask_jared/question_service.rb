@@ -9,7 +9,7 @@ module AskJared
 
     RECOGNIZED_INTENTS = ApprovedKnowledgeRetriever::INTENT_SPECS.keys.freeze
 
-    def initialize(token_service: TokenService.new, retriever: ApprovedKnowledgeRetriever.new, provider: OpenAiProvider.new, skeleton_provider: nil, engagement_service: EngagementService.new, usage_guard: UsageGuard.new, planner: nil)
+    def initialize(token_service: TokenService.new, retriever: ApprovedKnowledgeRetriever.new, provider: OpenAiProvider.new, skeleton_provider: nil, engagement_service: EngagementService.new, usage_guard: UsageGuard.new, planner: nil, intent_resolver: nil)
       @token_service = token_service
       @retriever = retriever
       @provider = provider
@@ -18,6 +18,7 @@ module AskJared
       @engagement_service = engagement_service
       @usage_guard = usage_guard
       @v2_planner = planner || CandidateContextPlanner.new(context: CandidateContext.new)
+      @intent_resolver = intent_resolver || IntentResolutionService.new(provider: provider)
     end
 
     def call(raw_token:, question:, session_id:, ip: nil, request_id:, admin_preview: false, architecture: nil, evaluation: false)
@@ -39,9 +40,9 @@ module AskJared
       prior_primary = prior_primary_evidence(session_digest)
       prior_context = prior_answer_context(session_digest)
       prior_intent = prior_question_intent(session_digest)
-      classification = @retriever.respond_to?(:classification) ? @retriever.classification(question) : {}
-      classified_intent = @retriever.respond_to?(:classified_intent) ? @retriever.classified_intent(question) : nil
-      intent_candidates = Array(classification[:candidates]).presence || [ classified_intent ].compact
+      classification = resolve_intent(question: question, prior_context: prior_context)
+      classified_intent = classification[:primary].to_s == "unclassified" ? nil : classification[:primary]
+      intent_candidates = Array(classification[:candidates]).reject { |candidate| candidate.to_s == "unclassified" }.presence || [ classified_intent ].compact
       # A new question must establish its own intent. Prior intent is only
       # useful after the user has clearly continued the preceding exchange.
       active_intent = continuation?(question) ? (prior_intent || classified_intent) : classified_intent
@@ -117,6 +118,7 @@ module AskJared
           "model" => model_for(skeleton_route), "latency_ms" => ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - started_at) * 1000).round,
           "intent_path" => classified_intent.present? ? "recognized" : "fallback", "evidence_count" => response["evidence_ids"].to_a.length,
           "architecture" => architecture_used, "planner_version" => plan&.version, "planner_model" => "deterministic",
+          "intent_resolution" => classification[:resolution_mode], "intent_resolution_model" => ModelConfig::CANONICAL_MODEL,
           "context_keys" => plan&.context_keys, "plan_summary" => plan&.summary,
           "example_evidence_ids" => example_evidence_groups(response: response, packet: packet),
           "turn" => EngagementEvent.where(session_digest: session_digest, event_type: "answer_returned").count + 1,
@@ -165,12 +167,32 @@ module AskJared
       effective_architecture = PUBLIC_DEFAULT_ARCHITECTURE
       [ @v2_planner.call(question: question.to_s.strip, intent: intent, intent_candidates: intent_candidates,
                          planning_required: !!classification[:planning_required],
-                         planning_reasons: Array(classification[:planning_reasons]), prior_evidence_ids: prior_evidence), effective_architecture ]
+                         planning_reasons: Array(classification[:planning_reasons]), prior_evidence_ids: prior_evidence,
+                         resolution: classification), effective_architecture ]
     rescue StandardError => error
       Rails.logger.error("Ask Jared candidate-context-v2 planning failed: #{error.class}: #{error.message}")
       # Keep the canonical architecture and use the provider's evidence-only
       # contract if planning is unavailable. Never downgrade to legacy v1.
       [ nil, PUBLIC_DEFAULT_ARCHITECTURE ]
+    end
+
+    def resolve_intent(question:, prior_context:)
+      if @provider.respond_to?(:structured_call)
+        resolution = @intent_resolver.call(question: question, prior_context: prior_context)
+        resolution = resolution.deep_symbolize_keys
+        resolution[:resolution_mode] = "model"
+        resolution
+      else
+        # Test doubles and non-OpenAI providers retain the legacy seam so unit
+        # tests can exercise retrieval independently. Production providers use
+        # the model-first resolver above and never consult regex routing.
+        result = @retriever.respond_to?(:classification) ? @retriever.classification(question) : {}
+        result = result.deep_symbolize_keys
+        result[:primary] ||= @retriever.classified_intent(question) if @retriever.respond_to?(:classified_intent)
+        result[:candidates] ||= [ result[:primary] ].compact
+        result[:resolution_mode] = "test-double"
+        result
+      end
     end
 
     def validate_response(response, question:, packet:)

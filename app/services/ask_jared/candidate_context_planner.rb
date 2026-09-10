@@ -4,7 +4,7 @@ module AskJared
       @context = context
     end
 
-    def call(question:, intent:, prior_evidence_ids: [], intent_candidates: nil, planning_required: false, planning_reasons: [])
+    def call(question:, intent:, prior_evidence_ids: [], intent_candidates: nil, planning_required: false, planning_reasons: [], resolution: {})
       started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
       # A compound question is allowed to carry more than one answer family.
       # Load guidance for every selected family, then deduplicate by stable key;
@@ -18,25 +18,39 @@ module AskJared
       sources = records.flat_map { |record| Array(record["source_references"]) }.uniq
       themes = records.select { |record| Array(record["affects"]).include?("interpretation") || Array(record["affects"]).include?("story_ranking") }.map { |record| record["purpose"] }.first(6)
       contract = contract_for(intent, question, candidate_intents: candidate_intents, planning_reasons: planning_reasons)
-      queries = [ question ] + Array(contract[:retrieval_queries])
+      queries = [ question ] + Array(contract[:retrieval_queries]) + model_retrieval_queries(question, resolution)
       queries += records.filter_map { |record| record["guidance"] if Array(record["affects"]).include?("retrieval") }.first(3)
       AnswerPlan.new(
         architecture: @context.version, version: @context.version, intent: intent || "unclassified", target: target_for(intent, question),
         breadth: question.match?(/some|examples|strongest|qualities|kinds|what would/i) ? "broad" : "narrow",
-        answer_shape: shape_for(intent, question), themes: themes, story_slots: story_slots_for(intent, question),
+        answer_shape: resolution[:answer_shape] || resolution["answer_shape"] || shape_for(intent, question), themes: themes, story_slots: story_slots_for(intent, question),
         preferred_sources: sources, boundary_relevance: boundary_for(intent, question), retrieval_queries: queries,
         avoid: records.filter_map { |record| record["guidance"] if record["category"] == "boundary_guidance" || record["category"] == "recruiter_intent" },
         referent_ids: Array(prior_evidence_ids), context_keys: @context.context_keys(records),
         dimensions: broad_characterization?(intent, question) ? broad_dimensions(records) : [],
         evidence_requirements: contract[:evidence_requirements], scope_rules: contract[:scope_rules],
         fallback_behavior: contract[:fallback_behavior], intent_candidates: Array(intent_candidates).presence || [ intent ].compact,
-        planning_required: planning_required, planning_reasons: planning_reasons
+        planning_required: planning_required, planning_reasons: planning_reasons,
+        question_parts: Array(resolution[:parts] || resolution["parts"]),
+        confidence: resolution[:confidence] || resolution["confidence"],
+        resolution_mode: resolution[:resolution_mode] || resolution["resolution_mode"]
       ).tap { |plan| plan.define_singleton_method(:planning_latency_ms) { ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - started) * 1000).round } }
     rescue StandardError
       raise
     end
 
     private
+
+    def model_retrieval_queries(question, resolution)
+      parts = Array(resolution[:parts] || resolution["parts"])
+      dimensions = parts.flat_map { |part| Array(part["dimensions"] || part[:dimensions]) }.map(&:to_s).uniq
+      subjects = parts.map { |part| part["subject"] || part[:subject] }.compact.map(&:to_s)
+      queries = []
+      queries << "Jared product project built shipped proud role contribution ownership" if subjects.any? { |subject| %w[project product].include?(subject) }
+      queries << "Jared direct contribution technical ownership role on project" if dimensions.any? { |dimension| %w[ownership contribution role_fit].include?(dimension) }
+      queries << "Jared recruiter evidence #{dimensions.join(' ')}" if queries.empty? && dimensions.any?
+      queries
+    end
 
     def target_for(intent, question)
       return "follow-up referent" if question.match?(/first|second|that (?:decision|story)|tell me more|what happened afterward|another/i)

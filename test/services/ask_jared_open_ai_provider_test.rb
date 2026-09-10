@@ -102,6 +102,21 @@ class AskJaredOpenAiProviderTest < ActiveSupport::TestCase
     refute http.request_body.key?("temperature")
   end
 
+  test "supports strict structured calls for model intent resolution" do
+    result_body = { "primary_intent" => "project_story" }.to_json
+    body = { choices: [ { message: { content: result_body } } ], usage: { prompt_tokens: 4, completion_tokens: 3 } }.to_json
+    http = CapturingHttp.new(Net::HTTPSuccess.allocate.tap { |response| response.define_singleton_method(:body) { body } })
+    schema = { name: "intent", schema: { type: "object", properties: { "primary_intent" => { type: "string" } }, required: [ "primary_intent" ], additionalProperties: false } }
+
+    result = AskJared::OpenAiProvider.new(api_key: "test-key", http: http).structured_call(
+      system_prompt: "Resolve.", user_content: "Question.", schema: schema
+    )
+
+    assert_equal "project_story", result.fetch("result").fetch("primary_intent")
+    assert_equal AskJared::ModelConfig::CANONICAL_MODEL, http.request_body.fetch("model")
+    assert_equal "intent", http.request_body.fetch("response_format").fetch("json_schema").fetch("name")
+  end
+
   test "fails closed when no API key is configured" do
     provider = AskJared::OpenAiProvider.new(api_key: nil)
 

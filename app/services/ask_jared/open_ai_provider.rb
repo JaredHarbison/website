@@ -1,13 +1,10 @@
 require "json"
-require "net/http"
-require "uri"
 require "yaml"
+require_relative "open_ai_client"
 
 module AskJared
   class OpenAiProvider
-    ENDPOINT = URI("https://api.openai.com/v1/chat/completions")
     DEFAULT_MODEL = ModelConfig::CANONICAL_MODEL
-    REQUEST_TIMEOUT_SECONDS = 45
     PRICING = YAML.safe_load(File.read(Rails.root.join("config/ask_jared_pricing.yml")), permitted_classes: [ Date ], symbolize_names: true).freeze
     MAX_CONTEXT_ENTRIES = 6
     RESPONSE_SCHEMA = {
@@ -33,7 +30,7 @@ module AskJared
     def initialize(api_key: ENV["OPENAI_API_KEY"], model: ENV.fetch("ASK_JARED_MODEL", DEFAULT_MODEL), http: Net::HTTP)
       @api_key = api_key
       @model = model
-      @http = http
+      @client = OpenAiClient.new(http: http)
     end
 
     def call(question:, context:, plan: nil)
@@ -53,33 +50,38 @@ module AskJared
       request(question: question, context: bounded_context(context), messages: [ { role: "user", content: repair_instructions } ], response: response, plan: nil)
     end
 
+    def structured_call(system_prompt:, user_content:, schema:, max_completion_tokens: 500)
+      raise ConfigurationError, "OPENAI_API_KEY is not configured" if @api_key.blank?
+
+      response = @client.post({
+        model: @model,
+        max_completion_tokens: max_completion_tokens,
+        response_format: { type: "json_schema", json_schema: { name: schema.fetch(:name), strict: true, schema: schema.fetch(:schema) } },
+        messages: [ { role: "system", content: system_prompt }, { role: "user", content: user_content } ]
+      }, api_key: @api_key)
+      raise ProviderError, "OpenAI request failed" unless response.is_a?(Net::HTTPSuccess)
+
+      body = JSON.parse(response.body)
+      { "result" => JSON.parse(body.dig("choices", 0, "message", "content")), "__telemetry" => @client.telemetry(body, pricing: PRICING[@model.to_sym]) }
+    rescue JSON::ParserError, KeyError, TypeError
+      raise ProviderError, "OpenAI returned malformed structured output"
+    end
+
     private
 
     def request(question:, context:, messages:, response: nil, plan: nil)
       raise ConfigurationError, "OPENAI_API_KEY is not configured" if @api_key.blank?
 
-      response = post(request_body(question: question, context: context, messages: messages, response: response, plan: plan))
+      response = @client.post(request_body(question: question, context: context, messages: messages, response: response, plan: plan), api_key: @api_key)
       raise ProviderError, "OpenAI request failed" unless response.is_a?(Net::HTTPSuccess)
 
       body = JSON.parse(response.body)
       content = body.dig("choices", 0, "message", "content")
       validated = StructuredResponse.validate!(JSON.parse(content))
-      validated["__telemetry"] = telemetry(body)
+      validated["__telemetry"] = @client.telemetry(body, pricing: PRICING[@model.to_sym])
       validated
     rescue JSON::ParserError, KeyError, TypeError
       raise ProviderError, "OpenAI returned malformed structured output"
-    end
-
-    def post(body)
-      headers = { "Authorization" => "Bearer #{@api_key}", "Content-Type" => "application/json" }
-      return @http.post(ENDPOINT, JSON.generate(body), headers) unless @http == Net::HTTP
-
-      client = Net::HTTP.new(ENDPOINT.host, ENDPOINT.port)
-      client.use_ssl = true
-      client.open_timeout = REQUEST_TIMEOUT_SECONDS
-      client.read_timeout = REQUEST_TIMEOUT_SECONDS
-      client.write_timeout = REQUEST_TIMEOUT_SECONDS if client.respond_to?(:write_timeout=)
-      client.post(ENDPOINT.request_uri, JSON.generate(body), headers)
     end
 
     class ConfigurationError < StandardError; end
@@ -100,20 +102,6 @@ module AskJared
       }
       body[:temperature] = 0 unless @model.start_with?("gpt-5")
       body
-    end
-
-    def telemetry(body)
-      usage = body["usage"]
-      return {} unless usage.is_a?(Hash) && usage["prompt_tokens"] && usage["completion_tokens"]
-
-      input_tokens = usage["prompt_tokens"].to_i
-      output_tokens = usage["completion_tokens"].to_i
-      pricing = PRICING[@model.to_sym]
-      cost_cents = if pricing
-        ((input_tokens * pricing[:input_per_million_cents] + output_tokens * pricing[:output_per_million_cents]) / 1_000_000.0).round
-      end
-      { "input_tokens" => input_tokens, "output_tokens" => output_tokens,
-        "estimated_cost_cents" => cost_cents, "pricing_version" => pricing&.fetch(:version) }
     end
 
     def system_prompt
