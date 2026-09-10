@@ -18,10 +18,10 @@ contract for the next release cycle.
 ```yaml
 phase_count: 6
   slice_count: 21
-  completed_slice_count: 1
-  remaining_slice_count: 20
+  completed_slice_count: 2
+  remaining_slice_count: 19
   current_phase: 1
-  current_slice: 1.2
+  current_slice: 1.3
   canonical_architecture: candidate-context-v2
   canonical_final_model: ASK_JARED_MODEL (default gpt-5.6-sol)
   intent_resolution: model-first structured output constrained by candidate-context-v2
