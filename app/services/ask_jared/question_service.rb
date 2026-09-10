@@ -277,7 +277,8 @@ module AskJared
     end
 
     def skeleton_path?(intent, plan: nil)
-      @skeleton_enabled && recognized_intent?(intent) && @skeleton_provider.respond_to?(:call) && !plan&.planning_required
+      compound_reasons = %w[compound_question multiple_intent_families]
+      @skeleton_enabled && recognized_intent?(intent) && @skeleton_provider.respond_to?(:call) && !Array(plan&.planning_reasons).any? { |reason| compound_reasons.include?(reason) }
     end
 
     def resolve_claim_refs(response, packet:)

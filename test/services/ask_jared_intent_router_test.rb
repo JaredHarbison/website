@@ -20,6 +20,12 @@ class AskJaredIntentRouterTest < ActiveSupport::TestCase
     assert_includes result[:planning_reasons], "compound_question"
   end
 
+  test "does not treat an ordinary single question mark as compound" do
+    result = @router.analyze("What kind of engineer is Jared?")
+
+    refute_includes result[:planning_reasons], "compound_question"
+  end
+
   test "marks unknown questions for planning rather than pretending to know the intent" do
     result = @router.analyze("What should a recruiter understand about Jared?")
 

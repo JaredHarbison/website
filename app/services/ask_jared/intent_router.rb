@@ -83,7 +83,7 @@ module AskJared
     def structural_complexity(text)
       words = text.split.size
       {
-        compound: text.match?(/\?|\b(?:and|also|as well as|plus|along with)\b.*\b(?:and|also|what|how|why)\b/i),
+        compound: text.count("?") > 1 || text.match?(/\b(?:and|also|as well as|plus|along with)\b/i),
         comparison: text.match?(/\b(?:most|hardest|largest|best|worst|strongest|weakest|compare|difference|versus|vs\.?|better)\b/i),
         broad: text.match?(/\b(?:what are|what kind|how would you describe|tell me about|overview|overall|in general)\b/i),
         long: words > 30
