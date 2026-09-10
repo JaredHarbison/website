@@ -104,15 +104,7 @@ A chronological queue is easy to explain and sometimes unfair in practice. Someo
 
 Fair Queue is an event-level option that orders performers by completed turns, then preserves stable queue position and ID tie-breaking. A performer’s additional requests count as later turns during the same pass. Performers with no completed history begin at the same baseline. Hosts can enable or disable the mode for an event, and pause or unpause overrides remain event-scoped.
 
-![FIFO compared with Fair Queue ordering](/images/karaoke-fifo-vs-fair-queue.svg)
-
-*Fair Queue distributes turns across performers before falling back to stable queue position.*
-
-The queue ordering lives behind `SongQueue::FairOrder` rather than inside the view or controller.
-
-![FairOrder decision flow](/images/karaoke-fair-order-decision-flow.svg)
-
-*`FairOrder` combines completed and projected turns, then uses stable queue position and ID for deterministic tie-breaking.* That leaves the canonical song record available for the rest of the application and gives the fairness model a named place to evolve.
+The queue ordering lives behind `SongQueue::FairOrder` rather than inside the view or controller. That leaves the canonical song record available for the rest of the application and gives the fairness model a named place to evolve.
 
 ![A host workspace shows the live queue with current, next, and upcoming performers alongside direct queue controls.](/images/karaoke-queue-host-queue.png)
 
@@ -181,10 +173,6 @@ Venue owners can apply a theme for an entire event or a bounded window, delegate
 *Temporary authority is explicit, time-bounded, and removable rather than implied by a shared login.*
 
 Fair Queue allows a host to intervene when the room needs it, but the intervention records the action, performer, actor, and timestamp.
-
-![Host override consistency boundary](/images/karaoke-host-override-consistency.svg)
-
-*Host intervention stays inside an event-scoped transaction and lock, then records an auditable override.*
 
 ![A recent fair queue override records a pause action with the performer, acting host, and timestamp.](/images/karaoke-queue-owner-fair-overrides.png)
 
