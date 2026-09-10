@@ -51,7 +51,7 @@ module AskJared
         Match.new(intent: intent, score: weight + specificity_bonus(pattern), pattern: pattern.source)
       end
       grouped = matches.group_by(&:intent).values.map { |intent_matches| intent_matches.max_by(&:score) }.sort_by { |match| -match.score }
-      complexity = structural_complexity(text)
+      complexity = structural_complexity(text, grouped: grouped)
       score_gap = grouped.first && grouped.second ? grouped.first.score - grouped.second.score : nil
       planning_reasons = []
       planning_reasons << "multiple_intent_families" if grouped.length > 1 && score_gap.to_i < 25
@@ -80,10 +80,15 @@ module AskJared
       pattern.source.length > 45 ? 8 : 0
     end
 
-    def structural_complexity(text)
+    def structural_complexity(text, grouped: [])
       words = text.split.size
+      conjunction = text.match?(/\b(?:and|also|as well as|plus|along with)\b/i)
       {
-        compound: text.count("?") > 1 || text.match?(/\b(?:and|also|as well as|plus|along with)\b/i),
+        # A conjunction inside one answer family is usually a request for a
+        # richer answer, not independently answerable compound questions. Only
+        # split it when the router found multiple families (or multiple '?').
+        compound: text.count("?") > 1 || (conjunction && grouped.length > 1),
+        conjunction: conjunction,
         comparison: text.match?(/\b(?:most|hardest|largest|best|worst|strongest|weakest|compare|difference|versus|vs\.?|better)\b/i),
         broad: text.match?(/\b(?:what are|what kind|how would you describe|tell me about|overview|overall|in general)\b/i),
         long: words > 30

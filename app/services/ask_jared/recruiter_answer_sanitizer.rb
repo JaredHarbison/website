@@ -39,6 +39,9 @@ module AskJared
         .gsub(/\[([^\]]+)\]\((?:https?:\/\/)?[^)]+\)/, '\\1')
         .gsub(/\*\*|__|`/, "")
         .gsub(/\\([[:punct:]])/, '\\1')
+        # Sol occasionally repeats a short word during realization. Remove
+        # adjacent duplicates without rewriting separated emphasis.
+        .gsub(/\b([[:alpha:]][[:alpha:]'-]*)\s+\1\b/i, '\\1')
         .gsub(/[ \t]{2,}/, " ")
         .gsub(/\s+([,.;:!?])/, '\\1')
         .strip

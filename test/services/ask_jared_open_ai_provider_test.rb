@@ -88,8 +88,18 @@ class AskJaredOpenAiProviderTest < ActiveSupport::TestCase
 
     assert_equal 12, result.fetch("__telemetry").fetch("input_tokens")
     assert_equal 8, result.fetch("__telemetry").fetch("output_tokens")
-    assert_equal 0, result.fetch("__telemetry").fetch("estimated_cost_cents")
-    assert_equal "2026-09-05", result.fetch("__telemetry").fetch("pricing_version")
+    assert_nil result.fetch("__telemetry").fetch("estimated_cost_cents")
+    assert_nil result.fetch("__telemetry").fetch("pricing_version")
+  end
+
+  test "uses the canonical Sol model by default" do
+    body = { choices: [ { message: { content: { status: "answer", answer: "Grounded.", evidence_ids: [], source_urls: [] }.to_json } } ] }.to_json
+    http = CapturingHttp.new(Net::HTTPSuccess.allocate.tap { |response| response.define_singleton_method(:body) { body } })
+
+    AskJared::OpenAiProvider.new(api_key: "test-key", http: http).call(question: "Question", context: [ entry(1) ])
+
+    assert_equal "gpt-5.6-sol", http.request_body.fetch("model")
+    refute http.request_body.key?("temperature")
   end
 
   test "fails closed when no API key is configured" do

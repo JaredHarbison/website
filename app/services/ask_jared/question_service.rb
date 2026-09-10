@@ -46,6 +46,7 @@ module AskJared
       # useful after the user has clearly continued the preceding exchange.
       active_intent = continuation?(question) ? (prior_intent || classified_intent) : classified_intent
       plan, architecture_used = planning(question: question, intent: active_intent, intent_candidates: intent_candidates, classification: classification, prior_evidence: prior_context["evidence_ids"], requested: architecture, admin_preview: admin_preview || qa_preview)
+      skeleton_route = skeleton_path?(active_intent, plan: plan)
       if referent_follow_up?(question) && prior_context.any?
         referent_ids = referent_entry_ids(question, prior_context)
         referent_keys = referent_ids.map(&:to_s)
@@ -57,7 +58,7 @@ module AskJared
         end
       else
         entries = retrieve_with_plan(question, intent: active_intent, plan: plan).reject { |entry| another_example?(question) && prior_primary.include?(entry.source_reference) }
-        entries = entries.first(1) if another_example?(question) && skeleton_path?(active_intent, plan: plan)
+        entries = entries.first(1) if another_example?(question) && skeleton_route
       end
       # A planned retrieval may be empty during a transient scope/provider/database
       # hiccup even though the direct, deterministic retriever can still find the
@@ -68,14 +69,14 @@ module AskJared
         entries: entries,
         intent: active_intent,
         question: question.to_s.strip,
-        max_claims: skeleton_path?(active_intent, plan: plan) ? nil : 3
+        max_claims: skeleton_route ? nil : 3
       )
       force_insufficient = active_intent.to_s == "influence_without_authority" && !supported_influence_without_authority?(packet)
       force_insufficient ||= question.to_s.match?(/convinc|persuad/i) && !packet.claims.any? { |claim| claim["text"].match?(/convinc|persuad|influenc|advocat/i) }
       telemetry = {}
       response = if packet.empty?
         insufficient_response(another_example: another_example?(question))
-      elsif skeleton_path?(active_intent, plan: plan)
+      elsif skeleton_route
         skeleton = RecruiterAnswerSkeleton.new(packet: packet, intent: active_intent, question: question.to_s.strip)
         if skeleton.roles.empty?
           insufficient_response
@@ -100,7 +101,7 @@ module AskJared
       telemetry = response.delete("__telemetry") || {} if response.is_a?(Hash)
       response = if %w[system_error validation_failure].include?(response["status"])
         response
-      elsif skeleton_path?(active_intent, plan: plan) && !packet.empty?
+      elsif skeleton_route && !packet.empty?
         validate_skeleton_response(response, question: question.to_s.strip, packet: packet)
       else
         validate_response(response, question: question.to_s.strip, packet: packet)
@@ -113,7 +114,7 @@ module AskJared
           "primary_evidence_reference" => primary_entry&.source_reference, "question_intent" => active_intent,
           "question" => question.to_s, "answer" => response["answer"], "answer_status" => response["status"],
           "evidence_ids" => response["evidence_ids"], "skeleton_roles" => response["claim_refs"],
-          "model" => model_for(skeleton_path?(active_intent, plan: plan)), "latency_ms" => ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - started_at) * 1000).round,
+          "model" => model_for(skeleton_route), "latency_ms" => ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - started_at) * 1000).round,
           "intent_path" => classified_intent.present? ? "recognized" : "fallback", "evidence_count" => response["evidence_ids"].to_a.length,
           "architecture" => architecture_used, "planner_version" => plan&.version, "planner_model" => "deterministic",
           "context_keys" => plan&.context_keys, "plan_summary" => plan&.summary,
@@ -131,7 +132,7 @@ module AskJared
       end
       response.delete("claim_refs")
       response["evaluation"] = { "architecture" => architecture_used, "planner_version" => plan&.version,
-                                  "model" => model_for(skeleton_path?(active_intent, plan: plan)), "validation" => validation_state(response),
+                                  "model" => model_for(skeleton_route), "validation" => validation_state(response),
                                   "input_tokens" => telemetry["input_tokens"], "output_tokens" => telemetry["output_tokens"],
                                   "estimated_cost_cents" => telemetry["estimated_cost_cents"], "pricing_version" => telemetry["pricing_version"] } if admin_preview && evaluation
       response
@@ -405,8 +406,7 @@ module AskJared
       entries.find { |entry| response["evidence_ids"].include?(entry.id.to_s) } || entries.first
     end
 
-    def model_for(skeleton)
-      return ENV.fetch("ASK_JARED_SKELETON_MODEL", TerraSkeletonProvider::MODEL) if skeleton
+    def model_for(_skeleton)
       ENV.fetch("ASK_JARED_MODEL", OpenAiProvider::DEFAULT_MODEL)
     end
 

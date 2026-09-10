@@ -24,7 +24,7 @@ module AskJared
 
         record_for(case_study)
       end + [ shopify_membership_story_record, membership_metric_record, dogly_agenda_product_direction_record,
-               *new_recruiter_evidence_records, *retail_career_records ]
+               *new_recruiter_evidence_records, engineering_soft_skills_profile_record, *retail_career_records ]
       entries.map { |record| with_structured_recruiter_metadata(record) }
     end
 
@@ -221,6 +221,27 @@ module AskJared
         recruiter_record("story:dogly-agenda-simplification", "Daily Agenda simplification", "Daily Agenda launched with a compromise UX containing a hero, follows, Training, Nutrition, and Wellness sections. A tour moved engagement only minimally. Jared returned to the simplification hypothesis, removed the hero, moved follows before entry, surfaced purpose immediately, presented categories sequentially, and moved secondary functions behind buttons. Task completion increased 15%. A separate wrap-up later produced observed new follows without a quantified conversion metric.", "A measured 15% task-completion increase belongs to the simplification redesign, not the separate wrap-up feature.", { "relationship" => "Dogly Daily Agenda UX simplification", "competencies" => "product_judgment, measurable_impact, failure_learning, user_research", "result" => "Daily Agenda task completion increased 15% after the simplification redesign.", "safe_attribution" => "Do not attach the 15% result to the separate wrap-up/follow feature." }, "jared-confirmed-2026-09-02"),
         recruiter_record("story:dogly-agenda-completion-alignment", "Daily Agenda completion-metric alignment", "When a stakeholder rejected granular Agenda completion metrics, Jared recognized a possible misunderstanding of the proposal. He illustrated guide, task, topic, channel, and category levels so the team could evaluate the actual hierarchy. The team implemented the feature with guide-level completion as the default.", "Resolved a hidden stakeholder misunderstanding to improve decision quality.", { "relationship" => "Dogly stakeholder and peer decision alignment", "competencies" => "stakeholder_alignment, influence_without_authority, executive_communication, product_judgment", "result" => "The team implemented guide-level completion as the default.", "safe_attribution" => "This demonstrates decision-quality intervention, not merely advocacy for Jared's preferred feature." }, "jared-confirmed-2026-09-02")
       ]
+    end
+
+    def engineering_soft_skills_profile_record
+      recruiter_record(
+        "fact:engineering-soft-skills-profile",
+        "Engineering collaboration and working style",
+        "Jared's engineering soft skills are most visible in how he works with other engineers and stakeholders. He used code review and senior guidance while moving from backend work into full-stack work, then reciprocated by retaining migrations and routing while a frontend engineer implemented bounded controller actions. When a stakeholder rejected granular Agenda completion metrics, Jared clarified the hierarchy so the team could evaluate the proposal accurately. In a technical disagreement, he documented dependencies and time cost while acknowledging the consistency benefit. His feedback and calibrated-direction examples also include earlier retail leadership; those examples should remain clearly separate from engineering-team experience.",
+        "Engineering collaboration is grounded in code review, reciprocal task boundaries, stakeholder clarification, and explicit technical tradeoffs; feedback and mentorship examples include a separately scoped retail context.",
+        {
+          "relationship" => "Engineering collaboration and recruiter-facing working style",
+          "competencies" => "engineering_collaboration, communication, stakeholder_alignment, technical_disagreement, product_judgment, feedback_coachability",
+          "claims" => [
+            { "text" => "Jared used code review and senior guidance while moving from backend work into full-stack work, then reciprocated by retaining migrations and routing while a frontend engineer implemented bounded controller actions.", "kind" => "demonstrated", "role" => "direct_fact" },
+            { "text" => "Jared clarified a stakeholder's proposed Agenda completion hierarchy so the team could evaluate the proposal accurately.", "kind" => "demonstrated", "role" => "action" },
+            { "text" => "In a technical disagreement, Jared documented dependencies and time cost while acknowledging the consistency benefit of the alternative.", "kind" => "demonstrated", "role" => "action" }
+          ],
+          "limitations" => "Feedback and calibrated-direction examples include retail leadership context; they do not establish engineering people management or sustained large-team engineering experience.",
+          "safe_attribution" => "Use engineering examples as engineering evidence and label retail examples by domain."
+        },
+        "Jared-confirmed-2026-09-10"
+      )
     end
 
     def with_structured_recruiter_metadata(record)

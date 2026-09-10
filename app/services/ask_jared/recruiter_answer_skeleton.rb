@@ -21,8 +21,22 @@ module AskJared
       "impact" => { sources: %w[story:jcrew-dress-swim-decision story:dogly-agenda-simplification career:jcrew-associate-store-manager-columbus-circle], roles: %w[action metric], preferred_roles: %w[action metric], max: 2 },
       "status" => { roles: %w[planned_state boundary direct_fact action], preferred_roles: %w[planned_state boundary action], max: 2 },
       "stakeholder" => { sources: %w[story:dogly-agenda-completion-alignment story:dogly-pre-accelerator-prioritization story:dogly-react-migration-disagreement], preferred_roles: %w[action context], max: 1 },
-      "soft_skills" => { sources: %w[story:dogly-agenda-completion-alignment story:dogly-engineering-collaboration story:jcrew-crisis-leadership-feedback story:anthropologie-succession-mentorship], roles: %w[profile direct_fact action feedback], max: 3 },
-      "influence_without_authority" => { roles: %w[action direct_fact], max: 2 }
+      "soft_skills" => { sources: %w[fact:engineering-soft-skills-profile story:dogly-agenda-completion-alignment story:dogly-engineering-collaboration story:jcrew-crisis-leadership-feedback story:anthropologie-succession-mentorship], roles: %w[profile direct_fact action feedback], max: 3 },
+      "influence_without_authority" => { roles: %w[action direct_fact], max: 2 },
+      "scope" => { roles: %w[direct_fact action], max: 3 },
+      "complexity" => { roles: %w[direct_fact action process metric], max: 3 },
+      "role_fit" => { roles: %w[profile trajectory scope direct_fact action], max: 3 },
+      "frontend" => { roles: %w[direct_fact action profile], max: 2 },
+      "backend" => { roles: %w[direct_fact action profile], max: 2 },
+      "integration" => { roles: %w[direct_fact action process], max: 2 },
+      "architecture" => { roles: %w[direct_fact action process], max: 2 },
+      "testing" => { roles: %w[direct_fact action process], max: 2 },
+      "security" => { roles: %w[direct_fact action boundary], max: 2 },
+      "production" => { roles: %w[direct_fact action process metric], max: 2 },
+      "ai_data" => { roles: %w[direct_fact action process], max: 2 },
+      "leadership" => { roles: %w[profile direct_fact action feedback], max: 2 },
+      "career" => { roles: %w[profile trajectory direct_fact action], max: 3 },
+      "availability" => { roles: %w[direct_fact boundary], max: 2 }
     }.freeze
 
     attr_reader :intent, :question, :roles, :relationships

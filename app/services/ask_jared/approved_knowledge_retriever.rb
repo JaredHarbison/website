@@ -1,6 +1,11 @@
 module AskJared
   class ApprovedKnowledgeRetriever
     DEFAULT_LIMIT = 6
+    BOUNDARY_EXCLUDED_INTENTS = %w[
+      characterization candidacy role_fit frontend backend integration architecture testing security ai_data
+      leadership career rails react collaboration learning failure feedback prioritization disagreement mentorship
+      ambiguity impact production stakeholder status soft_skills influence_without_authority
+    ].freeze
 
     INTENT_SPECS = {
       "characterization" => { terms: [ "rails", "react", "full-stack", "engineering", "technical ownership", "product design" ], kinds: %w[demonstrated] },
@@ -54,7 +59,7 @@ module AskJared
       "ambiguity" => { "story:doglydaily-three-send-ux" => 5.0 },
       "disagreement" => { "story:dogly-react-migration-disagreement" => 5.0 },
       "stakeholder" => { "story:dogly-agenda-completion-alignment" => 6.0, "story:dogly-pre-accelerator-prioritization" => 4.0, "story:dogly-react-migration-disagreement" => 3.0 },
-      "soft_skills" => { "story:dogly-agenda-completion-alignment" => 7.0, "story:dogly-engineering-collaboration" => 6.0, "story:jcrew-crisis-leadership-feedback" => 5.0, "story:anthropologie-succession-mentorship" => 5.0, "fact:engineering-profile" => 4.0 },
+      "soft_skills" => { "fact:engineering-soft-skills-profile" => 14.0, "story:dogly-agenda-completion-alignment" => 7.0, "story:dogly-engineering-collaboration" => 6.0, "story:jcrew-crisis-leadership-feedback" => 5.0, "story:anthropologie-succession-mentorship" => 5.0, "fact:engineering-profile" => 4.0 },
       "impact" => { "story:jcrew-dress-swim-decision" => 5.0, "story:dogly-agenda-simplification" => 4.0, "career:jcrew-associate-store-manager-columbus-circle" => 3.0 },
       "complexity" => { "case-study:dogly-shopify-integration" => 5.0, "case-study:dogly-membership" => 4.0, "story:doglydaily-technical-debt-learning" => 4.0, "case-study:dogly-product-design" => 3.0 }
     }.freeze
@@ -123,7 +128,7 @@ module AskJared
       return false unless kind_allowed
       return false if intent == "impact" && (claim_kinds.include?("planned") || !evidence["result"].to_s.match?(/\d|%|\$/))
 
-      if %w[characterization candidacy rails react collaboration learning failure feedback prioritization disagreement mentorship ambiguity impact production stakeholder status].include?(intent)
+      if BOUNDARY_EXCLUDED_INTENTS.include?(intent)
         return false if claim_kinds.include?("boundary")
       end
 

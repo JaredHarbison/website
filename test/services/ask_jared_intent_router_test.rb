@@ -26,6 +26,13 @@ class AskJaredIntentRouterTest < ActiveSupport::TestCase
     refute_includes result[:planning_reasons], "compound_question"
   end
 
+  test "does not treat a single answer family joined by and as compound" do
+    result = @router.analyze("What is his experience with product-thinking and tradeoffs?")
+
+    assert_equal [ "prioritization" ], result[:candidates]
+    refute_includes result[:planning_reasons], "compound_question"
+  end
+
   test "marks unknown questions for planning rather than pretending to know the intent" do
     result = @router.analyze("What should a recruiter understand about Jared?")
 

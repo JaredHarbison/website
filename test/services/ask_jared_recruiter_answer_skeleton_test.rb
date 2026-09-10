@@ -5,6 +5,11 @@ class AskJaredRecruiterAnswerSkeletonTest < ActiveSupport::TestCase
     KnowledgeEntry.delete_all
   end
 
+  test "defines an explicit skeleton policy for every recognized intent" do
+    assert_equal AskJared::ApprovedKnowledgeRetriever::INTENT_SPECS.keys.sort,
+                 AskJared::RecruiterAnswerSkeleton::ROLE_POLICIES.keys.sort
+  end
+
   test "selects only intent-compatible minimum roles" do
     collaboration = entry("story:dogly-engineering-collaboration", "Direct engineer collaboration.", "direct_fact")
     stripe = entry("story:stripe-learning-ramp", "Learning ramp was roughly 15%.", "qualified_metric", "self_estimate")

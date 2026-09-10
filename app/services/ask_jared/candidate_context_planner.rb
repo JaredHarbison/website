@@ -6,10 +6,18 @@ module AskJared
 
     def call(question:, intent:, prior_evidence_ids: [], intent_candidates: nil, planning_required: false, planning_reasons: [])
       started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-      records = @context.for(intent, question: question)
+      # A compound question is allowed to carry more than one answer family.
+      # Load guidance for every selected family, then deduplicate by stable key;
+      # using only the primary family silently drops contracts for the secondary
+      # part of the question.
+      candidate_intents = Array(intent_candidates).presence || [ intent ]
+      records = candidate_intents.flat_map { |candidate| @context.for(candidate, question: question) }
+                                  .uniq { |record| record.fetch("key") }
+                                  .sort_by { |record| [ -record.fetch("priority", 0).to_i, record.fetch("key") ] }
+                                  .first(18)
       sources = records.flat_map { |record| Array(record["source_references"]) }.uniq
       themes = records.select { |record| Array(record["affects"]).include?("interpretation") || Array(record["affects"]).include?("story_ranking") }.map { |record| record["purpose"] }.first(6)
-      contract = contract_for(intent, question)
+      contract = contract_for(intent, question, candidate_intents: candidate_intents, planning_reasons: planning_reasons)
       queries = [ question ] + Array(contract[:retrieval_queries])
       queries += records.filter_map { |record| record["guidance"] if Array(record["affects"]).include?("retrieval") }.first(3)
       AnswerPlan.new(
@@ -70,8 +78,16 @@ module AskJared
     # These are deliberately structured planning rules rather than more prose in
     # the private corpus. They make the internal layer constrain retrieval and
     # synthesis even when the matching question has no exact intent label.
-    def contract_for(intent, question)
+    def contract_for(intent, question, candidate_intents: [], planning_reasons: [])
       text = question.to_s.downcase
+      if planning_reasons.include?("compound_question") || planning_reasons.include?("multiple_intent_families")
+        return {
+          evidence_requirements: [ "one_supported_answer_for_each_intent_family" ],
+          scope_rules: [ "Answer each distinct part separately.", "Do not merge evidence from different intent families into one claim.", "If one part is unsupported, identify only that gap and answer the supported part." ],
+          fallback_behavior: "Answer supported parts independently and omit unsupported parts rather than substituting adjacent evidence.",
+          retrieval_queries: candidate_intents.first(3).map { |candidate| "Jared #{candidate.to_s.tr('_', ' ')} recruiter evidence" }
+        }
+      end
       if broad_characterization?(intent, question)
         return {
           evidence_requirements: %w[canonical_profile_statement distinct_supporting_dimensions],

@@ -6,7 +6,7 @@ require "yaml"
 module AskJared
   class OpenAiProvider
     ENDPOINT = URI("https://api.openai.com/v1/chat/completions")
-    DEFAULT_MODEL = "gpt-4o-mini"
+    DEFAULT_MODEL = "gpt-5.6-sol"
     REQUEST_TIMEOUT_SECONDS = 45
     PRICING = YAML.safe_load(File.read(Rails.root.join("config/ask_jared_pricing.yml")), permitted_classes: [ Date ], symbolize_names: true).freeze
     MAX_CONTEXT_ENTRIES = 6
@@ -89,16 +89,17 @@ module AskJared
       user_content = "Question: #{question}\n\nApproved claim packet:\n#{format_context(context)}"
       user_content = "Question plan (planning guidance only; never factual authority):\n#{plan.summary.to_json}\n\n#{user_content}" if plan
       user_content = "#{user_content}\n\n#{messages.first[:content]}\n\nPrevious draft:\n#{response.to_json}" if messages
-      {
+      body = {
         model: @model,
-        temperature: 0,
-        max_tokens: 700,
+        max_completion_tokens: 700,
         response_format: RESPONSE_SCHEMA,
         messages: [
           { role: "system", content: system_prompt },
           { role: "user", content: user_content }
         ]
       }
+      body[:temperature] = 0 unless @model.start_with?("gpt-5")
+      body
     end
 
     def telemetry(body)

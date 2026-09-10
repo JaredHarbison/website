@@ -169,6 +169,13 @@ class AskJaredQuestionServiceTest < ActiveSupport::TestCase
     assert_empty AskUsageEvent.all
   end
 
+  test "reports one canonical model for skeleton and generic branches" do
+    service = AskJared::QuestionService.new(token_service: @token_service, provider: FakeProvider.new({}), skeleton_provider: FakeProvider.new({}))
+
+    assert_equal "gpt-5.6-sol", service.send(:model_for, true)
+    assert_equal "gpt-5.6-sol", service.send(:model_for, false)
+  end
+
   test "sanitizes model markdown and internal evidence references before recruiter delivery" do
     entry = KnowledgeEntry.create!(title: "Approved fact", body: "A recruiter-safe fact.", entry_type: "fact", approval_status: "approved", visibility: "recruiter_visible", source_type: "public_site", source_reference: "sanitized", source_fingerprint: "sanitized")
     provider = FakeProvider.new({ "status" => "answer", "answer" => "**Onboarding UX** improved. (Evidence [17]) &#x20; 1\\.", "evidence_ids" => [ entry.id.to_s ], "source_urls" => [] })
