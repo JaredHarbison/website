@@ -28,7 +28,7 @@ class Admin::OperationsControllerTest < ActionDispatch::IntegrationTest
 
     get "/admin/system"
     assert_response :success
-    assert_includes response.body, "gpt-5.6-terra"
+    assert_includes response.body, AskJared::ModelConfig::CANONICAL_MODEL
   end
 
   test "admin issue list and detail preserve diagnostics privately" do

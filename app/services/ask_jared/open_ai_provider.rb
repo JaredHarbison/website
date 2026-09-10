@@ -6,7 +6,7 @@ require "yaml"
 module AskJared
   class OpenAiProvider
     ENDPOINT = URI("https://api.openai.com/v1/chat/completions")
-    DEFAULT_MODEL = "gpt-5.6-sol"
+    DEFAULT_MODEL = ModelConfig::CANONICAL_MODEL
     REQUEST_TIMEOUT_SECONDS = 45
     PRICING = YAML.safe_load(File.read(Rails.root.join("config/ask_jared_pricing.yml")), permitted_classes: [ Date ], symbolize_names: true).freeze
     MAX_CONTEXT_ENTRIES = 6

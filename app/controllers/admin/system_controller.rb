@@ -13,8 +13,8 @@ module Admin
         "Candidate Context v2 draft records" => CandidateContextRecord.where(approval_status: "draft").count
       }
       @issue_email_configured = ENV["JARED_ISSUE_EMAIL"].present?
-      @recognized_model = "gpt-5.6-terra"
-      @fallback_model = ENV["ASK_JARED_MODEL"].presence || "configured fallback"
+      @recognized_model = AskJared::ModelConfig::CANONICAL_MODEL
+      @fallback_model = "Not used; one canonical model is configured"
       answer_events = EngagementEvent.from_real_prospect.where(event_type: "answer_returned").where("occurred_at >= ?", 30.days.ago)
       statuses = answer_events.pluck(:metadata).group_by { |metadata| metadata["answer_status"].presence || "unknown" }.transform_values(&:count)
       @successful_answers = statuses.fetch("answer", 0)

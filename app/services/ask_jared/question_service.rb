@@ -407,7 +407,7 @@ module AskJared
     end
 
     def model_for(_skeleton)
-      ENV.fetch("ASK_JARED_MODEL", OpenAiProvider::DEFAULT_MODEL)
+      ModelConfig::CANONICAL_MODEL
     end
 
     class NullProvider

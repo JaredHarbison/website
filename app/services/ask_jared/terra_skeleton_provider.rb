@@ -5,7 +5,7 @@ require "uri"
 module AskJared
   class TerraSkeletonProvider
     ENDPOINT = URI("https://api.openai.com/v1/chat/completions")
-    MODEL = OpenAiProvider::DEFAULT_MODEL
+    MODEL = ModelConfig::CANONICAL_MODEL
     REQUEST_TIMEOUT_SECONDS = 45
     RESPONSE_SCHEMA = {
       type: "json_schema",
@@ -24,7 +24,7 @@ module AskJared
       }
     }.freeze
 
-    def initialize(api_key: ENV["OPENAI_API_KEY"], model: ENV.fetch("ASK_JARED_MODEL", MODEL), http: Net::HTTP)
+    def initialize(api_key: ENV["OPENAI_API_KEY"], model: MODEL, http: Net::HTTP)
       @api_key = api_key
       @model = model
       @http = http

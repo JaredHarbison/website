@@ -98,7 +98,7 @@ class AskJaredOpenAiProviderTest < ActiveSupport::TestCase
 
     AskJared::OpenAiProvider.new(api_key: "test-key", http: http).call(question: "Question", context: [ entry(1) ])
 
-    assert_equal "gpt-5.6-sol", http.request_body.fetch("model")
+    assert_equal AskJared::ModelConfig::CANONICAL_MODEL, http.request_body.fetch("model")
     refute http.request_body.key?("temperature")
   end
 
