@@ -70,6 +70,35 @@ class AskJaredEvaluationRunnerTest < ActiveSupport::TestCase
     end
   end
 
+  test "uses the selected model when provider telemetry omits it so completed work resumes" do
+    calls = 0
+    with_runner do |runner, path|
+      2.times do
+        runner.run(cases: [ evaluation_case("Q1") ], model: "gpt-5.6-sol", architecture: "public-corpus-only") do
+          calls += 1
+          { "status" => "answer", "answer" => "Done.", "evidence_ids" => [] }
+        end
+      end
+
+      result = JSON.parse(File.read(path)).fetch("results").values.first
+      assert_equal 1, calls
+      assert_equal "gpt-5.6-sol", result.fetch("reported_model")
+    end
+  end
+
+  test "resumes historical completed checkpoints that lack provider model telemetry" do
+    with_runner do |runner, path|
+      File.write(path, JSON.generate("version" => 1, "results" => {
+        "public-corpus-only:gpt-5.6-sol:Q1" => {
+          "status" => "completed", "model" => "gpt-5.6-sol", "architecture" => "public-corpus-only"
+        }
+      }))
+
+      runner.run(cases: [ evaluation_case("Q1") ], model: "gpt-5.6-sol", architecture: "public-corpus-only") { raise "should resume" }
+      assert_equal 1, JSON.parse(File.read(path)).fetch("results").length
+    end
+  end
+
   test "records provider and validation failures instead of hanging" do
     with_runner(retries: 0) do |runner, path|
       runner.run(cases: [ evaluation_case("provider"), evaluation_case("validation") ], model: "gpt-5.6-terra", architecture: "candidate-context-v2") do |item, **|

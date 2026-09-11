@@ -20,6 +20,8 @@ gem "redcarpet", "~> 3.6"
 
 group :development, :test do
   gem "sqlite3", "~> 2.0"
+  # Load local development credentials without checking them into source.
+  gem "dotenv-rails", "~> 3.1"
 end
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]

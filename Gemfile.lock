@@ -94,6 +94,10 @@ GEM
       railties (>= 7.0)
       responders
       warden (~> 1.2.3)
+    dotenv (3.2.0)
+    dotenv-rails (3.2.0)
+      dotenv (= 3.2.0)
+      railties (>= 6.1)
     drb (2.2.3)
     erb (6.0.4)
     erubi (1.13.1)
@@ -301,6 +305,7 @@ DEPENDENCIES
   brakeman
   debug
   devise (~> 5.0)
+  dotenv-rails (~> 3.1)
   jbuilder
   pg (~> 1.5)
   propshaft

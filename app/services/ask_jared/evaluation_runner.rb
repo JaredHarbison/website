@@ -64,7 +64,10 @@ module AskJared
             "answer" => response["answer"],
             "evidence_ids" => Array(response["evidence_ids"]),
             "validation" => response.dig("evaluation", "validation") || response["validation"] || "passed",
-            "reported_model" => response.dig("evaluation", "model") || response["model"],
+            # A provider may omit model telemetry even though the runner
+            # selected one. Persist the requested model so a completed arm is
+            # safely resumable instead of being needlessly re-billed.
+            "reported_model" => response.dig("evaluation", "model") || response["model"] || model,
             "input_tokens" => response.dig("evaluation", "input_tokens"),
             "output_tokens" => response.dig("evaluation", "output_tokens"),
             "estimated_cost_cents" => response.dig("evaluation", "estimated_cost_cents"),
@@ -104,7 +107,7 @@ module AskJared
     end
 
     def resumable?(result, model:, architecture:)
-      result.is_a?(Hash) && result["model"] == model && result["architecture"] == architecture && (result["status"].to_s != "completed" || result["reported_model"].to_s == model) && result["status"].to_s.in?(%w[completed provider_timeout provider_error structured_response_error validation_error])
+      result.is_a?(Hash) && result["model"] == model && result["architecture"] == architecture && (result["status"].to_s != "completed" || result["reported_model"].blank? || result["reported_model"].to_s == model) && result["status"].to_s.in?(%w[completed provider_timeout provider_error structured_response_error validation_error])
     end
 
     def load_checkpoint
