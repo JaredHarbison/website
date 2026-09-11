@@ -51,4 +51,32 @@ class AskJaredPublicCorpusEvaluationTest < ActiveSupport::TestCase
       assert_equal [ "public-corpus-only" ], results.map { |result| result.fetch("architecture") }.uniq
     end
   end
+
+  test "runs corpus-only and Rules arms against the same frozen battery" do
+    baseline_calls = []
+    rules_calls = []
+    baseline = Struct.new(:calls) do
+      def call(question:)
+        calls << question
+        { "status" => "answer", "answer" => "Corpus-only.", "evidence_ids" => [] }
+      end
+    end.new(baseline_calls)
+    rules = Struct.new(:calls) do
+      def call(question:)
+        calls << question
+        { "status" => "answer", "answer" => "Rules-qualified.", "evidence_ids" => [] }
+      end
+    end.new(rules_calls)
+
+    Dir.mktmpdir do |directory|
+      checkpoint = File.join(directory, "paired-public-corpus.json")
+      AskJared::PublicCorpusEvaluation.new(answerer: baseline, rules_answerer: rules).run_pair(checkpoint_path: checkpoint, model: "test-model")
+      results = JSON.parse(File.read(checkpoint)).fetch("results").values
+
+      assert_equal 20, baseline_calls.length
+      assert_equal baseline_calls, rules_calls
+      assert_equal 40, results.length
+      assert_equal %w[public-corpus-only public-corpus-plus-rules], results.map { |result| result.fetch("architecture") }.uniq.sort
+    end
+  end
 end

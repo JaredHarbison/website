@@ -1,8 +1,9 @@
 require "json"
 
 module AskJared
-  # Evaluation-only answerer. Its inputs are published documents only; Rules
-  # and private KnowledgeEntry records are intentionally absent in this arm.
+  # Evaluation-only answerer. Its inputs are published documents only; an
+  # optional Rules registry constrains claims but supplies no candidate facts.
+  # Private KnowledgeEntry records are intentionally absent in both arms.
   class PublicCorpusAnswerer
     SCHEMA = {
       name: "ask_jared_public_corpus_answer",
@@ -17,9 +18,10 @@ module AskJared
       }
     }.freeze
 
-    def initialize(provider:, retriever: PublicCorpusRetriever.new)
+    def initialize(provider:, retriever: PublicCorpusRetriever.new, rules: nil)
       @provider = provider
       @retriever = retriever
+      @rules = rules
     end
 
     def call(question:)
@@ -42,7 +44,8 @@ module AskJared
     private
 
     def system_prompt
-      <<~PROMPT
+      rules = @rules ? "\nRules:\n- #{@rules.instructions.join("\n- ")}" : ""
+      <<~PROMPT + rules
         Answer the recruiter question using only the supplied published source documents.
         Do not infer ownership, expertise, rankings, causality, metrics, chronology, or personal preference.
         If the sources do not support the requested claim, use insufficient_information and say only what is missing.

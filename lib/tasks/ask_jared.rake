@@ -19,4 +19,18 @@ namespace :ask_jared do
     puts "Postflight:"
     puts JSON.pretty_generate(finalizer.validation_report)
   end
+
+  desc "Run the public-corpus-only and public-corpus-plus-Rules evaluation arms"
+  task evaluate_public_corpus: :environment do
+    model = ENV.fetch("ASK_JARED_MODEL", AskJared::ModelConfig::CANONICAL_MODEL)
+    checkpoint_path = ENV.fetch("ASK_JARED_EVALUATION_CHECKPOINT", Rails.root.join("docs/ask-jared/phase2/public-corpus-paired-#{model}.json").to_s)
+    provider = AskJared::OpenAiProvider.new(model: model)
+    evaluation = AskJared::PublicCorpusEvaluation.new(
+      answerer: AskJared::PublicCorpusAnswerer.new(provider: provider),
+      rules_answerer: AskJared::PublicCorpusAnswerer.new(provider: provider, rules: AskJared::PublicCorpusRules.default)
+    )
+
+    evaluation.run_pair(checkpoint_path: checkpoint_path, model: model)
+    puts "Paired public-corpus evaluation checkpoint: #{checkpoint_path}"
+  end
 end
