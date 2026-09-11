@@ -18,10 +18,10 @@ contract for the next release cycle.
 ```yaml
 phase_count: 6
   slice_count: 22
-  completed_slice_count: 2
-  remaining_slice_count: 20
+  completed_slice_count: 4
+  remaining_slice_count: 18
   current_phase: 1
-  current_slice: 1.3
+  current_slice: 1.5
   canonical_architecture: candidate-context-v2
   canonical_final_model: ASK_JARED_MODEL (default gpt-5.6-sol)
   question_understanding: model-first structured decision output
@@ -160,7 +160,7 @@ model without exposing credentials.
 Acceptance: no production answer path silently selects `gpt-4o-mini`; tests
 assert model selection for narrow, broad, compound, repair, and planner calls.
 
-#### 1.2 Model-first intent and answer-contract resolution — current
+#### 1.2 Model-first intent and answer-contract resolution — complete
 
 Create a structured intent-resolution service using the canonical model and
 private candidate-context guidance. The output must be schema-constrained and
@@ -178,7 +178,7 @@ follow-up, and compound questions resolve to stable structured contracts;
 malformed or out-of-contract output fails closed to an explicit unclassified
 contract without silently selecting a legacy route.
 
-#### 1.3 Decision schema and policy contract
+#### 1.3 Decision schema and policy contract — complete
 
 Create one small registry for decision fields, retrieval qualification, source
 ranking hints, answer shape, policy checks, and fallback. Keep semantic
@@ -190,7 +190,7 @@ Acceptance: adding a decision shape requires one definition and its tests; no
 recognized question falls back to first claims due to a missing policy; adding
 synonyms alone is not treated as an architecture improvement.
 
-#### 1.4 Explicit question decision object
+#### 1.4 Explicit question decision object — complete
 
 Replace loose routing arguments with a validated decision object containing
 classification, answer parts, scope, operation, dimensions, unsupported
@@ -199,7 +199,7 @@ per request and use it for retrieval, synthesis, validation, and telemetry.
 
 Acceptance: one persisted decision explains every production answer or failure.
 
-#### 1.5 Shared validation and telemetry pipeline
+#### 1.5 Shared validation and telemetry pipeline — current
 
 Extract common normalization, claim resolution, repair, failure classification,
 and telemetry logic. Preserve strict evidence validation while making partial

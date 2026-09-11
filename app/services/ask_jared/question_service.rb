@@ -40,14 +40,14 @@ module AskJared
       prior_primary = prior_primary_evidence(session_digest)
       prior_context = prior_answer_context(session_digest)
       prior_intent = prior_question_intent(session_digest)
-      classification = resolve_intent(question: question, prior_context: prior_context)
-      classified_intent = classification[:primary].to_s == "unclassified" ? nil : classification[:primary]
-      intent_candidates = Array(classification[:candidates]).reject { |candidate| candidate.to_s == "unclassified" }.presence || [ classified_intent ].compact
+      decision = resolve_decision(question: question, prior_context: prior_context)
+      classified_intent = decision.recognized? ? decision.primary : nil
+      intent_candidates = decision.candidates.reject { |candidate| candidate == "unclassified" }.presence || [ classified_intent ].compact
       # A new question must establish its own intent. Prior intent is only
       # useful after the user has clearly continued the preceding exchange.
       active_intent = continuation?(question) ? (prior_intent || classified_intent) : classified_intent
-      plan, architecture_used = planning(question: question, intent: active_intent, intent_candidates: intent_candidates, classification: classification, prior_evidence: prior_context["evidence_ids"], requested: architecture, admin_preview: admin_preview || qa_preview)
-      skeleton_route = skeleton_path?(active_intent, plan: plan)
+      plan, architecture_used = planning(question: question, decision: decision, intent: active_intent, intent_candidates: intent_candidates, prior_evidence: prior_context["evidence_ids"], requested: architecture, admin_preview: admin_preview || qa_preview)
+      skeleton_route = skeleton_path?(decision: decision, intent: active_intent, plan: plan)
       if referent_follow_up?(question) && prior_context.any?
         referent_ids = referent_entry_ids(question, prior_context)
         referent_keys = referent_ids.map(&:to_s)
@@ -119,7 +119,8 @@ module AskJared
           "model" => model_for(skeleton_route), "latency_ms" => ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - started_at) * 1000).round,
           "intent_path" => classified_intent.present? ? "recognized" : "fallback", "evidence_count" => response["evidence_ids"].to_a.length,
           "architecture" => architecture_used, "planner_version" => plan&.version, "planner_model" => "deterministic",
-          "intent_resolution" => classification[:resolution_mode], "intent_resolution_model" => ModelConfig::CANONICAL_MODEL,
+          "intent_resolution" => decision.resolution_mode, "intent_resolution_model" => ModelConfig::CANONICAL_MODEL,
+          "question_decision" => decision.to_h.merge("selected_model_path" => model_for(skeleton_route)),
           "context_keys" => plan&.context_keys, "plan_summary" => plan&.summary,
           "example_evidence_ids" => example_evidence_groups(response: response, packet: packet),
           "turn" => EngagementEvent.where(session_digest: session_digest, event_type: "answer_returned").count + 1,
@@ -161,15 +162,15 @@ module AskJared
       (preferred + unique.reject { |entry| preferred.include?(entry) }).first(12)
     end
 
-    def planning(question:, intent:, intent_candidates:, classification:, prior_evidence:, requested:, admin_preview:)
+    def planning(question:, decision:, intent:, intent_candidates:, prior_evidence:, requested:, admin_preview:)
       # Candidate Context v2 is canonical for public, admin-preview, and QA
       # traffic. The old baseline and v1 planner were evaluation variants and
       # must not silently re-enter production when a planner errors.
       effective_architecture = PUBLIC_DEFAULT_ARCHITECTURE
       [ @v2_planner.call(question: question.to_s.strip, intent: intent, intent_candidates: intent_candidates,
-                         planning_required: !!classification[:planning_required],
-                         planning_reasons: Array(classification[:planning_reasons]), prior_evidence_ids: prior_evidence,
-                         resolution: classification), effective_architecture ]
+                         planning_required: decision.planning_required,
+                         planning_reasons: decision.planning_reasons, prior_evidence_ids: prior_evidence,
+                         resolution: decision.to_h), effective_architecture ]
     rescue StandardError => error
       Rails.logger.error("Ask Jared candidate-context-v2 planning failed: #{error.class}: #{error.message}")
       # Keep the canonical architecture and use the provider's evidence-only
@@ -177,12 +178,10 @@ module AskJared
       [ nil, PUBLIC_DEFAULT_ARCHITECTURE ]
     end
 
-    def resolve_intent(question:, prior_context:)
+    def resolve_decision(question:, prior_context:)
       if @provider.respond_to?(:structured_call)
         resolution = @intent_resolver.call(question: question, prior_context: prior_context)
-        resolution = resolution.deep_symbolize_keys
-        resolution[:resolution_mode] = "model"
-        resolution
+        QuestionDecision.from_resolution(resolution.merge("resolution_mode" => "model"))
       else
         # Test doubles and non-OpenAI providers retain the legacy seam so unit
         # tests can exercise retrieval independently. Production providers use
@@ -191,8 +190,7 @@ module AskJared
         result = result.deep_symbolize_keys
         result[:primary] ||= @retriever.classified_intent(question) if @retriever.respond_to?(:classified_intent)
         result[:candidates] ||= [ result[:primary] ].compact
-        result[:resolution_mode] = "test-double"
-        result
+        QuestionDecision.from_resolution(result.merge(resolution_mode: "test-double"))
       end
     end
 
@@ -300,9 +298,9 @@ module AskJared
       RECOGNIZED_INTENTS.include?(intent.to_s)
     end
 
-    def skeleton_path?(intent, plan: nil)
+    def skeleton_path?(decision:, intent:, plan: nil)
       compound_reasons = %w[compound_question multiple_intent_families]
-      @skeleton_enabled && recognized_intent?(intent) && @skeleton_provider.respond_to?(:call) && !Array(plan&.planning_reasons).any? { |reason| compound_reasons.include?(reason) }
+      @skeleton_enabled && decision.recognized? && recognized_intent?(intent) && @skeleton_provider.respond_to?(:call) && !Array(plan&.planning_reasons).any? { |reason| compound_reasons.include?(reason) }
     end
 
     def resolve_claim_refs(response, packet:)

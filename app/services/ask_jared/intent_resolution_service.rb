@@ -2,30 +2,13 @@ require "json"
 
 module AskJared
   class IntentResolutionService
-    INTENTS = %w[
-      characterization product ownership project_story contribution
-      prioritization complexity failure soft_skills collaboration mentorship
-      leadership stakeholder influence_without_authority role_fit candidacy
-      risk organization frontend backend rails react typescript integration
-      architecture testing security production impact ambiguity learning
-      status scope career availability unclassified
-    ].freeze
-
-    SUBJECTS = %w[candidate project product technology decision behavior outcome role experience unknown].freeze
-    OPERATIONS = %w[identify summarize explain compare select assess verify describe recommend follow_up].freeze
-    DIMENSIONS = %w[
-      technical_scope technical_depth product_judgment ownership contribution
-      collaboration communication leadership mentorship decision_making tradeoffs
-      prioritization ambiguity outcome impact learning adaptability team_context
-      employer chronology shipped_status role_fit gap
-    ].freeze
-    SCOPES = %w[unrestricted dogly non_dogly other_employer personal unknown].freeze
-    ANSWER_SHAPES = %w[direct profile story comparison compound gap follow_up insufficient].freeze
-    EVIDENCE_REQUIREMENTS = %w[
-      profile_fact project_identity direct_contribution ownership_boundary
-      concrete_behavior outcome limitation employer_identity chronology status
-      comparison_basis learning_trajectory
-    ].freeze
+    INTENTS = DecisionPolicy::INTENTS
+    SUBJECTS = DecisionPolicy::SUBJECTS
+    OPERATIONS = DecisionPolicy::OPERATIONS
+    DIMENSIONS = DecisionPolicy::DIMENSIONS
+    SCOPES = DecisionPolicy::SCOPES
+    ANSWER_SHAPES = DecisionPolicy::ANSWER_SHAPES
+    EVIDENCE_REQUIREMENTS = DecisionPolicy::EVIDENCE_REQUIREMENTS
 
     SCHEMA = {
       name: "ask_jared_intent_resolution",
@@ -48,9 +31,15 @@ module AskJared
           } },
           "answer_shape" => { type: "string", enum: ANSWER_SHAPES },
           "compound" => { type: "boolean" },
+          "unsupported_subrequests" => { type: "array", maxItems: 4, items: {
+            type: "object", properties: {
+              "subject" => { type: "string", enum: SUBJECTS },
+              "reason" => { type: "string", enum: %w[missing_evidence unsupported_quantification out_of_scope] }
+            }, required: %w[subject reason], additionalProperties: false
+          } },
           "confidence" => { type: "number", minimum: 0, maximum: 1 }
         },
-        required: %w[primary_intent intent_candidates question_parts answer_shape compound confidence],
+        required: %w[primary_intent intent_candidates question_parts answer_shape compound unsupported_subrequests confidence],
         additionalProperties: false
       }
     }.freeze
@@ -105,6 +94,7 @@ module AskJared
         "parts" => parts.presence || [ { "subject" => "unknown", "operation" => "describe", "dimensions" => [], "scope" => "unknown", "evidence_requirements" => [] } ],
         "answer_shape" => ANSWER_SHAPES.include?(result["answer_shape"].to_s) ? result["answer_shape"].to_s : "insufficient",
         "compound" => result["compound"] == true,
+        "unsupported_subrequests" => Array(result["unsupported_subrequests"]),
         "confidence" => result["confidence"].to_f.clamp(0.0, 1.0),
         "planning_required" => true,
         "planning_reasons" => [ "model_intent_resolution" ] + (result["compound"] == true ? [ "compound_question" ] : [])
@@ -115,7 +105,7 @@ module AskJared
       {
         "primary" => "unclassified", "candidates" => [ "unclassified" ],
         "parts" => [ { "subject" => "unknown", "operation" => "describe", "dimensions" => [], "scope" => "unknown", "evidence_requirements" => [] } ],
-        "answer_shape" => "insufficient", "compound" => false, "confidence" => 0.0,
+        "answer_shape" => "insufficient", "compound" => false, "unsupported_subrequests" => [], "confidence" => 0.0,
         "planning_required" => false, "planning_reasons" => [ "intent_resolution_unavailable" ], "telemetry" => {}
       }
     end

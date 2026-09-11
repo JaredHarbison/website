@@ -176,7 +176,7 @@ class AskJaredCandidateContextTest < ActiveSupport::TestCase
     plan = AskJared::CandidateContextPlanner.new(context: context).call(question: "What kind of engineer is Jared?", intent: "characterization")
 
     assert_operator plan.dimensions.length, :>=, 2
-    assert_includes plan.answer_shape, "2-4 dimensions"
+    assert_equal "profile", plan.answer_shape
   end
 
   test "broad characterization planning requires canonical profile evidence" do
@@ -189,8 +189,12 @@ class AskJaredCandidateContextTest < ActiveSupport::TestCase
   end
 
   test "planner contract protects employer scope and superlative questions" do
-    outside = AskJared::CandidateContextPlanner.new.call(question: "What has Jared built outside Dogly?", intent: nil)
-    complex = AskJared::CandidateContextPlanner.new.call(question: "What is the most complicated project he worked on for Dogly?", intent: nil)
+    outside = AskJared::CandidateContextPlanner.new.call(
+      question: "What has Jared built outside Dogly?", intent: "scope", resolution: { "answer_shape" => "direct" }
+    )
+    complex = AskJared::CandidateContextPlanner.new.call(
+      question: "What is the most complicated project he worked on for Dogly?", intent: "complexity", resolution: { "answer_shape" => "comparison" }
+    )
 
     assert_includes outside.evidence_requirements, "employer_or_project_identity"
     assert_includes outside.scope_rules, "Exclude Dogly evidence unless explicitly labeled as comparison context."

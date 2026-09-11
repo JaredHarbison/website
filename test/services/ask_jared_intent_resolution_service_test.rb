@@ -14,7 +14,7 @@ class AskJaredIntentResolutionServiceTest < ActiveSupport::TestCase
               { "subject" => "project", "operation" => "select", "dimensions" => [ "product_judgment" ], "scope" => "unrestricted", "evidence_requirements" => [ "project_identity" ] },
               { "subject" => "role", "operation" => "describe", "dimensions" => [ "contribution", "ownership" ], "scope" => "unrestricted", "evidence_requirements" => [ "direct_contribution", "ownership_boundary" ] }
             ],
-            "answer_shape" => "compound", "compound" => true, "confidence" => 0.96
+            "answer_shape" => "compound", "compound" => true, "unsupported_subrequests" => [], "confidence" => 0.96
           },
           "__telemetry" => { "input_tokens" => 10, "output_tokens" => 20 }
         }
