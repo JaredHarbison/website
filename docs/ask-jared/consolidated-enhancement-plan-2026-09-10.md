@@ -18,10 +18,10 @@ contract for the next release cycle.
 ```yaml
 phase_count: 6
   slice_count: 22
-  completed_slice_count: 5
-  remaining_slice_count: 17
+  completed_slice_count: 6
+  remaining_slice_count: 16
   current_phase: 2
-  current_slice: 2.0
+  current_slice: 2.1
   canonical_architecture: candidate-context-v2
   canonical_final_model: ASK_JARED_MODEL (default gpt-5.6-sol)
   question_understanding: model-first structured decision output
@@ -66,6 +66,7 @@ approval.
 | 1.3 Decision schema and policy | locally accepted | `f33a6a7a9`; service suite: 162 runs, 792 assertions | not deployed | 1.4 |
 | 1.4 Explicit question decision object | locally accepted | `f33a6a7a9`; persisted-decision and service-suite coverage | not deployed | 1.5 |
 | 1.5 Shared validation and telemetry | locally accepted | bounded-repair regression coverage; service suite: 164 runs, 797 assertions | not deployed | 2.0 |
+| 2.0 Corpus baseline and source policy | locally accepted | corpus-only battery: 20/20 completed, 16 answers, 4 narrow insufficiency responses; `phase2/public-corpus-only-gpt-5.6-sol.json` | not deployed | 2.1 |
 
 ## Non-negotiable contracts
 
@@ -245,7 +246,7 @@ cannot produce divergent user-facing failure semantics.
 Purpose: make the public writing the coherent recruiter evidence system, then
 add only the smallest policy layer needed to prevent confident overclaiming.
 
-#### 2.0 Corpus baseline and source policy — current
+#### 2.0 Corpus baseline and source policy — complete
 
 Freeze the 20-question paired evaluation set as the first answer-quality
 baseline. Run corpus-only answers before adding Rules, then run corpus-plus-
@@ -258,7 +259,7 @@ Acceptance: every question has a source-corpus answer, a documented expected
 answer shape, required evidence, prohibited claims, and a reviewer-visible
 status. No production routing change is justified by a single QA anecdote.
 
-#### 2.1 Compact Rules layer
+#### 2.1 Compact Rules layer — current
 
 Represent only durable constraints that recur across the evaluation set:
 unsupported superlatives and pride claims, ownership boundaries, collaborator
