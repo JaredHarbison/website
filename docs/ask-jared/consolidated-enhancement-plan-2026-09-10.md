@@ -30,10 +30,41 @@ phase_count: 6
   evaluation_contract: 20-question paired set now; 50-question follow-up battery after core acceptance
 ```
 
-A slice is complete only when its acceptance contract, automated tests, and
-required production evidence are complete. Whenever work pauses, completes a
-slice, or proposes a new slice, report the phase, slice, completed count,
-remaining count, acceptance result, and next slice.
+## Slice status, release gate, and authority
+
+Each slice has three independently recorded states:
+
+- `implemented` — the scoped code or documentation change exists.
+- `tested` — its automated acceptance coverage passes.
+- `release-verified` — any required deployed or manual-QA evidence has been
+  recorded.
+
+A slice counts as complete only when all three applicable states are complete.
+Where production verification is intentionally deferred, its implementation is
+reported as locally accepted but does not authorize deployment or redefine the
+release gate. Whenever work pauses, completes a slice, or proposes a new
+slice, report the phase, slice, completed count, remaining count, acceptance
+result, deployment state, and next slice.
+
+Until Phase 2.0 establishes the article-only baseline and Phase 2.1 compares
+the compact Rules layer against it, no recruiter-visible answer behavior may be
+deployed or promoted. Architecture, telemetry, and evaluation-tooling work may
+continue locally.
+
+Codex may autonomously refactor, test, commit, and build evaluation tooling.
+Jared approval is required only for new recruiter-visible factual claims,
+meaning-changing edits to source content, a change to the evaluation or
+release gate, or deployment. No absence of feedback is treated as factual
+approval.
+
+## Slice handoff record
+
+| Slice | Acceptance result | Evidence | Deployment state | Next slice |
+| --- | --- | --- | --- | --- |
+| 1.1 Canonical model configuration | locally accepted | `2ac9a632b`; model-path tests | not deployed | 1.2 |
+| 1.2 Model-first intent resolution | locally accepted | `62f8673f1`, `5bcb495f9`; resolver regressions | not deployed | 1.3 |
+| 1.3 Decision schema and policy | locally accepted | `f33a6a7a9`; service suite: 162 runs, 792 assertions | not deployed | 1.4 |
+| 1.4 Explicit question decision object | locally accepted | `f33a6a7a9`; persisted-decision and service-suite coverage | not deployed | 1.5 |
 
 ## Non-negotiable contracts
 
@@ -138,7 +169,7 @@ not create a second semantic routing system.
 The client and server allow unlimited admin/internal-QA questions while public
 recruiter sessions retain the four-question limit.
 
-#### 0.2 Canonical-architecture QA assertion — in progress
+#### 0.2 Canonical-architecture QA assertion — release verification pending
 
 Acceptance:
 
