@@ -92,6 +92,5 @@ module AskJared
       dimensions << "product and stakeholder judgment" if guidance.any? { |text| text.match?(/product judgment|stakeholder|tradeoff/) }
       dimensions.first(4)
     end
-
   end
 end
