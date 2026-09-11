@@ -104,7 +104,7 @@ A chronological queue is easy to explain and sometimes unfair in practice. Someo
 
 Fair Queue is an event-level option that orders performers by completed turns, then preserves stable queue position and ID tie-breaking. A performer’s additional requests count as later turns during the same pass. Performers with no completed history begin at the same baseline. Hosts can enable or disable the mode for an event, and pause or unpause overrides remain event-scoped.
 
-![FIFO ordering can give one performer consecutive turns, while Fair Queue distributes turns across performers.](/images/karaoke-queue-fifo-vs-fair.svg)
+![FIFO ordering can give one performer consecutive turns, while Fair Queue distributes turns across performers.](/images/karaoke-queue-fifo-vs-fair-v2.svg)
 
 *FIFO gives Alex three consecutive turns. Fair Queue gives Bri and Casey a turn before Alex's remaining songs.*
 
