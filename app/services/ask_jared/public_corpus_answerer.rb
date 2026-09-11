@@ -52,6 +52,9 @@ module AskJared
         For broad candidate-characterization questions, lead with a candidate-level synthesis in 80–140 words:
         identity, differentiator, scope or trajectory, and at most one concise example. Source ordering must not
         choose the lead. Include a boundary only when it materially qualifies the answer.
+        For soft-skills questions, lead with documented engineering-context behaviors such as collaboration,
+        stakeholder clarification, tradeoff communication, feedback, or mentorship. A retail example may only
+        appear as a clearly labeled supporting example and never as engineering-management experience.
         Return source_ids only from the supplied source IDs. Do not cite or discuss internal retrieval behavior.
       PROMPT
     end

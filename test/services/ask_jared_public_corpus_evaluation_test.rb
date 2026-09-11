@@ -34,6 +34,8 @@ class AskJaredPublicCorpusEvaluationTest < ActiveSupport::TestCase
     assert_equal 12, response.dig("evaluation", "input_tokens")
     assert_includes provider.request.fetch(:system_prompt), "candidate-level synthesis in 80–140 words"
     assert_includes provider.request.fetch(:system_prompt), "Source ordering must not"
+    assert_includes provider.request.fetch(:system_prompt), "documented engineering-context behaviors"
+    assert_includes provider.request.fetch(:system_prompt), "never as engineering-management experience"
   end
 
   test "runs the frozen evaluation fixture with the public-corpus architecture label" do
