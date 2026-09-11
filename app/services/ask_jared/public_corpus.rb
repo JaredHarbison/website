@@ -75,7 +75,20 @@ module AskJared
 
     def entries_for(collection)
       repository = @repositories.fetch(collection)
-      repository.respond_to?(:all) ? repository.all : Array(repository)
+      return Array(repository) unless repository.is_a?(ContentRepository)
+
+      # ContentRepository currently serves the site from a flat collection.
+      # Keep that routing behavior intact while allowing Ask Jared to discover
+      # future nested published source files recursively.
+      root = Rails.root.join("content", collection)
+      root.glob("**/*.md").filter_map do |path|
+        metadata, body = repository.send(:parse, path.read)
+        next unless metadata["status"] == "published"
+
+        model = COLLECTIONS.fetch(collection, { model: ContentEntry }).fetch(:model)
+        model.new(body: body, collection: collection, metadata: metadata,
+                  slug: path.relative_path_from(root).sub_ext("").to_s)
+      end
     end
 
     def document(entry, collection:, url:)

@@ -28,6 +28,15 @@ class AskJaredPublicCorpusTest < ActiveSupport::TestCase
     assert_empty corpus.metadata_errors
   end
 
+  test "keeps nested source paths in the stable corpus ID" do
+    nested = Entry.new(slug: "rails/webhooks", title: "Webhooks", body: "Body", summary: "Summary", metadata: { "title" => "Webhooks", "summary" => "Summary", "status" => "published", "tags" => [ "Rails" ], "category" => "Architecture" })
+    about = Entry.new(slug: "about", title: "About", body: "About", summary: "About", metadata: { "title" => "About", "summary" => "About", "status" => "published", "tags" => [ "Rails" ] })
+    corpus = AskJared::PublicCorpus.new(repositories: { "case_studies" => [], "writing" => [ nested ], "pages" => [ about ] })
+
+    assert_equal "writing:rails/webhooks", corpus.find("writing:rails/webhooks").id
+    assert_equal "/writing/rails/webhooks", corpus.find("writing:rails/webhooks").url
+  end
+
   test "rejects a published source that is missing retrieval metadata" do
     incomplete = Entry.new(slug: "new-article", title: "New article", body: "Body", summary: "Summary", metadata: { "title" => "New article", "summary" => "Summary", "status" => "published", "tags" => [ "Rails" ] })
     about = Entry.new(slug: "about", title: "About", body: "About", summary: "About", metadata: { "title" => "About", "summary" => "About", "status" => "published", "tags" => [ "Rails" ] })
