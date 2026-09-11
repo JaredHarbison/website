@@ -1,6 +1,10 @@
 ---
 title: About
 summary: "I am a Senior Software Engineer who builds practical product software: the kind that has to be understandable by users, maintainable by future engineers, and honest about the constraints it lives inside."
+tags:
+  - Product Engineering
+  - Rails
+  - Collaboration
 status: published
 ---
 

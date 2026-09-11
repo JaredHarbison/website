@@ -21,17 +21,34 @@ module AskJared
       "writing" => { model: Article, path: "/writing/%{slug}" }
     }.freeze
     PAGE_ALLOWLIST = { "about" => "/about" }.freeze
+    REQUIRED_METADATA = %w[title summary status tags].freeze
+    COLLECTION_REQUIRED_METADATA = {
+      "case_studies" => %w[role technologies],
+      "writing" => %w[category]
+    }.freeze
 
     def initialize(repositories: nil)
       @repositories = repositories || default_repositories
     end
 
     def documents
-      collection_documents + page_documents
+      sources = collection_documents + page_documents
+      validate!(sources)
+      sources
     end
 
     def find(id)
       documents.find { |document| document.id == id.to_s }
+    end
+
+    def metadata_errors(documents = self.documents)
+      documents.flat_map do |document|
+        required = REQUIRED_METADATA + COLLECTION_REQUIRED_METADATA.fetch(document.collection, [])
+        required.filter_map do |field|
+          value = document.metadata[field]
+          "#{document.id} is missing #{field}" if value.blank? || (value.respond_to?(:empty?) && value.empty?)
+        end
+      end
     end
 
     private
@@ -66,6 +83,11 @@ module AskJared
         "#{collection}:#{entry.slug}", entry.title, url, collection,
         entry.body.to_s, entry.summary.to_s, entry.metadata || {}
       )
+    end
+
+    def validate!(sources)
+      errors = metadata_errors(sources)
+      raise ArgumentError, "Ask Jared public-corpus metadata contract failed: #{errors.join('; ')}" if errors.any?
     end
   end
 end
