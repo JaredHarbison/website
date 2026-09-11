@@ -32,6 +32,8 @@ class AskJaredPublicCorpusEvaluationTest < ActiveSupport::TestCase
     assert_equal [ "writing:rails" ], response["evidence_ids"]
     refute_includes provider.request.fetch(:user_content), "private:never"
     assert_equal 12, response.dig("evaluation", "input_tokens")
+    assert_includes provider.request.fetch(:system_prompt), "candidate-level synthesis in 80–140 words"
+    assert_includes provider.request.fetch(:system_prompt), "Source ordering must not"
   end
 
   test "runs the frozen evaluation fixture with the public-corpus architecture label" do

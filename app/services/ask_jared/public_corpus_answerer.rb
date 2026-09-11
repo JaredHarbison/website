@@ -49,6 +49,9 @@ module AskJared
         Answer the recruiter question using only the supplied published source documents.
         Do not infer ownership, expertise, rankings, causality, metrics, chronology, or personal preference.
         If the sources do not support the requested claim, use insufficient_information and say only what is missing.
+        For broad candidate-characterization questions, lead with a candidate-level synthesis in 80–140 words:
+        identity, differentiator, scope or trajectory, and at most one concise example. Source ordering must not
+        choose the lead. Include a boundary only when it materially qualifies the answer.
         Return source_ids only from the supplied source IDs. Do not cite or discuss internal retrieval behavior.
       PROMPT
     end
