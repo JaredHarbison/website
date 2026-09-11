@@ -1,0 +1,29 @@
+require "test_helper"
+
+class AskJaredPublicCorpusTest < ActiveSupport::TestCase
+  Entry = Struct.new(:slug, :title, :body, :summary, :metadata, keyword_init: true)
+
+  test "discovers every published article in the approved collections dynamically" do
+    case_study = Entry.new(slug: "new-case-study", title: "New case study", body: "Case body", summary: "Case summary", metadata: {})
+    first_article = Entry.new(slug: "first-article", title: "First article", body: "First body", summary: "First summary", metadata: {})
+    new_article = Entry.new(slug: "new-article", title: "New article", body: "New body", summary: "New summary", metadata: {})
+    about = Entry.new(slug: "about", title: "About", body: "About body", summary: "About summary", metadata: {})
+    contact = Entry.new(slug: "contact", title: "Contact", body: "Contact body", summary: "Contact summary", metadata: {})
+    corpus = AskJared::PublicCorpus.new(repositories: {
+      "case_studies" => [ case_study ], "writing" => [ first_article, new_article ], "pages" => [ about, contact ]
+    })
+
+    assert_equal %w[case_studies:new-case-study writing:first-article writing:new-article pages:about], corpus.documents.map(&:id)
+    assert_equal "/writing/new-article", corpus.find("writing:new-article").url
+    refute corpus.find("pages:contact")
+  end
+
+  test "uses the live published repositories and excludes non-source pages" do
+    corpus = AskJared::PublicCorpus.new
+
+    assert_includes corpus.documents.map(&:id), "pages:about"
+    refute_includes corpus.documents.map(&:id), "pages:contact"
+    assert corpus.documents.any? { |document| document.collection == "case_studies" }
+    assert corpus.documents.any? { |document| document.collection == "writing" }
+  end
+end
