@@ -36,6 +36,8 @@ class AskJaredPublicCorpusEvaluationTest < ActiveSupport::TestCase
     assert_includes provider.request.fetch(:system_prompt), "Source ordering must not"
     assert_includes provider.request.fetch(:system_prompt), "documented engineering-context behaviors"
     assert_includes provider.request.fetch(:system_prompt), "never as engineering-management experience"
+    assert_includes provider.request.fetch(:system_prompt), "Never select a project as largest or most complex"
+    assert_includes provider.request.fetch(:system_prompt), "direct boundary first"
   end
 
   test "runs the frozen evaluation fixture with the public-corpus architecture label" do

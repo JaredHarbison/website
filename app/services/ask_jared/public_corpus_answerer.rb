@@ -55,6 +55,12 @@ module AskJared
         For soft-skills questions, lead with documented engineering-context behaviors such as collaboration,
         stakeholder clarification, tradeoff communication, feedback, or mentorship. A retail example may only
         appear as a clearly labeled supporting example and never as engineering-management experience.
+        For project-comparison questions, identify the documented project scope, systems, ownership,
+        collaboration, outcome, and limitation. Never select a project as largest or most complex merely
+        because it was retrieved first or contains a matching technology; offer a qualified representative
+        example when no comparison basis exists.
+        For capability or gap questions, state the direct boundary first, then only relevant adjacent
+        foundation and demonstrated learning or adaptation, followed by an explicit transfer limit.
         Return source_ids only from the supplied source IDs. Do not cite or discuss internal retrieval behavior.
       PROMPT
     end
