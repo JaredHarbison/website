@@ -184,200 +184,199 @@
     "public-corpus-only:gpt-5.6-sol:P10": {
       "status": "completed",
       "answer_status": "answer",
-      "answer": "Jared describes a collaborative, staged decision process:\n\n- Start with broad ideation so product needs, customer frustrations, operational concerns, and ambitious ideas are visible before feasibility narrows the discussion.\n- Align the team on a specific north star that can reject work; use AI to organize ideas, not to decide business value or commitments.\n- Separate value from sequencing by considering “need to have / love to have” independently from “MVP / iteration.” A narrow version of an essential capability may ship first, while a low-cost feature may enter the MVP if it removes substantial risk.\n- Design user-facing work before final technical commitment so empty, error, permission, partial-progress, responsive, and other hidden states become explicit.\n- Make tradeoffs reviewable in terms of outcomes, risks, resources, dependencies, failure and recovery paths, testing, rollout, time, and scope. Final approval is shared rather than treated as an engineering-only or founder-only decision.\n- When challenging a direction, bring an alternative and explain what each path enables, costs, and risks. He may change product language or scope when architecture changes what the product can truthfully promise.\n- Define a first release around the minimum state and safeguards needed to prevent invisible or duplicated failures, rather than building a fully generalized platform upfront.\n- Preserve uncertainty instead of automating it away: use durable evidence and identifiers, explain weaker suggestions, involve people where ambiguity is real, persist their decisions, and decline unsupported claims.\n- Treat customer-valued experience and technical performance together. For example, rather than removing imagery users valued, he retained its emotional role while testing delivery, responsive behavior, and rendering tradeoffs.",
+      "answer": "Jared describes a collaborative process that moves from broad exploration to explicit commitment:\n\n- Begin with unconstrained ideation so product needs, customer frustrations, operational concerns, and ambitious ideas are visible before feasibility narrows the discussion.\n- Use AI to organize notes, not to make decisions. The team reviews the synthesis and agrees on a north star specific enough to reject work.\n- Separate value from sequence by assessing “need to have / love to have” independently from “MVP / iteration.”\n- Design user-facing work before final technical commitment so empty, error, permission, partial-progress, validation, mobile, and other hidden states become visible.\n- Make the technical plan reviewable, including architecture, dependencies, failure and recovery paths, testing, rollout, scope, time, and resources. Business priorities, product outcomes, and technical risks are treated as shared decisions rather than decisions for one role alone.\n\nHis tradeoffs connect customer value, truthful product behavior, operational risk, and implementation scope. For example, he preserved Dogly’s valued imagery while testing ways to control its performance cost rather than optimizing a score independently of the experience. In a multi-brand checkout example, he proposed independently retryable order transmissions and customer language that promises only what the system knows, rather than making checkout depend synchronously on every external service. He also favors narrow first releases with enough state, visibility, retry behavior, and idempotency to prevent failures or duplicates without first building a fully generalized platform.\n\nAcross catalog reconciliation and AI reporting, he makes uncertainty explicit rather than automating it away: use strong identifiers before weak matches, send ambiguous cases to human review, preserve confirmed decisions, show what an action will change, expose sources and selection reasons, and decline claims or questions when available evidence is insufficient.",
       "evidence_ids": [
         "writing:product-planning-and-scope",
         "writing:technical-disagreement-and-alternatives",
+        "case_studies:dogly-product-design",
         "writing:product-catalog-reconciliation",
-        "case_studies:federation-briefing",
-        "case_studies:dogly-product-design"
+        "case_studies:federation-briefing"
       ],
       "validation": "passed",
       "reported_model": null,
       "input_tokens": 9172,
-      "output_tokens": 505,
+      "output_tokens": 486,
       "estimated_cost_cents": null,
-      "latency_ms": 10535,
+      "latency_ms": 10178,
       "attempts": 1,
       "case_id": "P10",
       "model": "gpt-5.6-sol",
       "architecture": "public-corpus-only",
-      "recorded_at": "2026-09-11T14:03:29Z"
+      "recorded_at": "2026-09-11T14:10:24Z"
     },
     "public-corpus-only:gpt-5.6-sol:P11": {
       "status": "completed",
       "answer_status": "answer",
-      "answer": "Jared describes a collaborative, structured approach with founders and stakeholders. In early planning, he leads founders and the team through broad ideation before narrowing scope. He then organizes the ideas, brings them back for revision, and works with the team to agree on a north star. The group separates experience value from release sequence, takes user-facing MVP work through design, and reviews a technical plan covering architecture, lifecycle changes, dependencies, failure paths, testing, rollout, scope, time, and resources. Final approval is intended to follow shared decisions rather than introduce costs or tradeoffs for the first time.\n\nWhen technical disagreement arises, he brings an alternative rather than only raising a concern. With business stakeholders, he explains options in terms of outcomes, risks, resources, costs, and failure modes instead of framework details. He also connects architecture to what the product can truthfully promise.\n\nPublished project examples show him working directly with Dogly’s founders and Advocates across product planning and implementation. In partner onboarding and review work, he made applicant and administrator states explicit, including resumable applications, visible revisions, and applicant-facing explanations of changes.",
+      "answer": "Jared describes a collaborative, structured approach with founders and stakeholders. In early planning, he leads founders and the team through open ideation, captures product needs and operational concerns before debating feasibility, then brings organized themes back for revision and shared agreement on a north star. The team separates experience value from release sequence, takes user-facing MVP work through design, and reviews a technical plan that makes architecture, dependencies, failure paths, scope, time, resources, and tradeoffs understandable before approval.\n\nHe also adapts technical communication to the audience. With business stakeholders, he frames disagreements in terms of outcomes, risk, resources, costs, possibilities, and failure modes rather than framework internals. When he raises a concern, he tries to provide an alternative and connect engineering constraints to the product outcome. The Dogly membership work further documents that he worked across product planning and the Rails stack, often directly with Dogly’s founders and Advocates.",
       "evidence_ids": [
         "writing:product-planning-and-scope",
         "writing:technical-disagreement-and-alternatives",
-        "case_studies:dogly-membership",
-        "case_studies:dogly-partner-applications"
+        "case_studies:dogly-membership"
       ],
       "validation": "passed",
       "reported_model": null,
       "input_tokens": 8442,
-      "output_tokens": 291,
+      "output_tokens": 239,
       "estimated_cost_cents": null,
-      "latency_ms": 7268,
+      "latency_ms": 7454,
       "attempts": 1,
       "case_id": "P11",
       "model": "gpt-5.6-sol",
       "architecture": "public-corpus-only",
-      "recorded_at": "2026-09-11T14:03:37Z"
+      "recorded_at": "2026-09-11T14:10:32Z"
     },
     "public-corpus-only:gpt-5.6-sol:P12": {
       "status": "completed",
       "answer_status": "answer",
-      "answer": "Jared handles ambiguity by making uncertainty explicit and creating a path to a supported decision. In planning, he starts with broad ideation, organizes the material without treating that organization as agreement, aligns the team on an outcome, and then makes scope, tradeoffs, risks, and failure paths concrete. In technical disagreement, he identifies assumptions and risks, may take time to verify a concern, follows up quickly, and brings an alternative framed for the relevant audience. In implementation, he avoids turning weak signals into confident conclusions: weaker catalog matches become explainable suggestions for human review, unmatched records remain a valid state, and evidence-limited AI questions are declined rather than answered from unrelated material. His product work also preserves user input or prior state when automated steps are uncertain—for example, retaining a typed location when geocoding fails and preventing blank autosave events from erasing saved data.",
+      "answer": "Jared handles ambiguity by making uncertainty explicit and turning it into reviewable decisions. In planning, he starts with broad ideation, organizes the possibilities, aligns the team on an outcome, then narrows scope through prioritization, design, and technical review. In technical work, he defines ownership and decision boundaries, prefers strong evidence or durable identifiers, labels weaker matches as suggestions, and involves a person when uncertainty cannot be resolved safely. He also preserves fallback or unmatched states rather than forcing a result, and declines conclusions when the available evidence is insufficient. When he disagrees with a direction, he identifies the risk, develops an alternative, explains the tradeoffs in terms appropriate to the audience, and closes the loop quickly.",
       "evidence_ids": [
         "writing:product-planning-and-scope",
-        "writing:technical-disagreement-and-alternatives",
         "writing:product-catalog-reconciliation",
         "case_studies:federation-briefing",
-        "case_studies:dogly-partner-applications"
+        "writing:technical-disagreement-and-alternatives"
       ],
       "validation": "passed",
       "reported_model": null,
       "input_tokens": 7894,
-      "output_tokens": 246,
+      "output_tokens": 284,
       "estimated_cost_cents": null,
-      "latency_ms": 5223,
+      "latency_ms": 6667,
       "attempts": 1,
       "case_id": "P12",
       "model": "gpt-5.6-sol",
       "architecture": "public-corpus-only",
-      "recorded_at": "2026-09-11T14:03:42Z"
+      "recorded_at": "2026-09-11T14:10:38Z"
     },
     "public-corpus-only:gpt-5.6-sol:P13": {
       "status": "completed",
       "answer_status": "answer",
-      "answer": "Jared describes a Shopify fulfillment rollout that went through integration, rollback, and selective restoration after it exposed unsafe assumptions about payment timing, stock locations, variant ownership, and merge boundaries in Dogly’s mature checkout. Automated fulfillment was not broadly released; useful catalog and configuration tooling remained while the checkout boundary was reconsidered. He says he would improve the work by using persisted integration events with database-enforced idempotency, explicit per-brand rollout states, and stronger multi-brand failure testing.",
+      "answer": "A documented mistake came during the Shopify fulfillment rollout at Dogly. Jared completed and tested an implementation, but the limited rollout exposed unsafe assumptions about payment timing, stock locations, variant ownership, and merge boundaries in the mature checkout system. The work went through rollback and selective restoration, and automated fulfillment was held back from broad release while useful catalog and configuration tools were retained. He says he would improve the design by using persisted integration events with database-enforced idempotency, explicit per-brand rollout states, contract tests, and an end-to-end test for partial failure in multi-brand orders.",
       "evidence_ids": [
         "case_studies:dogly-shopify-integration"
       ],
       "validation": "passed",
       "reported_model": null,
       "input_tokens": 8612,
-      "output_tokens": 232,
+      "output_tokens": 210,
       "estimated_cost_cents": null,
-      "latency_ms": 6143,
+      "latency_ms": 4876,
       "attempts": 1,
       "case_id": "P13",
       "model": "gpt-5.6-sol",
       "architecture": "public-corpus-only",
-      "recorded_at": "2026-09-11T14:03:48Z"
+      "recorded_at": "2026-09-11T14:10:43Z"
     },
     "public-corpus-only:gpt-5.6-sol:P14": {
       "status": "completed",
       "answer_status": "insufficient_information",
-      "answer": "The supplied sources do not describe Jared’s process for learning unfamiliar technology.",
+      "answer": "The sources do not directly describe Jared’s process for learning unfamiliar technology.",
       "evidence_ids": [],
       "validation": "passed",
       "reported_model": null,
       "input_tokens": 10382,
-      "output_tokens": 115,
+      "output_tokens": 125,
       "estimated_cost_cents": null,
-      "latency_ms": 4406,
+      "latency_ms": 3409,
       "attempts": 1,
       "case_id": "P14",
       "model": "gpt-5.6-sol",
       "architecture": "public-corpus-only",
-      "recorded_at": "2026-09-11T14:03:52Z"
+      "recorded_at": "2026-09-11T14:10:47Z"
     },
     "public-corpus-only:gpt-5.6-sol:P15": {
       "status": "completed",
       "answer_status": "answer",
-      "answer": "Jared has production experience in a mature Rails marketplace/community application, working as Dogly’s sole engineer and technical partner to founders across planning, architecture, implementation, delivery, and post-release support. His production work includes subscriptions and access control, personalized email and notification systems, Zoom meeting workflows, partner onboarding and admin review, ecommerce, and Shopify integrations.\n\nHis reliability work includes asynchronous webhook processing, HMAC verification, duplicate guards for at-least-once delivery, jobs that recheck current state before acting, per-brand external-ID tracking for safer retries, graceful geocoding and content fallbacks, conservative autosave behavior, and focused tests around failure-prone paths. During the Shopify fulfillment rollout, he used limited rollout, rollback, selective restoration, explicit logging, surfaced transaction errors, and admin-visible failure states rather than broadly releasing automation with unresolved checkout assumptions. The production Shopify acquisition path is associated with more than 1,000 retained Dogly user records.\n\nHe has also built operational safeguards into a non-production AI prototype, including reviewed snapshots, validation before data promotion, offline operation, endpoint fallbacks, unsupported-question handling, and tests for ingestion, retrieval, citations, and failure cases; the source explicitly describes this as a focused prototype rather than a production service.",
+      "answer": "Jared’s published experience includes production responsibility for a mature Rails product at Dogly, where he worked as a sole engineer and took responsibility for features after release. His reliability-related work includes:\n\n- Production support for a Shopify customer-acquisition integration using signed webhooks, asynchronous jobs, per-brand configuration, duplicate-account and duplicate-invitation guards, and state rechecks when delayed jobs ran.\n- Designing retry boundaries and external-ID mappings for Shopify order transmission, fulfillment callbacks, catalog reconciliation, and inventory mapping.\n- Using limited rollouts, rollback, and selective restoration when checkout, payment timing, stock-location, and variant-ownership assumptions proved unsafe; automated fulfillment was held back from broad release.\n- Adding explicit logging, surfacing transaction rollback errors, and providing admin-visible states for missing credentials, taxonomy, option types, and SKU conflicts.\n- Maintaining delivery correctness in member-email workflows by recording successful delivery before advancing a sequence, supporting staged reminders, using signed expiring action links, and providing fallbacks when personalized content was unavailable.\n- Extending mature Rails systems incrementally without interrupting existing community, commerce, subscription, public-page, and admin workflows.\n- Building resumable partner onboarding with secure expiring tokens, conservative autosave behavior, graceful geocoding fallbacks, revision tracking, and focused lifecycle tests.\n\nThe sources also document retained production data: more than 1,000 Dogly users associated with the Shopify acquisition channel, plus 77 Zoom meeting records, 679 registrations, and 50 posts connected to Zoom meetings.",
       "evidence_ids": [
         "pages:about",
-        "case_studies:dogly-membership",
-        "case_studies:dogly-partner-applications",
         "case_studies:dogly-shopify-integration",
-        "case_studies:federation-briefing"
+        "case_studies:dogly-membership",
+        "case_studies:dogly-partner-applications"
       ],
       "validation": "passed",
       "reported_model": null,
       "input_tokens": 10443,
-      "output_tokens": 410,
+      "output_tokens": 477,
       "estimated_cost_cents": null,
-      "latency_ms": 11459,
+      "latency_ms": 8807,
       "attempts": 1,
       "case_id": "P15",
       "model": "gpt-5.6-sol",
       "architecture": "public-corpus-only",
-      "recorded_at": "2026-09-11T14:04:04Z"
+      "recorded_at": "2026-09-11T14:10:55Z"
     },
     "public-corpus-only:gpt-5.6-sol:P16": {
       "status": "completed",
       "answer_status": "answer",
-      "answer": "Published measurable outcomes include:\n- More than 1,000 retained Dogly user records have a Shopify-customer association from the production acquisition path Jared owned as Dogly’s sole engineer.\n- Internal pre- and post-work comparisons showed subscription levels increased by more than 40% during the membership engagement work he contributed to. The source reports this as the business measurement made at the time, not a causal attribution or reconstructed database metric.\n- Retained production data for the live-group workflows he helped build includes 77 Zoom meeting records, 679 registrations, and 50 posts connected to Zoom meetings.",
+      "answer": "Published measurable outcomes associated with Jared’s Dogly work include:\n- Internal pre/post comparisons showed subscription levels increased by more than 40% following the membership and engagement work. The source treats this as the business measurement made at the time, not a reconstructed causal estimate.\n- More than 1,000 retained Dogly user records have Shopify-customer associations from the production acquisition integration. This measures records connected to the channel, not activation or paid membership.\n- Retained production data for live expert groups includes 77 Zoom meeting records, 679 registrations, and 50 posts connected to Zoom meetings.\n\nThe sources do not provide measured conversion improvements for advocate discovery or quantified outcomes for the partner application and product-design work.",
       "evidence_ids": [
+        "case_studies:dogly-membership",
         "case_studies:dogly-shopify-integration",
-        "case_studies:dogly-membership"
+        "case_studies:dogly-advocate-discovery",
+        "case_studies:dogly-partner-applications",
+        "case_studies:dogly-product-design"
       ],
       "validation": "passed",
       "reported_model": null,
       "input_tokens": 9871,
       "output_tokens": 322,
       "estimated_cost_cents": null,
-      "latency_ms": 6660,
+      "latency_ms": 8709,
       "attempts": 1,
       "case_id": "P16",
       "model": "gpt-5.6-sol",
       "architecture": "public-corpus-only",
-      "recorded_at": "2026-09-11T14:04:10Z"
+      "recorded_at": "2026-09-11T14:11:04Z"
     },
     "public-corpus-only:gpt-5.6-sol:P17": {
       "status": "completed",
       "answer_status": "answer",
-      "answer": "Yes. Jared describes working in Dogly’s mature, older Rails application, which had years of accumulated product functionality and legacy constraints. His work involved adding and evolving onboarding, membership, commerce, partner, admin, and design systems incrementally while preserving existing routes, models, workflows, checkout behavior, and older frontend conventions rather than rewriting the application.",
+      "answer": "Yes. Jared worked in Dogly’s mature Rails application, which had years of accumulated product functionality and legacy constraints. His work extended existing routes, models, conventions, commerce and community systems, Haml views, SCSS, JavaScript, and admin workflows incrementally rather than through a rewrite. The product-design work also explicitly describes inherited legacy Bootstrap behavior, legacy JavaScript, page-specific SCSS, and older surfaces that had to remain usable.",
       "evidence_ids": [
         "case_studies:dogly-partner-applications",
-        "case_studies:dogly-shopify-integration",
-        "case_studies:fridge-no-more-bulk-ordering",
         "case_studies:dogly-product-design",
         "case_studies:dogly-membership"
       ],
       "validation": "passed",
       "reported_model": null,
       "input_tokens": 10007,
-      "output_tokens": 145,
+      "output_tokens": 141,
       "estimated_cost_cents": null,
-      "latency_ms": 5116,
+      "latency_ms": 5009,
       "attempts": 1,
       "case_id": "P17",
       "model": "gpt-5.6-sol",
       "architecture": "public-corpus-only",
-      "recorded_at": "2026-09-11T14:04:16Z"
+      "recorded_at": "2026-09-11T14:11:09Z"
     },
     "public-corpus-only:gpt-5.6-sol:P18": {
       "status": "completed",
       "answer_status": "answer",
-      "answer": "Jared’s frontend and product-design experience includes:\n\n- Leading much of Dogly’s aesthetic and interaction evolution over six years, including product-design direction and implementation across a mature Rails application.\n- Designing responsive experiences in Figma for desktop, tablet, and mobile, then building them with Rails, Haml, SCSS, Stimulus, and some React-based surfaces.\n- Creating a shared visual language and reusable UI patterns for typography, spacing, buttons, cards, overlays, carousels, pricing comparisons, tags, pills, badges, modals, loading states, image treatments, and centralized breakpoints.\n- Designing and implementing Dogly’s homepage variants, onboarding, daily guidance, authentication, pricing, cart, partner onboarding, directories, discovery experiences, Advocate profiles, channels, and learning content.\n- Handling detailed interface states such as empty libraries, incomplete onboarding, subscription gating, multiple dogs, long names, missing follows, progress, errors, and member-specific actions.\n- Preserving image-led brand qualities while addressing text contrast, responsive composition, accessibility, and performance.\n- Designing keyboard-usable interfaces, including ARIA tab behavior and arrow, Home, and End navigation for Dogly’s Browse/Match directory modes.\n- Designing guided, resumable partner-application and review flows with progressive questions, autosave, image-upload states, applicant-visible revisions, and responsive layouts.\n- Connecting product planning to design: facilitating ideation, defining a shared north star with the team, prioritizing MVP scope, designing user-facing work before final technical planning, and using design to expose missing states and product decisions.\n- Designing the complete interface and side-by-side evidence comparison for The Federation Briefing, a Streamlit prototype that displays selected sources, source rationale, unsupported-question handling, and reports with and without current evidence.",
+      "answer": "Jared’s published work shows frontend and product-design experience across mature Rails products and a Streamlit prototype. At Dogly, he led product-design direction and implemented user-facing surfaces using Rails, Haml, SCSS, Stimulus, and existing React components. He designed responsive desktop, tablet, and mobile experiences in Figma, then built the supporting components and interactions.\n\nHis product-design work includes establishing Dogly’s visual language, interaction colors, imagery treatments, typography, spacing, cards, overlays, loading and status states, modals, pricing patterns, centralized breakpoints, and reusable responsive layouts. He applied these patterns to the homepage, onboarding, daily guidance, advocate profiles, content channels, authentication, pricing, cart, partner onboarding, and discovery experiences. The work accounted for states such as empty content, incomplete onboarding, subscription differences, missing data, multiple dogs, and long names, while balancing image-rich presentation with usability and performance.\n\nHe also designed and implemented guided product flows: resumable and autosaving partner applications with applicant-visible review changes; accessible Browse/Match directory modes with ARIA tab semantics and keyboard navigation; and membership experiences spanning topic discovery, comments, personalized guidance, daily plans, email, and live groups.\n\nHis planning process connects product goals to design and implementation: collaborative ideation, agreement on a north star, prioritization by value and release sequence, responsive design before final technical planning, and explicit consideration of validation, errors, permissions, partial progress, empty states, mobile behavior, failure paths, testing, and rollout.\n\nOutside Dogly, he designed and built the Federation Briefing’s Streamlit comparison interface, including visible source cards, source-selection explanations, side-by-side reports, offline fallbacks, and unsupported-question handling.",
       "evidence_ids": [
         "case_studies:dogly-product-design",
         "case_studies:dogly-partner-applications",
         "case_studies:dogly-advocate-discovery",
+        "case_studies:dogly-membership",
         "writing:product-planning-and-scope",
         "case_studies:federation-briefing"
       ],
       "validation": "passed",
       "reported_model": null,
       "input_tokens": 10431,
-      "output_tokens": 509,
+      "output_tokens": 613,
       "estimated_cost_cents": null,
-      "latency_ms": 11674,
+      "latency_ms": 11264,
       "attempts": 1,
       "case_id": "P18",
       "model": "gpt-5.6-sol",
       "architecture": "public-corpus-only",
-      "recorded_at": "2026-09-11T14:04:27Z"
+      "recorded_at": "2026-09-11T14:11:20Z"
     },
     "public-corpus-only:gpt-5.6-sol:P19": {
       "status": "completed",
       "answer_status": "answer",
-      "answer": "Yes. Jared built integrations with external systems, including Shopify order webhooks, order transmission, fulfillment callbacks, catalog reconciliation, product import, and inventory mapping. He also built Zoom workflows that created and updated meetings, registered participants, provided launch links, sent reminders, and connected recordings to Dogly content.",
+      "answer": "Yes. Jared built integrations with external systems, including Shopify for signed order webhooks, customer and order association, marketplace order transmission, fulfillment callbacks, catalog reconciliation, and inventory mapping. He also built Zoom workflows that created and updated meetings, registered participants, provided role- and time-based launch links, sent reminders, and connected recordings to Dogly content.",
       "evidence_ids": [
         "case_studies:dogly-shopify-integration",
         "case_studies:dogly-membership"
@@ -385,14 +384,14 @@
       "validation": "passed",
       "reported_model": null,
       "input_tokens": 9183,
-      "output_tokens": 103,
+      "output_tokens": 113,
       "estimated_cost_cents": null,
-      "latency_ms": 2965,
+      "latency_ms": 3375,
       "attempts": 1,
       "case_id": "P19",
       "model": "gpt-5.6-sol",
       "architecture": "public-corpus-only",
-      "recorded_at": "2026-09-11T14:04:30Z"
+      "recorded_at": "2026-09-11T14:11:24Z"
     },
     "public-corpus-only:gpt-5.6-sol:P20": {
       "status": "completed",
@@ -406,13 +405,13 @@
       "input_tokens": 9249,
       "output_tokens": 51,
       "estimated_cost_cents": null,
-      "latency_ms": 1956,
+      "latency_ms": 2048,
       "attempts": 1,
       "case_id": "P20",
       "model": "gpt-5.6-sol",
       "architecture": "public-corpus-only",
-      "recorded_at": "2026-09-11T14:04:32Z"
+      "recorded_at": "2026-09-11T14:11:26Z"
     }
   },
-  "updated_at": "2026-09-11T14:10:14Z"
+  "updated_at": "2026-09-11T14:11:26Z"
 }
