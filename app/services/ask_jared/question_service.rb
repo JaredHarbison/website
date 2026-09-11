@@ -195,33 +195,37 @@ module AskJared
     end
 
     def validate_response(response, question:, packet:)
-      response = normalize_response(response, packet: packet)
-      resolved = resolve_claim_refs(response, packet: packet)
-      EvidenceIntegrity.validate_response!(answer: resolved["answer"], evidence_ids: resolved["evidence_ids"], claim_refs: resolved["claim_refs"], packet: packet, question: question, intent: packet.intent)
-      resolved
-    rescue AskJared::EvidenceIntegrity::Violation => violation
-      @validation_failure_reason = violation.violations.join("; ")
-      return validation_failure_response unless @provider.respond_to?(:repair)
+      result = validation_pipeline.call(
+        response: response,
+        repair: (@provider.respond_to?(:repair) ? ->(candidate, violations) { @provider.repair(question: question, context: packet, response: candidate, violations: violations) } : nil)
+      ) { |candidate| validate_generic_response_once(candidate, packet: packet, question: question) }
+      return result.response if result.valid?
 
-      begin
-        repaired = @provider.repair(question: question, context: packet, response: response, violations: violation.violations)
-        repaired = normalize_response(repaired, packet: packet)
-        resolved = resolve_claim_refs(repaired, packet: packet)
-        EvidenceIntegrity.validate_response!(answer: resolved["answer"], evidence_ids: resolved["evidence_ids"], claim_refs: resolved["claim_refs"], packet: packet, question: question, intent: packet.intent)
-        resolved
-      rescue AskJared::EvidenceIntegrity::Violation => repair_violation
-        @validation_failure_reason = [ @validation_failure_reason, repair_violation.violations.join("; ") ].compact.join("; ")
-        validation_failure_response
-      rescue ArgumentError, KeyError, TypeError, AskJared::OpenAiProvider::ConfigurationError, AskJared::OpenAiProvider::ProviderError => error
-        @validation_failure_reason = [ @validation_failure_reason, error.class.name ].compact.join("; ")
-        validation_failure_response
-      end
-    rescue ArgumentError, KeyError, TypeError, AskJared::OpenAiProvider::ConfigurationError, AskJared::OpenAiProvider::ProviderError => error
-      @validation_failure_reason = error.class.name
+      @validation_failure_reason = result.failure_reason
       validation_failure_response
     end
 
     def validate_skeleton_response(response, question:, packet:)
+      result = validation_pipeline.call(
+        response: response,
+        repair: (@skeleton_provider.respond_to?(:repair) ? ->(candidate, violations) {
+          @skeleton_provider.repair(question: question, skeleton: RecruiterAnswerSkeleton.new(packet: packet, intent: packet.intent, question: question), response: candidate, violations: violations)
+        } : nil)
+      ) { |candidate| validate_skeleton_response_once(candidate, packet: packet, question: question) }
+      return result.response if result.valid?
+
+      @validation_failure_reason = result.failure_reason
+      validation_failure_response
+    end
+
+    def validate_generic_response_once(response, packet:, question:)
+      response = normalize_response(response, packet: packet)
+      resolved = resolve_claim_refs(response, packet: packet)
+      EvidenceIntegrity.validate_response!(answer: resolved["answer"], evidence_ids: resolved["evidence_ids"], claim_refs: resolved["claim_refs"], packet: packet, question: question, intent: packet.intent)
+      resolved
+    end
+
+    def validate_skeleton_response_once(response, packet:, question:)
       skeleton = RecruiterAnswerSkeleton.new(packet: packet, intent: packet.intent, question: question)
       normalized = response.is_a?(Hash) ? response : {}
       status = normalized["status"]
@@ -250,40 +254,10 @@ module AskJared
         "source_urls" => packet.source_urls,
         "claim_refs" => resolved_claim_refs
       }
-    rescue EvidenceIntegrity::Violation => violation
-      @validation_failure_reason = violation.violations.join("; ")
-      return validation_failure_response unless @skeleton_provider.respond_to?(:repair)
-
-      begin
-        repaired = @skeleton_provider.repair(
-          question: question,
-          skeleton: RecruiterAnswerSkeleton.new(packet: packet, intent: packet.intent, question: question),
-          response: response,
-          violations: violation.violations
-        )
-        validate_skeleton_response_once(repaired, packet: packet, question: question)
-      rescue EvidenceIntegrity::Violation => repair_violation
-        @validation_failure_reason = [ @validation_failure_reason, repair_violation.violations.join("; ") ].compact.join("; ")
-        validation_failure_response
-      rescue ArgumentError, KeyError, TypeError, OpenAiProvider::ConfigurationError, OpenAiProvider::ProviderError => error
-        @validation_failure_reason = [ @validation_failure_reason, error.class.name ].compact.join("; ")
-        validation_failure_response
-      end
     end
 
-    def validate_skeleton_response_once(response, packet:, question:)
-      skeleton = RecruiterAnswerSkeleton.new(packet: packet, intent: packet.intent, question: question)
-      raise EvidenceIntegrity::Violation, "skeleton response is malformed" unless response["status"] == "answer" && response["segments"].is_a?(Array) && response["segments"].any?
-      response["segments"].each do |segment|
-        raise EvidenceIntegrity::Violation, "skeleton segment is malformed" unless segment["text"].is_a?(String) && segment["role_refs"].is_a?(Array) && segment["role_refs"].any?
-        raise EvidenceIntegrity::Violation, "skeleton segment exposes internal references" if segment["text"].match?(/\bc\d+\b|\br\d+\b|#claim-/i)
-        skeleton.resolve_role_refs!(segment["role_refs"])
-      end
-      refs = response["segments"].flat_map { |segment| segment["role_refs"] }.uniq
-      answer = RecruiterAnswerSanitizer.clean(response["segments"].map { |segment| segment["text"] }.join(" "))
-      claim_refs = packet.resolve_claim_aliases!(skeleton.claim_refs_for(refs))
-      EvidenceIntegrity.validate_response!(answer: answer, evidence_ids: skeleton.evidence_ids_for(refs), claim_refs: claim_refs, packet: packet, question: question, intent: packet.intent, strict_sentence: false)
-      { "status" => "answer", "answer" => answer, "evidence_ids" => skeleton.evidence_ids_for(refs), "source_urls" => packet.source_urls, "claim_refs" => claim_refs }
+    def validation_pipeline
+      @validation_pipeline ||= ResponseValidationPipeline.new
     end
 
     def normalize_response(response, packet:)

@@ -18,10 +18,10 @@ contract for the next release cycle.
 ```yaml
 phase_count: 6
   slice_count: 22
-  completed_slice_count: 4
-  remaining_slice_count: 18
-  current_phase: 1
-  current_slice: 1.5
+  completed_slice_count: 5
+  remaining_slice_count: 17
+  current_phase: 2
+  current_slice: 2.0
   canonical_architecture: candidate-context-v2
   canonical_final_model: ASK_JARED_MODEL (default gpt-5.6-sol)
   question_understanding: model-first structured decision output
@@ -65,6 +65,7 @@ approval.
 | 1.2 Model-first intent resolution | locally accepted | `62f8673f1`, `5bcb495f9`; resolver regressions | not deployed | 1.3 |
 | 1.3 Decision schema and policy | locally accepted | `f33a6a7a9`; service suite: 162 runs, 792 assertions | not deployed | 1.4 |
 | 1.4 Explicit question decision object | locally accepted | `f33a6a7a9`; persisted-decision and service-suite coverage | not deployed | 1.5 |
+| 1.5 Shared validation and telemetry | locally accepted | bounded-repair regression coverage; service suite: 164 runs, 797 assertions | not deployed | 2.0 |
 
 ## Non-negotiable contracts
 
@@ -230,7 +231,7 @@ per request and use it for retrieval, synthesis, validation, and telemetry.
 
 Acceptance: one persisted decision explains every production answer or failure.
 
-#### 1.5 Shared validation and telemetry pipeline — current
+#### 1.5 Shared validation and telemetry pipeline — complete
 
 Extract common normalization, claim resolution, repair, failure classification,
 and telemetry logic. Preserve strict evidence validation while making partial
@@ -244,7 +245,7 @@ cannot produce divergent user-facing failure semantics.
 Purpose: make the public writing the coherent recruiter evidence system, then
 add only the smallest policy layer needed to prevent confident overclaiming.
 
-#### 2.0 Corpus baseline and source policy
+#### 2.0 Corpus baseline and source policy — current
 
 Freeze the 20-question paired evaluation set as the first answer-quality
 baseline. Run corpus-only answers before adding Rules, then run corpus-plus-
