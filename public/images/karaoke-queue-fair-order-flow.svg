@@ -25,5 +25,5 @@
     <line x1="665" y1="430" x2="665" y2="490"/><line x1="665" y1="490" x2="295" y2="490"/><line x1="295" y1="490" x2="295" y2="430"/><polygon points="295,430 289,440 301,440"/>
   </g>
   <g font-family="ui-monospace, monospace" font-size="14" fill="#929e98"><text x="385" y="230">stable queue position</text><text x="410" y="480">remaining performances?</text></g>
-  <text x="480" y="525" fill="#56d6c9" font-family="ui-monospace, monospace" font-size="15" text-anchor="middle">DETERMINISTIC EVENT-LOCAL ORDERING</text>
+  <text x="480" y="525" fill="#56d6c9" font-family="ui-monospace, monospace" font-size="15" text-anchor="middle">SAME EVENT + SAME QUEUE = SAME ORDER</text>
 </svg>

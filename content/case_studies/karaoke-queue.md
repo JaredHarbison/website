@@ -106,9 +106,13 @@ Fair Queue is an event-level option that orders performers by completed turns, t
 
 ![FIFO ordering can give one performer consecutive turns, while Fair Queue distributes turns across performers.](/images/karaoke-queue-fifo-vs-fair.svg)
 
+*FIFO gives Alex three consecutive turns. Fair Queue gives Bri and Casey a turn before Alex's remaining songs.*
+
 The queue ordering lives behind `SongQueue::FairOrder` rather than inside the view or controller. That leaves the canonical song record available for the rest of the application and gives the fairness model a named place to evolve.
 
 ![FairOrder repeatedly selects the lowest completed-and-projected turn count, then resolves ties by queue position and ID.](/images/karaoke-queue-fair-order-flow.svg)
+
+*For one event, the same completed-turn history and queued requests always produce the same next-performer order.*
 
 ![A host workspace shows the live queue with current, next, and upcoming performers alongside direct queue controls.](/images/karaoke-queue-host-queue.png)
 
@@ -179,6 +183,8 @@ Venue owners can apply a theme for an entire event or a bounded window, delegate
 Fair Queue allows a host to intervene when the room needs it, but the intervention records the action, performer, actor, and timestamp.
 
 ![An event-scoped host queue override locks the event inside a transaction, rewrites controlled queue ordering fields, and records the audit event.](/images/karaoke-queue-host-override-boundary.svg)
+
+*A host pause or unpause changes only the current event's queue and records who made the change.*
 
 ![A recent fair queue override records a pause action with the performer, acting host, and timestamp.](/images/karaoke-queue-owner-fair-overrides.png)
 
