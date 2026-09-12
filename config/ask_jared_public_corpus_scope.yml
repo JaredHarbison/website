@@ -1,0 +1,11 @@
+version: 1
+sources:
+  case_studies:dogly-advocate-discovery: { employer: Dogly, project_scope: inside_employer, scope_confidence: confirmed }
+  case_studies:dogly-membership: { employer: Dogly, project_scope: inside_employer, scope_confidence: confirmed }
+  case_studies:dogly-partner-applications: { employer: Dogly, project_scope: inside_employer, scope_confidence: confirmed }
+  case_studies:dogly-product-design: { employer: Dogly, project_scope: inside_employer, scope_confidence: confirmed }
+  case_studies:dogly-shopify-integration: { employer: Dogly, project_scope: inside_employer, scope_confidence: confirmed }
+  case_studies:fridge-no-more-bulk-ordering: { employer: Dogly, project_scope: inside_employer, scope_confidence: confirmed }
+  case_studies:federation-briefing: { employer: personal, project_scope: outside_employer, scope_confidence: confirmed }
+  case_studies:karaoke-queue: { employer: personal, project_scope: outside_employer, scope_confidence: confirmed }
+  writing:frontline-process-design: { employer: other_employer, project_scope: outside_employer, scope_confidence: confirmed }

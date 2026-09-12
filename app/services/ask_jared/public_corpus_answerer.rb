@@ -25,7 +25,7 @@ module AskJared
     end
 
     def call(question:, decision: nil)
-      documents = @retriever.call(question)
+      documents = @retriever.call(question, scope: requested_scope(decision))
       response = @provider.structured_call(
         system_prompt: system_prompt,
         user_content: JSON.generate(question: question, decision: decision, sources: documents.map { |document| { id: document.id, title: document.title, url: document.url, content: document.body } }),
@@ -46,6 +46,12 @@ module AskJared
     def retrieval_trace
       trace = @retriever.respond_to?(:last_trace) ? @retriever.last_trace : nil
       trace.is_a?(Hash) ? trace : {}
+    end
+
+    def requested_scope(decision)
+      parts = Array(decision&.fetch("parts", []))
+      scopes = parts.filter_map { |part| part["scope"] if %w[dogly non_dogly other_employer personal].include?(part["scope"]) }.uniq
+      scopes.one? ? scopes.first : nil
     end
 
     def system_prompt

@@ -27,8 +27,9 @@ module AskJared
       "writing" => %w[category]
     }.freeze
 
-    def initialize(repositories: nil)
+    def initialize(repositories: nil, scope_registry: PublicCorpusScope.new)
       @repositories = repositories || default_repositories
+      @scope_registry = scope_registry
     end
 
     def documents
@@ -94,7 +95,7 @@ module AskJared
     def document(entry, collection:, url:)
       Document.new(
         "#{collection}:#{entry.slug}", entry.title, url, collection,
-        entry.body.to_s, entry.summary.to_s, entry.metadata || {}
+        entry.body.to_s, entry.summary.to_s, (entry.metadata || {}).merge("scope" => @scope_registry.for("#{collection}:#{entry.slug}"))
       )
     end
 
