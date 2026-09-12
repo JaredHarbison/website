@@ -1,6 +1,7 @@
 require "json"
 require "timeout"
 require "fileutils"
+require_relative "evaluation_scorecard"
 
 module AskJared
   class EvaluationRunner
@@ -33,12 +34,13 @@ module AskJared
 
         progress(index: index, total: cases.length, key: key, status: "started")
         result = execute(evaluation_case, model: model, architecture: architecture, &operation)
-        results[key] = result.merge(
+        persisted = result.merge(
           "case_id" => evaluation_case.fetch("id"),
           "model" => model,
           "architecture" => architecture,
           "recorded_at" => Time.current.iso8601
         )
+        results[key] = persisted.merge("scorecard" => EvaluationScorecard.build(evaluation_case: evaluation_case, result: persisted))
         checkpoint["results"] = results
         checkpoint["updated_at"] = Time.current.iso8601
         flush_checkpoint(checkpoint)
