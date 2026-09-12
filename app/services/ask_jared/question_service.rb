@@ -32,7 +32,8 @@ module AskJared
       end
       validate_question!(question)
       if public_corpus_preview?(architecture: architecture, admin_preview: admin_preview)
-        response = @public_corpus_answerer.call(question: question.to_s.strip)
+        decision = resolve_decision(question: question.to_s.strip, prior_context: {})
+        response = @public_corpus_answerer.call(question: question.to_s.strip, decision: decision.to_h)
         response["evaluation"] = response.fetch("evaluation", {}).merge("architecture" => PUBLIC_CORPUS_ARCHITECTURE) if evaluation
         return response
       end

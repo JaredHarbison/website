@@ -24,11 +24,11 @@ module AskJared
       @rules = rules
     end
 
-    def call(question:)
+    def call(question:, decision: nil)
       documents = @retriever.call(question)
       response = @provider.structured_call(
         system_prompt: system_prompt,
-        user_content: JSON.generate(question: question, sources: documents.map { |document| { id: document.id, title: document.title, url: document.url, content: document.body } }),
+        user_content: JSON.generate(question: question, decision: decision, sources: documents.map { |document| { id: document.id, title: document.title, url: document.url, content: document.body } }),
         schema: SCHEMA,
         max_completion_tokens: 700
       )

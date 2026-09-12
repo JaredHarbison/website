@@ -35,6 +35,7 @@ class AskJaredPublicCorpusEvaluationTest < ActiveSupport::TestCase
 
     assert_equal [ "writing:rails" ], response["evidence_ids"]
     refute_includes provider.request.fetch(:user_content), "private:never"
+    assert_nil JSON.parse(provider.request.fetch(:user_content)).fetch("decision")
     assert_equal 12, response.dig("evaluation", "input_tokens")
     assert_equal({}, response.dig("evaluation", "retrieval_trace"))
     assert_includes provider.request.fetch(:system_prompt), "candidate-level synthesis in 80–140 words"

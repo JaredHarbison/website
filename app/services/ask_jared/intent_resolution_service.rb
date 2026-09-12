@@ -62,7 +62,7 @@ module AskJared
         schema: SCHEMA
       )
       normalize(response.fetch("result")).merge("telemetry" => response["__telemetry"] || {})
-    rescue OpenAiProvider::ConfigurationError, OpenAiProvider::ProviderError, KeyError, TypeError, JSON::ParserError => error
+    rescue OpenAiProvider::ConfigurationError, OpenAiProvider::ProviderError, SocketError, KeyError, TypeError, JSON::ParserError => error
       Rails.logger.warn("Ask Jared intent resolution unavailable: #{error.class}: #{error.message}")
       fallback
     end
