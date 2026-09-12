@@ -178,4 +178,22 @@ class AskJaredPublicCorpusEvaluationTest < ActiveSupport::TestCase
       assert_equal %w[public-corpus-only public-corpus-plus-rules], results.map { |result| result.fetch("architecture") }.uniq.sort
     end
   end
+
+  test "runs the expanded fifty-question recruiter battery separately from the core contract" do
+    calls = []
+    answerer = Struct.new(:calls) do
+      def call(question:)
+        calls << question
+        { "status" => "answer", "answer" => "Grounded.", "evidence_ids" => [] }
+      end
+    end.new(calls)
+
+    Dir.mktmpdir do |directory|
+      checkpoint = File.join(directory, "extended-public-corpus.json")
+      AskJared::PublicCorpusEvaluation.new(answerer: answerer, rules_answerer: answerer).run_extended_pair(checkpoint_path: checkpoint, model: "test-model")
+
+      assert_equal 100, calls.length
+      assert_equal 50, calls.first(50).uniq.length
+    end
+  end
 end

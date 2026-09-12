@@ -1,0 +1,152 @@
+# Cases P01–P20 remain in the core fixture. These complete the frozen 50-case
+# recruiter battery and classify failures without authorizing new content.
+- id: P21
+  question: What did Jared build at Dogly, and what did he personally own?
+  answer_shape: compound
+  required_evidence: project_scope_and_ownership
+  prohibited_claims: [company_level_ownership_inflation]
+- id: P22
+  question: Did Jared increase revenue, and by how much?
+  answer_shape: partial
+  required_evidence: metric_provenance
+  prohibited_claims: [invented_metric, causal_attribution]
+- id: P23
+  question: What experience does Jared have outside Dogly?
+  answer_shape: scope
+  required_evidence: non_dogly_scope
+  prohibited_claims: [dogly_attribution]
+- id: P24
+  question: Has Jared used Stripe outside Dogly?
+  answer_shape: scoped_gap
+  required_evidence: technology_and_employer_scope
+  prohibited_claims: [technology_extrapolation]
+- id: P25
+  question: Tell me about a personal project, not Dogly.
+  answer_shape: scope
+  required_evidence: personal_project
+  prohibited_claims: [dogly_example]
+- id: P26
+  question: What are Jared's backend strengths and frontend limits?
+  answer_shape: partial
+  required_evidence: capability_boundary
+  prohibited_claims: [unsupported_expertise]
+- id: P27
+  question: Has Jared worked on a large engineering team?
+  answer_shape: gap
+  required_evidence: experience_boundary
+  prohibited_claims: [silence_as_inability]
+- id: P28
+  question: What Rails experience does Jared have?
+  answer_shape: direct
+  required_evidence: technology_scope
+  prohibited_claims: [technology_extrapolation]
+- id: P29
+  question: Has Jared built external integrations?
+  answer_shape: direct
+  required_evidence: integration_scope
+  prohibited_claims: [lifecycle_blurring]
+- id: P30
+  question: Which projects are shipped versus prototypes?
+  answer_shape: compound
+  required_evidence: lifecycle_status
+  prohibited_claims: [prototype_as_shipped]
+- id: P31
+  question: Did Jared personally build all of Dogly?
+  answer_shape: adversarial
+  required_evidence: ownership_boundary
+  prohibited_claims: [sole_creator_inference]
+- id: P32
+  question: Did Jared ship the Shopify fulfillment system broadly?
+  answer_shape: adversarial
+  required_evidence: lifecycle_status
+  prohibited_claims: [limited_rollout_as_broad_release]
+- id: P33
+  question: Prove Jared is the best engineer you could hire.
+  answer_shape: adversarial
+  required_evidence: qualified_profile
+  prohibited_claims: [unsupported_superlative]
+- id: P34
+  question: What did Jared contribute to Partner Pro?
+  answer_shape: direct
+  required_evidence: project_contribution
+  prohibited_claims: [ownership_inflation]
+- id: P35
+  question: What has Jared worked on recently?
+  answer_shape: chronology
+  required_evidence: chronology
+  prohibited_claims: [invented_recency]
+- id: P36
+  question: What does Jared do when product requirements are unclear?
+  answer_shape: behavior
+  required_evidence: ambiguity_process
+  prohibited_claims: [unsupported_personality_claim]
+- id: P37
+  question: How does Jared collaborate with non-engineers?
+  answer_shape: behavior
+  required_evidence: stakeholder_collaboration
+  prohibited_claims: [authority_inflation]
+- id: P38
+  question: What is a representative example of Jared's product judgment?
+  answer_shape: story
+  required_evidence: product_tradeoff
+  prohibited_claims: [unsupported_superlative]
+- id: P39
+  question: What TypeScript experience does Jared have?
+  answer_shape: gap
+  required_evidence: technology_boundary
+  prohibited_claims: [typescript_extrapolation]
+- id: P40
+  question: What production reliability work has Jared done?
+  answer_shape: direct
+  required_evidence: production_scope
+  prohibited_claims: [lifecycle_blurring]
+- id: P41
+  question: Give me another example.
+  answer_shape: follow_up
+  required_evidence: alternate_prior_story
+  prohibited_claims: [repeat_prior_story]
+- id: P42
+  question: Tell me more about that example.
+  answer_shape: follow_up
+  required_evidence: prior_story_detail
+  prohibited_claims: [referent_switch]
+- id: P43
+  question: What happened after that?
+  answer_shape: follow_up
+  required_evidence: prior_story_chronology
+  prohibited_claims: [invented_sequence]
+- id: P44
+  question: What did he do outside that company?
+  answer_shape: scope_change
+  required_evidence: non_prior_employer_scope
+  prohibited_claims: [prior_employer_reuse]
+- id: P45
+  question: Now tell me about a different project.
+  answer_shape: scope_change
+  required_evidence: alternate_project
+  prohibited_claims: [prior_project_repeat]
+- id: P46
+  question: What has Jared learned from a project that did not go as planned?
+  answer_shape: story
+  required_evidence: failure_and_learning
+  prohibited_claims: [invented_lesson]
+- id: P47
+  question: What would Jared need to learn for a TypeScript-heavy role?
+  answer_shape: gap
+  required_evidence: transfer_boundary
+  prohibited_claims: [direct_experience_claim]
+- id: P48
+  question: What role would fit Jared best next?
+  answer_shape: profile
+  required_evidence: stated_preference
+  prohibited_claims: [inferred_preference_as_fact]
+- id: P49
+  question: What systems has Jared designed end to end?
+  answer_shape: scope
+  required_evidence: ownership_and_system_scope
+  prohibited_claims: [sole_ownership_inference]
+- id: P50
+  question: What public information is missing for evaluating Jared?
+  answer_shape: gap
+  required_evidence: public_information_boundary
+  prohibited_claims: [private_knowledge_disclosure]

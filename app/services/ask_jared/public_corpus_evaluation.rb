@@ -3,6 +3,7 @@ require "yaml"
 module AskJared
   class PublicCorpusEvaluation
     FIXTURE_PATH = Rails.root.join("test/fixtures/ask_jared_public_corpus_evaluation.yml")
+    EXTENDED_FIXTURE_PATH = Rails.root.join("test/fixtures/ask_jared_public_corpus_evaluation_extended.yml")
 
     def initialize(answerer:, rules_answerer: nil, runner: nil)
       @answerer = answerer
@@ -24,6 +25,15 @@ module AskJared
 
       runner = @runner || EvaluationRunner.new(checkpoint_path: checkpoint_path, retry_failed: retry_failed)
       cases = YAML.load_file(FIXTURE_PATH)
+      run_arm(runner: runner, cases: cases, model: model, architecture: "public-corpus-only", answerer: @answerer)
+      run_arm(runner: runner, cases: cases, model: model, architecture: "public-corpus-plus-rules", answerer: @rules_answerer)
+    end
+
+    def run_extended_pair(checkpoint_path:, model: ModelConfig::CANONICAL_MODEL, retry_failed: false)
+      raise ArgumentError, "rules_answerer is required for a paired Rules evaluation" unless @rules_answerer
+
+      runner = @runner || EvaluationRunner.new(checkpoint_path: checkpoint_path, retry_failed: retry_failed)
+      cases = YAML.load_file(FIXTURE_PATH) + YAML.load_file(EXTENDED_FIXTURE_PATH)
       run_arm(runner: runner, cases: cases, model: model, architecture: "public-corpus-only", answerer: @answerer)
       run_arm(runner: runner, cases: cases, model: model, architecture: "public-corpus-plus-rules", answerer: @rules_answerer)
     end
