@@ -24,8 +24,8 @@ module AskJared
       @rules = rules
     end
 
-    def call(question:, decision: nil)
-      documents, coverage = retrieve_with_coverage(question: question, decision: decision)
+    def call(question:, decision: nil, prior_source_ids: [])
+      documents, coverage = retrieve_with_coverage(question: question, decision: decision, prior_source_ids: prior_source_ids)
       response = @provider.structured_call(
         system_prompt: system_prompt,
         user_content: JSON.generate(question: question, decision: decision, sources: documents.map { |document| { id: document.id, title: document.title, url: document.url, content: document.body } }),
@@ -54,7 +54,12 @@ module AskJared
       scopes.one? ? scopes.first : nil
     end
 
-    def retrieve_with_coverage(question:, decision:)
+    def retrieve_with_coverage(question:, decision:, prior_source_ids:)
+      if follow_up?(decision) && prior_source_ids.any?
+        documents = Array(prior_source_ids).filter_map { |source_id| @retriever.find(source_id) }.first(6)
+        return [ documents, [ { "part" => 1, "scope" => "prior_referent", "dimensions" => [], "evidence_requirements" => [], "source_ids" => documents.map(&:id), "covered" => documents.any? } ] ]
+      end
+
       parts = Array(decision&.fetch("parts", []))
       parts = [ {} ] if parts.empty?
       documents = []
@@ -69,6 +74,10 @@ module AskJared
         }
       end
       [ documents.uniq(&:id).first(6), coverage ]
+    end
+
+    def follow_up?(decision)
+      decision&.fetch("answer_shape", nil) == "follow_up"
     end
 
     def system_prompt

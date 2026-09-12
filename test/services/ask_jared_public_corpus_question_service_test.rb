@@ -5,7 +5,7 @@ class AskJaredPublicCorpusQuestionServiceTest < ActiveSupport::TestCase
     answerer = Class.new do
       attr_reader :questions
       def initialize = @questions = []
-      def call(question:, decision:)
+      def call(question:, decision:, prior_source_ids:)
         questions << question
         @decision = decision
         { "status" => "answer", "answer" => "Published answer.", "evidence_ids" => [ "pages:about" ], "evaluation" => {} }

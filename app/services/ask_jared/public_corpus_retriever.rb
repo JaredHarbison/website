@@ -28,6 +28,10 @@ module AskJared
       selected.map(&:first)
     end
 
+    def find(source_id)
+      @corpus.find(source_id)
+    end
+
     private
 
     def trace(document, score, title_matches, body_matches)

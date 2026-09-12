@@ -72,6 +72,27 @@ class AskJaredPublicCorpusEvaluationTest < ActiveSupport::TestCase
     assert_equal 2, response.dig("evaluation", "coverage").length
   end
 
+  test "pins a clear follow-up to the prior public source" do
+    prior = Document.new("case_studies:prior", "Prior", "/prior", "case_studies", "Prior body", "", {})
+    other = Document.new("writing:other", "Other", "/other", "writing", "Other body", "", {})
+    corpus = Struct.new(:documents) do
+      def find(id) = documents.find { |document| document.id == id }
+    end.new([ prior, other ])
+    retriever = AskJared::PublicCorpusRetriever.new(corpus: corpus)
+    provider = Class.new do
+      def structured_call(**)
+        { "result" => { "status" => "answer", "answer" => "Prior detail.", "source_ids" => [ "case_studies:prior" ] } }
+      end
+    end.new
+
+    response = AskJared::PublicCorpusAnswerer.new(provider: provider, retriever: retriever).call(
+      question: "Tell me more.", decision: { "answer_shape" => "follow_up" }, prior_source_ids: [ "case_studies:prior" ]
+    )
+
+    assert_equal [ "case_studies:prior" ], response.fetch("evidence_ids")
+    assert_equal "prior_referent", response.dig("evaluation", "coverage", 0, "scope")
+  end
+
   test "runs the frozen evaluation fixture with the public-corpus architecture label" do
     calls = []
     answerer = Struct.new(:calls) do

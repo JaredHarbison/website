@@ -31,13 +31,14 @@ module AskJared
         raise ActiveRecord::RecordNotFound, "Ask token is invalid or unavailable" unless @token_service.recruiter_accessible?(token)
       end
       validate_question!(question)
+      session_digest = @usage_guard.digest_session(session_id)
       if public_corpus_preview?(architecture: architecture, admin_preview: admin_preview)
-        decision = resolve_decision(question: question.to_s.strip, prior_context: {})
-        response = @public_corpus_answerer.call(question: question.to_s.strip, decision: decision.to_h)
+        prior_context = prior_answer_context(session_digest)
+        decision = resolve_decision(question: question.to_s.strip, prior_context: prior_context)
+        response = @public_corpus_answerer.call(question: question.to_s.strip, decision: decision.to_h, prior_source_ids: prior_context["evidence_ids"])
         response["evaluation"] = response.fetch("evaluation", {}).merge("architecture" => PUBLIC_CORPUS_ARCHITECTURE) if evaluation
         return response
       end
-      session_digest = @usage_guard.digest_session(session_id)
       qa_preview = token&.opportunity&.tracker_source == "internal_qa"
       unless admin_preview || qa_preview
         question_count = EngagementEvent.where(session_digest: session_digest, event_type: "question_submitted").count
