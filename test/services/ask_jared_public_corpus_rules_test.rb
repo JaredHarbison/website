@@ -44,7 +44,7 @@ class AskJaredPublicCorpusRulesTest < ActiveSupport::TestCase
       attr_reader :request
       def structured_call(**request)
         @request = request
-        { "result" => { "status" => "insufficient_information", "answer" => "The supplied writing does not establish that.", "source_ids" => [] } }
+        { "result" => { "status" => "insufficient_information", "direct_answer" => "The supplied writing does not establish that.", "supporting_example" => "", "qualification" => "", "source_ids" => [] } }
       end
     end.new
     answerer = AskJared::PublicCorpusAnswerer.new(provider: provider, retriever: ->(*) { [] }, rules: AskJared::PublicCorpusRules.new)

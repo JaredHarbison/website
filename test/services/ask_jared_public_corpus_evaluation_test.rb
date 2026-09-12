@@ -26,7 +26,7 @@ class AskJaredPublicCorpusEvaluationTest < ActiveSupport::TestCase
       attr_reader :request
       def structured_call(**request)
         @request = request
-        { "result" => { "status" => "answer", "answer" => "Published answer.", "source_ids" => [ "writing:rails", "private:never" ] }, "__telemetry" => { "input_tokens" => 12 } }
+        { "result" => { "status" => "answer", "direct_answer" => "Published answer.", "supporting_example" => "", "qualification" => "", "source_ids" => [ "writing:rails", "private:never" ] }, "__telemetry" => { "input_tokens" => 12 } }
       end
     end.new
     answerer = AskJared::PublicCorpusAnswerer.new(provider: provider, retriever: Struct.new(:documents) { def call(*) = documents }.new([ document ]))
@@ -59,7 +59,7 @@ class AskJaredPublicCorpusEvaluationTest < ActiveSupport::TestCase
     end.new(document)
     provider = Class.new do
       def structured_call(**)
-        { "result" => { "status" => "answer", "answer" => "Grounded.", "source_ids" => [ "writing:scope" ] } }
+        { "result" => { "status" => "answer", "direct_answer" => "Grounded.", "supporting_example" => "", "qualification" => "", "source_ids" => [ "writing:scope" ] } }
       end
     end.new
 
@@ -81,7 +81,7 @@ class AskJaredPublicCorpusEvaluationTest < ActiveSupport::TestCase
     retriever = AskJared::PublicCorpusRetriever.new(corpus: corpus)
     provider = Class.new do
       def structured_call(**)
-        { "result" => { "status" => "answer", "answer" => "Prior detail.", "source_ids" => [ "case_studies:prior" ] } }
+        { "result" => { "status" => "answer", "direct_answer" => "Prior detail.", "supporting_example" => "", "qualification" => "", "source_ids" => [ "case_studies:prior" ] } }
       end
     end.new
 

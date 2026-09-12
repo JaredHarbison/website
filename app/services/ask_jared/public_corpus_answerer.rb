@@ -11,10 +11,12 @@ module AskJared
         type: "object",
         properties: {
           "status" => { type: "string", enum: %w[answer insufficient_information] },
-          "answer" => { type: "string" },
+          "direct_answer" => { type: "string" },
+          "supporting_example" => { type: "string" },
+          "qualification" => { type: "string" },
           "source_ids" => { type: "array", items: { type: "string" }, maxItems: 6 }
         },
-        required: %w[status answer source_ids], additionalProperties: false
+        required: %w[status direct_answer supporting_example qualification source_ids], additionalProperties: false
       }
     }.freeze
 
@@ -35,7 +37,7 @@ module AskJared
       result = response.fetch("result")
       source_ids = Array(result["source_ids"]) & documents.map(&:id)
       {
-        "status" => result["status"], "answer" => result["answer"].to_s,
+        "status" => result["status"], "answer" => render_answer(result),
         "evidence_ids" => source_ids, "source_urls" => documents.select { |document| source_ids.include?(document.id) }.map(&:url),
         "evaluation" => (response["__telemetry"] || {}).merge("retrieval_trace" => retrieval_trace, "coverage" => coverage)
       }
@@ -80,6 +82,18 @@ module AskJared
       decision&.fetch("answer_shape", nil) == "follow_up"
     end
 
+    # Keep the model focused on answer roles and make the final wording
+    # deterministic. The legacy fallback keeps fixture-based callers usable
+    # while the production schema requires the structured fields.
+    def render_answer(result)
+      sections = if result.key?("direct_answer")
+        [ result["direct_answer"], result["supporting_example"], result["qualification"] ]
+      else
+        [ result["answer"] ]
+      end
+      RecruiterAnswerSanitizer.clean(sections.filter_map { |section| section.to_s.strip.presence }.join(" "))
+    end
+
     def system_prompt
       rules = @rules ? "\nRules:\n- #{@rules.instructions.join("\n- ")}" : ""
       <<~PROMPT + rules
@@ -98,7 +112,11 @@ module AskJared
         example when no comparison basis exists.
         For capability or gap questions, state the direct boundary first, then only relevant adjacent
         foundation and demonstrated learning or adaptation, followed by an explicit transfer limit.
-        Return source_ids only from the supplied source IDs. Do not cite or discuss internal retrieval behavior.
+        Return a compact answer frame: direct_answer answers the question in one or two sentences;
+        supporting_example is one short, distinct relevant example or an empty string; qualification is a
+        material limitation or scope clarification or an empty string. Do not repeat the lead across fields,
+        narrate a full case study for a narrow question, use headings or bullets, or mention planning, evidence,
+        retrieval, sources, or internal process. Return source_ids only from the supplied source IDs.
       PROMPT
     end
   end
