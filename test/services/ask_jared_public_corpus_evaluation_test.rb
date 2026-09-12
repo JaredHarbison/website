@@ -38,12 +38,38 @@ class AskJaredPublicCorpusEvaluationTest < ActiveSupport::TestCase
     assert_nil JSON.parse(provider.request.fetch(:user_content)).fetch("decision")
     assert_equal 12, response.dig("evaluation", "input_tokens")
     assert_equal({}, response.dig("evaluation", "retrieval_trace"))
+    assert_equal [ true ], response.dig("evaluation", "coverage").map { |part| part.fetch("covered") }
     assert_includes provider.request.fetch(:system_prompt), "candidate-level synthesis in 80–140 words"
     assert_includes provider.request.fetch(:system_prompt), "Source ordering must not"
     assert_includes provider.request.fetch(:system_prompt), "documented engineering-context behaviors"
     assert_includes provider.request.fetch(:system_prompt), "never as engineering-management experience"
     assert_includes provider.request.fetch(:system_prompt), "Never select a project as largest or most complex"
     assert_includes provider.request.fetch(:system_prompt), "direct boundary first"
+  end
+
+  test "retrieves separately for every structured question part" do
+    document = Document.new("writing:scope", "Scope", "/writing/scope", "writing", "Published body", "Summary", {})
+    retriever = Class.new do
+      attr_reader :scopes
+      def initialize(document) = (@document = document; @scopes = [])
+      def call(_question, scope: nil)
+        scopes << scope
+        [ @document ]
+      end
+    end.new(document)
+    provider = Class.new do
+      def structured_call(**)
+        { "result" => { "status" => "answer", "answer" => "Grounded.", "source_ids" => [ "writing:scope" ] } }
+      end
+    end.new
+
+    response = AskJared::PublicCorpusAnswerer.new(provider: provider, retriever: retriever).call(
+      question: "What did Jared do outside Dogly and at Dogly?",
+      decision: { "parts" => [ { "scope" => "non_dogly", "dimensions" => [ "ownership" ] }, { "scope" => "dogly", "dimensions" => [ "contribution" ] } ] }
+    )
+
+    assert_equal %w[non_dogly dogly], retriever.scopes
+    assert_equal 2, response.dig("evaluation", "coverage").length
   end
 
   test "runs the frozen evaluation fixture with the public-corpus architecture label" do

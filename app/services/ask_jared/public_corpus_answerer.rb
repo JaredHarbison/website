@@ -25,7 +25,7 @@ module AskJared
     end
 
     def call(question:, decision: nil)
-      documents = @retriever.call(question, scope: requested_scope(decision))
+      documents, coverage = retrieve_with_coverage(question: question, decision: decision)
       response = @provider.structured_call(
         system_prompt: system_prompt,
         user_content: JSON.generate(question: question, decision: decision, sources: documents.map { |document| { id: document.id, title: document.title, url: document.url, content: document.body } }),
@@ -37,7 +37,7 @@ module AskJared
       {
         "status" => result["status"], "answer" => result["answer"].to_s,
         "evidence_ids" => source_ids, "source_urls" => documents.select { |document| source_ids.include?(document.id) }.map(&:url),
-        "evaluation" => (response["__telemetry"] || {}).merge("retrieval_trace" => retrieval_trace)
+        "evaluation" => (response["__telemetry"] || {}).merge("retrieval_trace" => retrieval_trace, "coverage" => coverage)
       }
     end
 
@@ -52,6 +52,23 @@ module AskJared
       parts = Array(decision&.fetch("parts", []))
       scopes = parts.filter_map { |part| part["scope"] if %w[dogly non_dogly other_employer personal].include?(part["scope"]) }.uniq
       scopes.one? ? scopes.first : nil
+    end
+
+    def retrieve_with_coverage(question:, decision:)
+      parts = Array(decision&.fetch("parts", []))
+      parts = [ {} ] if parts.empty?
+      documents = []
+      coverage = parts.each_with_index.map do |part, index|
+        scope = part["scope"] if %w[dogly non_dogly other_employer personal].include?(part["scope"])
+        selected = @retriever.call(question, scope: scope)
+        documents.concat(selected)
+        {
+          "part" => index + 1, "scope" => scope || "unrestricted",
+          "dimensions" => Array(part["dimensions"]), "evidence_requirements" => Array(part["evidence_requirements"]),
+          "source_ids" => selected.map(&:id), "covered" => selected.any?
+        }
+      end
+      [ documents.uniq(&:id).first(6), coverage ]
     end
 
     def system_prompt
