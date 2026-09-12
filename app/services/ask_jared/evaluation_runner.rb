@@ -8,11 +8,12 @@ module AskJared
     DEFAULT_RETRIES = 1
     DEFAULT_RETRY_DELAY_SECONDS = 1
 
-    def initialize(checkpoint_path:, timeout_seconds: DEFAULT_TIMEOUT_SECONDS, retries: DEFAULT_RETRIES, retry_delay_seconds: DEFAULT_RETRY_DELAY_SECONDS, clock: -> { Process.clock_gettime(Process::CLOCK_MONOTONIC) }, sleeper: ->(seconds) { sleep(seconds) })
+    def initialize(checkpoint_path:, timeout_seconds: DEFAULT_TIMEOUT_SECONDS, retries: DEFAULT_RETRIES, retry_delay_seconds: DEFAULT_RETRY_DELAY_SECONDS, retry_failed: false, clock: -> { Process.clock_gettime(Process::CLOCK_MONOTONIC) }, sleeper: ->(seconds) { sleep(seconds) })
       @checkpoint_path = checkpoint_path.to_s
       @timeout_seconds = timeout_seconds
       @retries = retries
       @retry_delay_seconds = retry_delay_seconds
+      @retry_failed = retry_failed
       @clock = clock
       @sleeper = sleeper
     end
@@ -107,6 +108,8 @@ module AskJared
     end
 
     def resumable?(result, model:, architecture:)
+      return false if @retry_failed && result.is_a?(Hash) && result["status"].to_s != "completed"
+
       result.is_a?(Hash) && result["model"] == model && result["architecture"] == architecture && (result["status"].to_s != "completed" || result["reported_model"].blank? || result["reported_model"].to_s == model) && result["status"].to_s.in?(%w[completed provider_timeout provider_error structured_response_error validation_error])
     end
 

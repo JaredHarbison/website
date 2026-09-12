@@ -30,7 +30,7 @@ namespace :ask_jared do
       rules_answerer: AskJared::PublicCorpusAnswerer.new(provider: provider, rules: AskJared::PublicCorpusRules.default)
     )
 
-    evaluation.run_pair(checkpoint_path: checkpoint_path, model: model)
+    evaluation.run_pair(checkpoint_path: checkpoint_path, model: model, retry_failed: ENV["ASK_JARED_RETRY_FAILED"] == "true")
     puts "Paired public-corpus evaluation checkpoint: #{checkpoint_path}"
   end
 end

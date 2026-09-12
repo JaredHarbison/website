@@ -19,10 +19,10 @@ module AskJared
 
     # Both arms share the frozen cases, selected model, and checkpoint. The
     # architecture label keeps resumable results distinct.
-    def run_pair(checkpoint_path:, model: ModelConfig::CANONICAL_MODEL)
+    def run_pair(checkpoint_path:, model: ModelConfig::CANONICAL_MODEL, retry_failed: false)
       raise ArgumentError, "rules_answerer is required for a paired Rules evaluation" unless @rules_answerer
 
-      runner = @runner || EvaluationRunner.new(checkpoint_path: checkpoint_path)
+      runner = @runner || EvaluationRunner.new(checkpoint_path: checkpoint_path, retry_failed: retry_failed)
       cases = YAML.load_file(FIXTURE_PATH)
       run_arm(runner: runner, cases: cases, model: model, architecture: "public-corpus-only", answerer: @answerer)
       run_arm(runner: runner, cases: cases, model: model, architecture: "public-corpus-plus-rules", answerer: @rules_answerer)
