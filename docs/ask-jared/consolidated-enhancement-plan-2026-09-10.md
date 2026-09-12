@@ -16,12 +16,12 @@ contract for the next release cycle.
 ## Progress contract
 
 ```yaml
-phase_count: 6
-  slice_count: 22
+phase_count: 7
+  slice_count: 27
   completed_slice_count: 6
-  remaining_slice_count: 16
-  current_phase: 2
-  current_slice: 2.1
+  remaining_slice_count: 21
+  current_phase: 3
+  current_slice: 3.1
   canonical_architecture: candidate-context-v2
   canonical_final_model: ASK_JARED_MODEL (default gpt-5.6-sol)
   question_understanding: model-first structured decision output
@@ -241,7 +241,7 @@ answers possible for compound questions.
 Acceptance: generic and skeleton paths share the same evidence/scope checks and
 cannot produce divergent user-facing failure semantics.
 
-### Phase 2 — Public-corpus answerability and policy (5 slices)
+### Phase 2 — Public-corpus answerability and policy (6 slices)
 
 Purpose: make the public writing the coherent recruiter evidence system, then
 add only the smallest policy layer needed to prevent confident overclaiming.
@@ -421,6 +421,55 @@ Run the battery on the deployed v2 path, inspect production telemetry, then
 hand back to Jared for Admin QA. The release gate requires zero known critical
 failures, no admin-limit regression, no user-visible validation failure for a
 supported question, and v2/model-path telemetry on every result.
+
+### Phase 6 — Migration completion and codebase cleanup (5 slices)
+
+#### 6.1 Admin dashboard and diagnostic parity
+
+Show answer architecture, public sources, Rules version, retrieval trace,
+validation outcome, model, latency, token/cost data, evaluation status, and
+unresolved failures in the admin experience.
+
+Acceptance: an administrator can explain one answer's source and decision
+path without inspecting logs or database records.
+
+#### 6.2 Recruiter experience and conversation parity
+
+Preserve question limits, feedback, source links, CTAs, answer history,
+follow-ups, error states, accessibility, mobile behavior, and engagement
+analytics on the public-corpus path.
+
+Acceptance: recruiter-facing regression coverage demonstrates parity,
+including clear-referent and changed-scope turns.
+
+#### 6.3 Public-content operations
+
+Validate published-source metadata, exclude drafts and non-evidence pages,
+detect broken links, refresh retrieval data after content changes, and make
+source changes visible in evaluation diagnostics.
+
+Acceptance: a content change enters the approved corpus with a traceable
+version or fails clearly before it can affect an answer.
+
+#### 6.4 Controlled rollout, retention, and retirement
+
+Add a feature flag, gradual rollout, rollback path, and retention/export plan.
+Stop database knowledge records from generating answers before removing their
+retrieval, embedding, import, and editing paths; preserve historical event
+references for the agreed retention period.
+
+Acceptance: promotion and rollback are reversible, and database knowledge can
+be retired without losing analytics or answer-event history.
+
+#### 6.5 Remove obsolete architecture and maintenance paths
+
+After stable rollout, remove superseded database retrieval, embeddings, private
+factual planning, compatibility branches, duplicate evaluation code, and stale
+admin controls. Leave one model path, answer architecture, evaluation runner,
+telemetry contract, and admin surface.
+
+Acceptance: the codebase has one documented answer path and no dormant
+database knowledge base capable of silently returning to recruiter answers.
 
 ## Evidence-corpus size decision
 
