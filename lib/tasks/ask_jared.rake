@@ -30,7 +30,14 @@ namespace :ask_jared do
       rules_answerer: AskJared::PublicCorpusAnswerer.new(provider: provider, rules: AskJared::PublicCorpusRules.default)
     )
 
-    evaluation.run_pair(checkpoint_path: checkpoint_path, model: model, retry_failed: ENV["ASK_JARED_RETRY_FAILED"] == "true")
+    run_options = { checkpoint_path: checkpoint_path, model: model, retry_failed: ENV["ASK_JARED_RETRY_FAILED"] == "true" }
+    if ENV["ASK_JARED_EVALUATION_BATTERY"] == "extended"
+      evaluation.run_extended_pair(**run_options)
+    else
+      evaluation.run_pair(**run_options)
+    end
     puts "Paired public-corpus evaluation checkpoint: #{checkpoint_path}"
+    results = JSON.parse(File.read(checkpoint_path)).fetch("results").values
+    puts JSON.pretty_generate(AskJared::DeploymentGate.evaluate(results))
   end
 end
