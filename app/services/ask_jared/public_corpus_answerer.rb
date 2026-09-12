@@ -30,7 +30,12 @@ module AskJared
       documents, coverage = retrieve_with_coverage(question: question, decision: decision, prior_source_ids: prior_source_ids)
       response = @provider.structured_call(
         system_prompt: system_prompt,
-        user_content: JSON.generate(question: question, decision: decision, sources: documents.map { |document| { id: document.id, title: document.title, url: document.url, content: document.body } }),
+        user_content: JSON.generate(
+          question: question,
+          decision: decision,
+          coverage: coverage,
+          sources: documents.map { |document| { id: document.id, title: document.title, url: document.url, content: document.body } }
+        ),
         schema: SCHEMA,
         max_completion_tokens: 700
       )
@@ -112,6 +117,11 @@ module AskJared
         example when no comparison basis exists.
         For capability or gap questions, state the direct boundary first, then only relevant adjacent
         foundation and demonstrated learning or adaptation, followed by an explicit transfer limit.
+        For compound questions, the coverage list identifies which question parts have retrieved public support.
+        When at least one part is covered, return status=answer: answer the supported portion directly and use
+        qualification only to name the specific unsupported portion. Do not replace a useful partial answer with
+        a blanket insufficiency, and do not manufacture the missing fact. Use insufficient_information only when
+        no requested portion has public support.
         Return a compact answer frame: direct_answer answers the question in one or two sentences;
         supporting_example is one short, distinct relevant example or an empty string; qualification is a
         material limitation or scope clarification or an empty string. Do not repeat the lead across fields,

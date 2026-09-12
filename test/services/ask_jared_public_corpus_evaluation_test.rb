@@ -39,6 +39,7 @@ class AskJaredPublicCorpusEvaluationTest < ActiveSupport::TestCase
     assert_equal 12, response.dig("evaluation", "input_tokens")
     assert_equal({}, response.dig("evaluation", "retrieval_trace"))
     assert_equal [ true ], response.dig("evaluation", "coverage").map { |part| part.fetch("covered") }
+    assert_equal [ true ], JSON.parse(provider.request.fetch(:user_content)).fetch("coverage").map { |part| part.fetch("covered") }
     assert_includes provider.request.fetch(:system_prompt), "candidate-level synthesis in 80–140 words"
     assert_includes provider.request.fetch(:system_prompt), "Source ordering must not"
     assert_includes provider.request.fetch(:system_prompt), "documented engineering-context behaviors"
@@ -70,6 +71,31 @@ class AskJaredPublicCorpusEvaluationTest < ActiveSupport::TestCase
 
     assert_equal %w[non_dogly dogly], retriever.scopes
     assert_equal 2, response.dig("evaluation", "coverage").length
+  end
+
+  test "tells the answerer which compound parts have no public support" do
+    document = Document.new("writing:supported", "Supported", "/supported", "writing", "Published body", "", {})
+    retriever = Class.new do
+      def initialize(document) = @document = document
+      def call(_question, scope: nil) = (scope == "dogly" ? [ @document ] : [])
+    end.new(document)
+    provider = Class.new do
+      attr_reader :request
+      def structured_call(**request)
+        @request = request
+        { "result" => { "status" => "answer", "direct_answer" => "The supported portion.", "supporting_example" => "", "qualification" => "The requested personal detail is not documented publicly.", "source_ids" => [ "writing:supported" ] } }
+      end
+    end.new
+
+    response = AskJared::PublicCorpusAnswerer.new(provider: provider, retriever: retriever).call(
+      question: "What did Jared build at Dogly and personally?",
+      decision: { "compound" => true, "parts" => [ { "scope" => "dogly" }, { "scope" => "personal" } ] }
+    )
+
+    coverage = JSON.parse(provider.request.fetch(:user_content)).fetch("coverage")
+    assert_equal [ true, false ], coverage.map { |part| part.fetch("covered") }
+    assert_equal "The supported portion. The requested personal detail is not documented publicly.", response.fetch("answer")
+    assert_includes provider.request.fetch(:system_prompt), "useful partial answer"
   end
 
   test "pins a clear follow-up to the prior public source" do
