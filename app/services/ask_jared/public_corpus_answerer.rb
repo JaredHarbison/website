@@ -41,8 +41,9 @@ module AskJared
       )
       result = response.fetch("result")
       source_ids = Array(result["source_ids"]) & documents.map(&:id)
+      status, answer = verify_response(result: result, source_ids: source_ids)
       {
-        "status" => result["status"], "answer" => render_answer(result),
+        "status" => status, "answer" => answer,
         "evidence_ids" => source_ids, "source_urls" => documents.select { |document| source_ids.include?(document.id) }.map(&:url),
         "evaluation" => (response["__telemetry"] || {}).merge("retrieval_trace" => retrieval_trace, "coverage" => coverage)
       }
@@ -97,6 +98,16 @@ module AskJared
         [ result["answer"] ]
       end
       RecruiterAnswerSanitizer.clean(sections.filter_map { |section| section.to_s.strip.presence }.join(" "))
+    end
+
+    # A model may only make a public-corpus answer when it points back to at
+    # least one supplied document. This is deliberately a useful recruiter
+    # fallback rather than an exposed validation error.
+    def verify_response(result:, source_ids:)
+      answer = render_answer(result)
+      return [ "insufficient_information", "The published site does not provide enough detail to answer that reliably." ] if result["status"] == "answer" && source_ids.empty?
+
+      [ result["status"], answer ]
     end
 
     def system_prompt

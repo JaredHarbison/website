@@ -48,6 +48,20 @@ class AskJaredPublicCorpusEvaluationTest < ActiveSupport::TestCase
     assert_includes provider.request.fetch(:system_prompt), "direct boundary first"
   end
 
+  test "uses a narrow public-information fallback when an answer has no attributable source" do
+    document = Document.new("writing:rails", "Rails", "/writing/rails", "writing", "Published body", "", {})
+    provider = Class.new do
+      def structured_call(**)
+        { "result" => { "status" => "answer", "direct_answer" => "An unsupported claim.", "supporting_example" => "", "qualification" => "", "source_ids" => [] } }
+      end
+    end.new
+
+    response = AskJared::PublicCorpusAnswerer.new(provider: provider, retriever: Struct.new(:documents) { def call(*) = documents }.new([ document ])).call(question: "What did Jared do?")
+
+    assert_equal "insufficient_information", response.fetch("status")
+    assert_equal "The published site does not provide enough detail to answer that reliably.", response.fetch("answer")
+  end
+
   test "retrieves separately for every structured question part" do
     document = Document.new("writing:scope", "Scope", "/writing/scope", "writing", "Published body", "Summary", {})
     retriever = Class.new do
