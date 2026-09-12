@@ -37,11 +37,16 @@ module AskJared
       {
         "status" => result["status"], "answer" => result["answer"].to_s,
         "evidence_ids" => source_ids, "source_urls" => documents.select { |document| source_ids.include?(document.id) }.map(&:url),
-        "evaluation" => (response["__telemetry"] || {})
+        "evaluation" => (response["__telemetry"] || {}).merge("retrieval_trace" => retrieval_trace)
       }
     end
 
     private
+
+    def retrieval_trace
+      trace = @retriever.respond_to?(:last_trace) ? @retriever.last_trace : nil
+      trace.is_a?(Hash) ? trace : {}
+    end
 
     def system_prompt
       rules = @rules ? "\nRules:\n- #{@rules.instructions.join("\n- ")}" : ""

@@ -14,6 +14,10 @@ class AskJaredPublicCorpusEvaluationTest < ActiveSupport::TestCase
     selected = AskJared::PublicCorpusRetriever.new(corpus: corpus).call("What Rails reliability work has Jared done?", limit: 1)
 
     assert_equal [ "writing:rails" ], selected.map(&:id)
+    trace = AskJared::PublicCorpusRetriever.new(corpus: corpus)
+    trace.call("What Rails reliability work has Jared done?", limit: 1)
+    assert_equal [ "writing:rails" ], trace.last_trace.fetch(:selected)
+    assert_equal "public-corpus-lexical", trace.last_trace.fetch(:mode)
   end
 
   test "answers only from retrieved public documents" do
@@ -32,6 +36,7 @@ class AskJaredPublicCorpusEvaluationTest < ActiveSupport::TestCase
     assert_equal [ "writing:rails" ], response["evidence_ids"]
     refute_includes provider.request.fetch(:user_content), "private:never"
     assert_equal 12, response.dig("evaluation", "input_tokens")
+    assert_equal({}, response.dig("evaluation", "retrieval_trace"))
     assert_includes provider.request.fetch(:system_prompt), "candidate-level synthesis in 80–140 words"
     assert_includes provider.request.fetch(:system_prompt), "Source ordering must not"
     assert_includes provider.request.fetch(:system_prompt), "documented engineering-context behaviors"
