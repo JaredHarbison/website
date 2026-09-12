@@ -28,10 +28,11 @@ class AskController < ApplicationController
     else
       0
     end
-    # Owner and internal QA sessions always exercise the canonical planner.
-    # Historical architecture variants remain available only in archived
-    # evaluation artifacts, never through the live preview surface.
-    @preview_architecture = AskJared::CandidateContext::VERSION
+    @preview_architecture = if @admin_preview && params[:architecture] == AskJared::QuestionService::PUBLIC_CORPUS_ARCHITECTURE
+      AskJared::QuestionService::PUBLIC_CORPUS_ARCHITECTURE
+    else
+      AskJared::CandidateContext::VERSION
+    end
     unless @admin_preview || token_service.recruiter_accessible?(@token)
       @ask_unavailable = true
       return render :show, status: :not_found

@@ -161,7 +161,7 @@ module AskJared
       begin
         ranked = semantic_rank(entries, question, intent)
         mode = "semantic-qualified"
-      rescue OpenAiEmbeddingProvider::ConfigurationError, OpenAiEmbeddingProvider::ProviderError, ActiveRecord::StatementInvalid
+      rescue OpenAiEmbeddingProvider::ConfigurationError, OpenAiEmbeddingProvider::ProviderError, SocketError, ActiveRecord::StatementInvalid
         ranked = lexical_rank(entries, question, intent)
         mode = "lexical-qualified"
       end
@@ -175,7 +175,7 @@ module AskJared
       begin
         ranked = semantic_rank(entries, question, nil)
         mode = "semantic-fallback"
-      rescue OpenAiEmbeddingProvider::ConfigurationError, OpenAiEmbeddingProvider::ProviderError, ActiveRecord::StatementInvalid
+      rescue OpenAiEmbeddingProvider::ConfigurationError, OpenAiEmbeddingProvider::ProviderError, SocketError, ActiveRecord::StatementInvalid
         ranked = lexical_rank(entries, question, nil)
         mode = "lexical-fallback"
       end

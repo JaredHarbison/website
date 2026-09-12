@@ -6,10 +6,11 @@ module AskJared
     MIN_QUESTION_LENGTH = 3
     GARBAGE_PATTERN = /\A(.)\1{20,}\z/
     PUBLIC_DEFAULT_ARCHITECTURE = CandidateContext::VERSION
+    PUBLIC_CORPUS_ARCHITECTURE = "public-corpus-rules-v1"
 
     RECOGNIZED_INTENTS = ApprovedKnowledgeRetriever::INTENT_SPECS.keys.freeze
 
-    def initialize(token_service: TokenService.new, retriever: ApprovedKnowledgeRetriever.new, provider: OpenAiProvider.new, skeleton_provider: nil, engagement_service: EngagementService.new, usage_guard: UsageGuard.new, planner: nil, intent_resolver: nil)
+    def initialize(token_service: TokenService.new, retriever: ApprovedKnowledgeRetriever.new, provider: OpenAiProvider.new, skeleton_provider: nil, engagement_service: EngagementService.new, usage_guard: UsageGuard.new, planner: nil, intent_resolver: nil, public_corpus_answerer: nil)
       @token_service = token_service
       @retriever = retriever
       @provider = provider
@@ -19,6 +20,7 @@ module AskJared
       @usage_guard = usage_guard
       @v2_planner = planner || CandidateContextPlanner.new(context: CandidateContext.new)
       @intent_resolver = intent_resolver || IntentResolutionService.new(provider: provider)
+      @public_corpus_answerer = public_corpus_answerer || PublicCorpusAnswerer.new(provider: provider, rules: PublicCorpusRules.default)
     end
 
     def call(raw_token:, question:, session_id:, ip: nil, request_id:, admin_preview: false, architecture: nil, evaluation: false)
@@ -29,6 +31,11 @@ module AskJared
         raise ActiveRecord::RecordNotFound, "Ask token is invalid or unavailable" unless @token_service.recruiter_accessible?(token)
       end
       validate_question!(question)
+      if public_corpus_preview?(architecture: architecture, admin_preview: admin_preview)
+        response = @public_corpus_answerer.call(question: question.to_s.strip)
+        response["evaluation"] = response.fetch("evaluation", {}).merge("architecture" => PUBLIC_CORPUS_ARCHITECTURE) if evaluation
+        return response
+      end
       session_digest = @usage_guard.digest_session(session_id)
       qa_preview = token&.opportunity&.tracker_source == "internal_qa"
       unless admin_preview || qa_preview
@@ -143,6 +150,10 @@ module AskJared
     end
 
     private
+
+    def public_corpus_preview?(architecture:, admin_preview:)
+      admin_preview && architecture.to_s == PUBLIC_CORPUS_ARCHITECTURE
+    end
 
     def retrieve(question, limit: nil, intent: nil)
       options = {}
