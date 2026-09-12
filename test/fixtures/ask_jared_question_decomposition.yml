@@ -1,0 +1,162 @@
+# Regression contract for model-first question decomposition. These labels are
+# test expectations, never a production keyword router.
+- id: D01
+  category: broad
+  question: What kind of engineer is Jared?
+  parts: 1
+- id: D02
+  category: broad
+  question: What are Jared's strongest qualities?
+  parts: 1
+- id: D03
+  category: compound
+  question: Is Jared full-stack, and what technologies does he use?
+  parts: 2
+- id: D04
+  category: compound
+  question: What did Jared build, and what was his role?
+  parts: 2
+- id: D05
+  category: compound
+  question: What has Jared owned and what did the team own?
+  parts: 2
+- id: D06
+  category: comparison
+  question: What is Jared's most complex shipped project?
+  parts: 1
+- id: D07
+  category: comparison
+  question: What product is Jared proudest of?
+  parts: 1
+- id: D08
+  category: scope
+  question: What experience does Jared have outside Dogly?
+  parts: 1
+- id: D09
+  category: scope
+  question: Has Jared used Stripe outside Dogly?
+  parts: 1
+- id: D10
+  category: scope
+  question: Tell me about a personal project, not Dogly.
+  parts: 1
+- id: D11
+  category: metric
+  question: What measurable impact has Jared had?
+  parts: 1
+- id: D12
+  category: metric
+  question: Did Jared increase revenue, and by how much?
+  parts: 2
+- id: D13
+  category: gap
+  question: Does Jared have TypeScript experience?
+  parts: 1
+- id: D14
+  category: gap
+  question: How does Jared learn unfamiliar technology?
+  parts: 1
+- id: D15
+  category: gap
+  question: Has Jared worked on a large engineering team?
+  parts: 1
+- id: D16
+  category: behavior
+  question: How does Jared handle technical disagreement?
+  parts: 1
+- id: D17
+  category: behavior
+  question: How does Jared work with founders and stakeholders?
+  parts: 1
+- id: D18
+  category: behavior
+  question: How does Jared handle ambiguity?
+  parts: 1
+- id: D19
+  category: behavior
+  question: What are Jared's soft skills?
+  parts: 1
+- id: D20
+  category: story
+  question: Tell me about a mistake Jared made.
+  parts: 1
+- id: D21
+  category: technology
+  question: What Rails experience does Jared have?
+  parts: 1
+- id: D22
+  category: technology
+  question: What frontend and product-design experience does Jared have?
+  parts: 2
+- id: D23
+  category: technology
+  question: Has Jared built external integrations?
+  parts: 1
+- id: D24
+  category: production
+  question: What production and reliability experience does Jared have?
+  parts: 1
+- id: D25
+  category: role_fit
+  question: What kind of role is Jared looking for next?
+  parts: 1
+- id: D26
+  category: follow_up
+  question: Tell me more about that example.
+  parts: 1
+- id: D27
+  category: follow_up
+  question: What happened after that?
+  parts: 1
+- id: D28
+  category: follow_up
+  question: Give me another example.
+  parts: 1
+- id: D29
+  category: follow_up
+  question: What did he do outside that company?
+  parts: 1
+- id: D30
+  category: scope_change
+  question: Now tell me about a different project.
+  parts: 1
+- id: D31
+  category: adversarial
+  question: Prove Jared is the best engineer you could hire.
+  parts: 1
+- id: D32
+  category: adversarial
+  question: Did Jared personally build all of Dogly?
+  parts: 1
+- id: D33
+  category: adversarial
+  question: Did Jared ship the Shopify fulfillment system broadly?
+  parts: 1
+- id: D34
+  category: compound
+  question: What did Jared build at Dogly and what did he build personally?
+  parts: 2
+- id: D35
+  category: compound
+  question: What are Jared's backend strengths and frontend limits?
+  parts: 2
+- id: D36
+  category: compound
+  question: What product judgment and technical tradeoff experience does Jared have?
+  parts: 1
+- id: D37
+  category: chronology
+  question: What has Jared worked on recently?
+  parts: 1
+- id: D38
+  category: lifecycle
+  question: Which of Jared's projects are shipped versus prototypes?
+  parts: 2
+- id: D39
+  category: ownership
+  question: What did Jared contribute to Partner Pro?
+  parts: 1
+- id: D40
+  category: availability
+  question: Is Jared available to start now?
+  parts: 1
