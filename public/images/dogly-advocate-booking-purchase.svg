@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="500" viewBox="0 0 960 500" role="img" aria-labelledby="title desc">
+  <title id="title">Purchase to verified booking entitlement</title>
+  <desc id="desc">A member starts checkout. Rails stores a purchase attempt and creates an idempotent Stripe session. Stripe sends a signed event. The reconciler verifies the event and payment details, locks the attempt, activates the entitlement, and queues notifications.</desc>
+  <rect width="960" height="500" fill="#080b0c"/>
+  <g font-family="ui-monospace, monospace"><text x="48" y="52" fill="#e5b566" font-size="18">PURCHASE → VERIFIED ENTITLEMENT</text><text x="48" y="78" fill="#929e98" font-size="14">PAYMENT CONFIRMATION IS SERVER-TO-SERVER</text></g>
+  <g font-family="ui-sans-serif, sans-serif" text-anchor="middle" fill="#d9e0dc"><text x="120" y="125" font-weight="700">Member</text><text x="310" y="125" font-weight="700">Purchase service</text><text x="500" y="125" font-weight="700">PostgreSQL</text><text x="690" y="125" font-weight="700">Stripe</text><text x="850" y="125" font-weight="700">Reconciler</text></g>
+  <g stroke="#26302c" stroke-width="2"><line x1="120" y1="145" x2="120" y2="420"/><line x1="310" y1="145" x2="310" y2="420"/><line x1="500" y1="145" x2="500" y2="420"/><line x1="690" y1="145" x2="690" y2="420"/><line x1="850" y1="145" x2="850" y2="420"/></g>
+  <g stroke="#75bfff" stroke-width="3" fill="none">
+    <line x1="120" y1="180" x2="310" y2="180"/><line x1="310" y1="225" x2="500" y2="225"/><line x1="310" y1="270" x2="690" y2="270"/><line x1="690" y1="315" x2="850" y2="315"/><line x1="850" y1="360" x2="500" y2="360"/><line x1="850" y1="405" x2="500" y2="405"/>
+  </g>
+  <g fill="#75bfff"><path d="M310 180l-10-6v12z"/><path d="M500 225l-10-6v12z"/><path d="M690 270l-10-6v12z"/><path d="M850 315l-10-6v12z"/><path d="M500 360l10-6v12z"/><path d="M500 405l10-6v12z"/></g>
+  <g font-family="ui-sans-serif, sans-serif" font-size="13" fill="#d9e0dc"><text x="145" y="170">begin checkout</text><text x="330" y="215">create attempt + terms snapshot</text><text x="390" y="260">create checkout (idempotency key)</text><text x="700" y="305">signed payment event</text><text x="575" y="350">verify event, metadata, amount, currency</text><text x="580" y="395">lock attempt · activate entitlement · enqueue outbox</text></g>
+  <rect x="150" y="442" width="660" height="36" rx="6" fill="#132c2b" stroke="#56d6c9"/><text x="480" y="465" text-anchor="middle" fill="#ecf2f8" font-family="ui-monospace, monospace" font-size="14">BROWSER RETURN ≠ PAYMENT PROOF · RECONCILIATION GRANTS ACCESS</text>
+</svg>

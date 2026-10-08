@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="560" viewBox="0 0 960 560" role="img" aria-labelledby="title desc">
+  <title id="title">Dogly Advocate Booking system context</title>
+  <desc id="desc">Members request and manage bookings, advocates publish packages and manage appointments, and admins configure policy and operations. Rails coordinates the domain; PostgreSQL stores durable state; Stripe, Zoom, Google Calendar, and email are explicit external boundaries.</desc>
+  <rect width="960" height="560" fill="#080b0c"/>
+  <g font-family="ui-monospace, monospace" fill="#e5b566"><text x="48" y="54" font-size="18">DOGLY ADVOCATE BOOKING</text><text x="48" y="80" font-size="14" fill="#929e98">SYSTEM CONTEXT · USERS · DOMAIN · PROVIDERS</text></g>
+  <g fill="#101817" stroke="#26302c" stroke-width="2">
+    <rect x="35" y="130" width="205" height="95" rx="8"/><rect x="35" y="245" width="205" height="95" rx="8"/><rect x="35" y="360" width="205" height="95" rx="8"/>
+    <rect x="320" y="175" width="300" height="170" rx="10"/><rect x="350" y="390" width="240" height="105" rx="9"/>
+    <rect x="720" y="110" width="205" height="85" rx="8"/><rect x="720" y="215" width="205" height="85" rx="8"/><rect x="720" y="320" width="205" height="85" rx="8"/><rect x="720" y="425" width="205" height="85" rx="8"/>
+  </g>
+  <g font-family="ui-sans-serif, sans-serif" text-anchor="middle" fill="#d9e0dc">
+    <text x="137" y="166" font-size="17" font-weight="700">Member</text><text x="137" y="192" font-size="14">buy package · request time</text><text x="137" y="211" font-size="14">manage booking</text>
+    <text x="137" y="281" font-size="17" font-weight="700">Advocate</text><text x="137" y="307" font-size="14">publish package · availability</text><text x="137" y="326" font-size="14">confirm · manage</text>
+    <text x="137" y="396" font-size="17" font-weight="700">Admin</text><text x="137" y="422" font-size="14">policies · venues</text><text x="137" y="441" font-size="14">operations · overrides</text>
+    <text x="470" y="222" font-size="19" font-weight="700">Rails booking domain</text><text x="470" y="253" font-size="15">controllers · policies · services</text><text x="470" y="278" font-size="15">purchase · entitlement · lifecycle</text><text x="470" y="303" font-size="15">outbox · provider adapters</text>
+    <text x="470" y="430" font-size="18" font-weight="700">PostgreSQL</text><text x="470" y="457" font-size="14">attempts · ledger · bookings</text><text x="470" y="477" font-size="14">events · outbox · constraints</text>
+    <text x="822" y="145" font-size="17" font-weight="700">Stripe</text><text x="822" y="171" font-size="14">checkout · signed events</text>
+    <text x="822" y="250" font-size="17" font-weight="700">Zoom</text><text x="822" y="276" font-size="14">meeting provisioning</text>
+    <text x="822" y="355" font-size="17" font-weight="700">Google Calendar</text><text x="822" y="381" font-size="14">booking event sync</text>
+    <text x="822" y="460" font-size="17" font-weight="700">Email / operations</text><text x="822" y="486" font-size="14">outbox-driven delivery</text>
+  </g>
+  <g stroke="#75bfff" stroke-width="2.5" fill="none"><path d="M240 177 L320 220"/><path d="M240 292 L320 260"/><path d="M240 407 L320 300"/><path d="M470 345 L470 390"/><path d="M620 205 L720 152"/><path d="M620 235 L720 257"/><path d="M620 280 L720 362"/><path d="M590 430 L720 468"/></g>
+  <g fill="#75bfff"><path d="M320 220l-10-1 5 9z"/><path d="M320 260l-10-4 2 10z"/><path d="M320 300l-10-6 1 10z"/><path d="M470 390l-5-9h10z"/><path d="M720 152l-10-1 5 9z"/><path d="M720 257l-10-5 1 10z"/><path d="M720 362l-10-6 1 10z"/><path d="M720 468l-10-5 1 10z"/></g>
+  <text x="480" y="535" text-anchor="middle" fill="#86d99a" font-family="ui-monospace, monospace" font-size="14">RAILS COORDINATES · POSTGRESQL ENFORCES · PROVIDERS EXECUTE</text>
+</svg>
