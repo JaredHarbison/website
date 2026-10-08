@@ -24,6 +24,15 @@
     <text x="822" y="355" font-size="17" font-weight="700">Google Calendar</text><text x="822" y="381" font-size="14">booking event sync</text>
     <text x="822" y="460" font-size="17" font-weight="700">Email / operations</text><text x="822" y="486" font-size="14">outbox-driven delivery</text>
   </g>
-  <g stroke="#75bfff" stroke-width="2.5" fill="none" marker-end="url(#arrowhead)"><path d="M240 177 L320 220"/><path d="M240 292 L320 260"/><path d="M240 407 L320 300"/><path d="M470 345 L470 390"/><path d="M620 205 L720 152"/><path d="M620 235 L720 257"/><path d="M620 280 L720 362"/><path d="M590 430 L720 468"/></g>
+  <g stroke="#75bfff" stroke-width="2.5" fill="none" marker-end="url(#arrowhead)">
+    <path d="M240 177 H280 V220 H320"/>
+    <path d="M240 292 H280 V260 H320"/>
+    <path d="M240 407 H280 V300 H320"/>
+    <path d="M470 345 V390"/>
+    <path d="M620 205 H670 V152 H720"/>
+    <path d="M620 235 H670 V257 H720"/>
+    <path d="M620 280 H680 V362 H720"/>
+    <path d="M590 430 H650 V468 H720"/>
+  </g>
   <text x="480" y="535" text-anchor="middle" fill="#86d99a" font-family="ui-monospace, monospace" font-size="14">RAILS COORDINATES · POSTGRESQL ENFORCES · PROVIDERS EXECUTE</text>
 </svg>
