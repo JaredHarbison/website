@@ -2,7 +2,7 @@
 title: Dogly Advocate Booking
 summary: Building a reliable booking and paid-entitlement lifecycle inside a mature Rails marketplace, from package purchase through scheduling, fulfillment, and operations.
 hero_image: /images/dogly-advocate-booking-system.svg
-hero_alt: System context diagram showing members, advocates, and admins using Dogly's Rails booking domain, with PostgreSQL as the durable source of truth and Stripe, Zoom, Google Calendar, and email behind explicit integration boundaries.
+hero_alt: System context diagram showing members, advocates, and admins using Dogly's Rails booking domain, with PostgreSQL as the durable source of truth; Stripe, Zoom, and email are active integrations, while Google Calendar is implemented for later rollout.
 date: 2026-10-08
 order: 9
 role: Senior Software Engineer
@@ -25,7 +25,7 @@ project_status: in_progress
 
 ## Overview
 
-Dogly's advocate booking work turned a set of marketplace capabilities—paid consultation packages, advocate availability, member requests, and live meetings—into one coordinated system. The hard part was not drawing a calendar. It was preserving correct behavior when people, payment providers, database transactions, and asynchronous integrations all move at different speeds.
+Dogly's advocate booking work turned a set of marketplace capabilities—paid consultation packages, advocate availability, member requests, and live meetings—into one coordinated system. The hard part was not drawing a calendar. It was preserving correct behavior when people, payment providers, database transactions, and external integrations move at different speeds and fail at different boundaries.
 
 This case study is also a useful walkthrough of how I approach a complex feature in a mature Rails application: start at the user journey, identify the durable business facts, make state transitions explicit, then put correctness checks at more than one layer.
 
@@ -49,7 +49,7 @@ The system is being delivered incrementally. The architecture and workflows desc
 - Never grant booking credits based only on a browser redirect from checkout.
 - Prevent overlapping active bookings even when requests race.
 - Preserve a traceable explanation for credit balances and booking transitions.
-- Make retries safe across payment callbacks and asynchronous provider work.
+- Make retries safe across payment callbacks and durable asynchronous calendar/notification work.
 - Enforce package, advocate, and global policy rules at the domain boundary.
 - Keep member, advocate, and admin permissions distinct.
 - Handle time zones, buffers, time off, and group events when showing availability.
@@ -72,9 +72,9 @@ Separating them avoids overloading one status field with unrelated facts. A succ
 
 The architecture has layered defenses. The request/controller boundary checks identity and authorization. Domain services re-check mutable rules inside the transition. Row locks protect balance changes. PostgreSQL constraints arbitrate conflicting slot writes. Provider event keys and outbox idempotency keys make repeated external signals safe to process.
 
-![Dogly Advocate Booking system context: the Rails booking domain coordinates member, advocate, and admin workflows while PostgreSQL owns durable state and external providers remain behind explicit boundaries.](/images/dogly-advocate-booking-system.svg)
+![Dogly Advocate Booking system context: the Rails booking domain coordinates member, advocate, and admin workflows while PostgreSQL owns durable state; Google Calendar is implemented for later user-facing rollout.](/images/dogly-advocate-booking-system.svg)
 
-*System context: Rails coordinates domain transitions; PostgreSQL owns durable integrity; Stripe, meeting, calendar, and email effects cross explicit boundaries.*
+*System context: Rails coordinates domain transitions; PostgreSQL owns durable integrity; Stripe, Zoom, calendar, and email effects cross explicit boundaries. Google Calendar sync is implemented but held for later user-facing rollout.*
 
 ## Technical Implementation
 
@@ -114,7 +114,7 @@ For that reason, PostgreSQL is the final arbiter. The booking schema enables `bt
 
 ### External effects and operations
 
-The application records follow-up work in an outbox with unique idempotency keys. Processing can retry email and calendar synchronization without treating a retry as a new booking event. Virtual meeting provisioning is tied to the confirmed booking and the configured provider/host conditions, rather than being an assumption made during checkout.
+The application records follow-up work in an outbox with unique idempotency keys. Email and Google Calendar synchronization use durable, asynchronous outbox processing; Google Calendar sync is implemented but intentionally held for later user-facing rollout. Virtual meeting provisioning runs synchronously after the confirmation transaction, so Zoom/provider or local-persistence failures remain a hardening area rather than a retryable outbox flow.
 
 The admin workflow provides visibility into bookings and purchase attempts, with policy, venue, and operational controls kept separate from member-facing actions. This matters because support needs to understand the durable state and its history, not infer it from a failed browser session or a provider dashboard alone.
 
@@ -124,7 +124,7 @@ The design has more records and explicit transitions than a minimal `Booking` ta
 
 The database constraint intentionally duplicates some availability logic. The application check improves the user experience; the constraint protects correctness. They solve different problems and should not be collapsed into one layer.
 
-Provider integrations remain asynchronous and can temporarily lag the booking record. The outbox and idempotency keys make retries safe, but they do not eliminate the need for monitoring, retry visibility, and clear handling of terminal provider failures.
+External provider work is kept outside the core booking transaction. Calendar and notification work are asynchronous through the outbox, while Zoom provisioning currently runs synchronously after confirmation.
 
 ## Outcome
 
@@ -134,7 +134,7 @@ The implementation establishes an end-to-end booking foundation in the existing 
 - Payment is reconciled from verified provider events, not inferred from a redirect.
 - Booking transitions and credit movements are explicit and auditable.
 - PostgreSQL protects against conflicting active slot writes under concurrency.
-- Calendar, meeting, and notification work is separated from the core transaction and made retryable.
+- Calendar and notification work use durable outbox processing; meeting provisioning is separated from the booking transaction and remains a current hardening area.
 - Member, advocate, and admin workflows share one domain model while retaining distinct authorization rules.
 
 The system's value is the set of invariants and recovery paths it makes explicit. Business impact and production reliability improvements have not been quantified here.

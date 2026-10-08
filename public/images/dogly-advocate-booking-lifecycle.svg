@@ -1,14 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="960" height="500" viewBox="0 0 960 500" role="img" aria-labelledby="title desc">
   <title id="title">Advocate booking lifecycle and credit effects</title>
-  <desc id="desc">A temporary hold becomes pending. The advocate may request an update or confirm. Decline, expiry, or eligible cancellation release a credit. Confirmation consumes a credit; a confirmed booking then becomes completed or no-show.</desc>
+  <desc id="desc">A temporary hold becomes pending. The advocate may request an update or confirm. Decline, expiry, or eligible cancellation release a credit. Confirmation consumes a credit; the booking then becomes completed with attendance_status attended or no_show.</desc>
   <defs>
     <marker id="arrowhead" markerWidth="9" markerHeight="9" refX="9" refY="4.5" orient="auto" markerUnits="userSpaceOnUse">
       <path d="M0 0 L9 4.5 L0 9 Z" fill="#75bfff"/>
     </marker>
   </defs>
   <rect width="960" height="500" fill="#080b0c"/><g font-family="ui-monospace, monospace"><text x="48" y="50" fill="#e5b566" font-size="18">ADVOCATE BOOKING LIFECYCLE</text><text x="48" y="76" fill="#929e98" font-size="14">STATE CHANGE + CREDIT EFFECT</text></g>
-  <g fill="#101817" stroke="#26302c" stroke-width="2"><rect x="40" y="150" width="180" height="80" rx="8"/><rect x="285" y="150" width="180" height="80" rx="8"/><rect x="530" y="150" width="180" height="80" rx="8"/><rect x="775" y="150" width="150" height="80" rx="8"/><rect x="285" y="330" width="180" height="80" rx="8"/><rect x="560" y="330" width="180" height="80" rx="8"/><rect x="775" y="330" width="150" height="80" rx="8"/></g>
-  <g fill="#d9e0dc" font-family="ui-sans-serif, sans-serif" font-size="16" font-weight="700" text-anchor="middle"><text x="130" y="197">Hold pending</text><text x="375" y="197">Pending</text><text x="620" y="197">Needs update</text><text x="850" y="197">Confirmed</text><text x="375" y="377">Cancelled</text><text x="650" y="377">Completed</text><text x="850" y="377">No-show</text></g>
+  <g fill="#101817" stroke="#26302c" stroke-width="2"><rect x="40" y="150" width="180" height="80" rx="8"/><rect x="285" y="150" width="180" height="80" rx="8"/><rect x="530" y="150" width="180" height="80" rx="8"/><rect x="775" y="150" width="150" height="80" rx="8"/><rect x="285" y="330" width="180" height="80" rx="8"/><rect x="560" y="330" width="180" height="80" rx="8"/></g>
+  <g fill="#d9e0dc" font-family="ui-sans-serif, sans-serif" font-size="16" font-weight="700" text-anchor="middle"><text x="130" y="197">Hold pending</text><text x="375" y="197">Pending</text><text x="620" y="197">Needs update</text><text x="850" y="197">Confirmed</text><text x="375" y="377">Cancelled</text><text x="650" y="363">Completed</text></g>
+  <text x="650" y="380" fill="#929e98" font-family="ui-sans-serif, sans-serif" font-size="11" text-anchor="middle">Attendance outcome</text>
+  <text x="650" y="397" fill="#929e98" font-family="ui-sans-serif, sans-serif" font-size="12" text-anchor="middle">attended / no_show</text>
   <g stroke="#75bfff" stroke-width="3" fill="none" marker-end="url(#arrowhead)">
     <path d="M220 190 H285"/>
     <path d="M465 190 H530"/>
@@ -17,8 +19,7 @@
     <path d="M130 230 V270 H250 V370 H285"/>
     <path d="M620 230 V280 H500 V370 H465"/>
     <path d="M800 230 V275 H700 V330"/>
-    <path d="M850 230 V330"/>
   </g>
-  <g font-family="ui-sans-serif, sans-serif" font-size="12" fill="#929e98" text-anchor="middle"><text x="252" y="178">request</text><text x="497" y="178">ask for update</text><text x="742" y="178">confirm · consume</text><text x="423" y="286">decline · release</text><text x="190" y="258">expiry · release</text><text x="545" y="268">eligible cancel · restore</text><text x="745" y="296">complete</text><text x="885" y="286">no-show</text></g>
+  <g font-family="ui-sans-serif, sans-serif" font-size="12" fill="#929e98" text-anchor="middle"><text x="252" y="178">request</text><text x="497" y="178">ask for update</text><text x="742" y="178">confirm · consume</text><text x="423" y="286">decline · release</text><text x="190" y="258">expiry · release</text><text x="545" y="268">eligible cancel · restore</text><text x="745" y="296">complete</text></g>
   <text x="480" y="455" text-anchor="middle" fill="#86d99a" font-family="ui-monospace, monospace" font-size="14">TRANSITIONS ARE AUTHORIZED · TRANSACTIONAL · AUDITED</text>
 </svg>
