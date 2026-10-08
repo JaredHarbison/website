@@ -98,7 +98,7 @@ The entitlement has an append-only entry history for activation, reservation, re
 
 *Booking state and credit effects move together through explicit, authorized transitions.*
 
-![Booking entitlement ledger showing purchased credits moving through available, reserved, consumed, refunded, and forfeited balances, with each movement recorded in an append-only entry history.](/images/dogly-advocate-booking-ledger.svg)
+![Booking entitlement ledger showing purchased credits moving through available, reserved, consumed, refunded, and forfeited balances, with each movement recorded in an append-only entry history.](/images/dogly-advocate-booking-ledger.svg?rev=20261008-ledger-lock-routing)
 
 *The ledger explains the balance: each state change is a recorded movement, not an unexplained overwrite.*
 
