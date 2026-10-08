@@ -19,6 +19,6 @@
     <path d="M800 230 V275 H700 V330"/>
     <path d="M850 230 V330"/>
   </g>
-  <g font-family="ui-sans-serif, sans-serif" font-size="12" fill="#929e98" text-anchor="middle"><text x="252" y="178">request</text><text x="497" y="178">ask for update</text><text x="742" y="178">confirm · consume</text><text x="390" y="286">decline · release</text><text x="190" y="258">expiry · release</text><text x="545" y="268">eligible cancel · restore</text><text x="745" y="296">complete</text><text x="867" y="286">no-show</text></g>
+  <g font-family="ui-sans-serif, sans-serif" font-size="12" fill="#929e98" text-anchor="middle"><text x="252" y="178">request</text><text x="497" y="178">ask for update</text><text x="742" y="178">confirm · consume</text><text x="423" y="286">decline · release</text><text x="190" y="258">expiry · release</text><text x="545" y="268">eligible cancel · restore</text><text x="745" y="296">complete</text><text x="885" y="286">no-show</text></g>
   <text x="480" y="455" text-anchor="middle" fill="#86d99a" font-family="ui-monospace, monospace" font-size="14">TRANSITIONS ARE AUTHORIZED · TRANSACTIONAL · AUDITED</text>
 </svg>
