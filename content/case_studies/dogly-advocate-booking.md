@@ -1,8 +1,8 @@
 ---
 title: Dogly Advocate Booking
 summary: Building a reliable booking and paid-entitlement lifecycle inside a mature Rails marketplace, from package purchase through scheduling, fulfillment, and operations.
-hero_image: /images/dogly-advocate-booking-system.svg
-hero_alt: System context diagram showing members, advocates, and admins using Dogly's Rails booking domain, with PostgreSQL as the durable source of truth; Stripe, Zoom, and email are active integrations, while Google Calendar is implemented for later rollout.
+hero_image: /images/dogly-advocate-booking-system.svg?rev=20261008-actor-order
+hero_alt: System context diagram showing advocate, admin, and member workflows in Dogly's Rails booking domain, with PostgreSQL as the durable source of truth; Stripe, Zoom, and email are active integrations, while Google Calendar is implemented for later rollout.
 date: 2026-10-08
 order: 9
 role: Senior Software Engineer
@@ -72,7 +72,7 @@ Separating them avoids overloading one status field with unrelated facts. A succ
 
 The architecture has layered defenses. The request/controller boundary checks identity and authorization. Domain services re-check mutable rules inside the transition. Row locks protect balance changes. PostgreSQL constraints arbitrate conflicting slot writes. Provider event keys and outbox idempotency keys make repeated external signals safe to process.
 
-![Dogly Advocate Booking system context: the Rails booking domain coordinates member, advocate, and admin workflows while PostgreSQL owns durable state; Google Calendar is implemented for later user-facing rollout.](/images/dogly-advocate-booking-system.svg)
+![Dogly Advocate Booking system context: the Rails booking domain coordinates advocate, admin, and member workflows while PostgreSQL owns durable state; Google Calendar is implemented for later user-facing rollout.](/images/dogly-advocate-booking-system.svg?rev=20261008-actor-order)
 
 *System context: Rails coordinates domain transitions; PostgreSQL owns durable integrity; Stripe, Zoom, calendar, and email effects cross explicit boundaries. Google Calendar sync is implemented but held for later user-facing rollout.*
 
